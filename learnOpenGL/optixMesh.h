@@ -5,77 +5,93 @@
 
 
 #include <optixu/optixpp_namespace.h>
-#include <optixu/optixu_matrix_namespace.h>
+#include <optixu/optixu_math_namespace.h> 
+//#include <optixu/optixu_math_stream_namespace.h>
 
 struct MeshBuffers
 {
-    optix::Buffer vertices;
-    optix::Buffer indices;
-    //optix::Buffer tri_indices;
-    //optix::Buffer mat_indices;
-    //optix::Buffer positions;
-    //optix::Buffer normals;
-    //optix::Buffer texcoords;
+	optix::Buffer vertices;
+	optix::Buffer indices;
+	//optix::Buffer tri_indices;
+	//optix::Buffer mat_indices;
+	//optix::Buffer positions;
+	//optix::Buffer normals;
+	//optix::Buffer texcoords;
 };
 
 class OptiXMesh
 {
 public:
-    OptiXMesh(std::shared_ptr<Mesh> mesh):p_mesh(mesh)
-    {
-        getMeshGeometry();
-    }
-    optix::GeometryGroup getMeshGeometry() {
+	OptiXMesh(std::shared_ptr<Mesh> mesh) :p_mesh(mesh)
+	{
+		getMeshGeometry();
+	}
+	optix::GeometryGroup getMeshGeometry() {
 
-        m_buffers.vertices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getVBO());
-        m_buffers.vertices->setFormat(RT_FORMAT_USER);
-        m_buffers.vertices->setElementSize(sizeof(Vertex));
-        m_buffers.vertices->setSize(p_mesh->vertices.size());
+		unsigned int num_triangles = p_mesh->indices.size() / 3;
 
-        m_buffers.indices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getEBO());
-        m_buffers.indices->setFormat(RT_FORMAT_UNSIGNED_INT3);
-        m_buffers.indices->setSize(p_mesh->indices.size() / 3);
+		m_buffers.vertices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getVBO());
+		m_buffers.vertices->setFormat(RT_FORMAT_USER);
+		m_buffers.vertices->setElementSize(sizeof(Vertex));
+		m_buffers.vertices->setSize(p_mesh->vertices.size());
 
-        optix::GeometryTriangles geoTris = context->createGeometryTriangles();  
-        geoTris->setPrimitiveCount(p_mesh->indices.size() / 3);
+		m_buffers.indices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getEBO());
+		m_buffers.indices->setFormat(RT_FORMAT_UNSIGNED_INT3);
+		m_buffers.indices->setSize(num_triangles);
 
-        geoTris->setVertices(p_mesh->vertices.size(), m_buffers.vertices, 0, sizeof(Vertex), RT_FORMAT_FLOAT3);
-        geoTris->setTriangleIndices(m_buffers.indices, RT_FORMAT_UNSIGNED_INT3);
-        geoTris->setBuildFlags(RTgeometrybuildflags(0));
+		optix::GeometryTriangles geoTris = context->createGeometryTriangles();
+		geoTris->setPrimitiveCount(num_triangles);
 
-        const char* ptx = optixUtil::getPtxString(0, "optixGeometryTriangles.cu");
-        geoTris->setAttributeProgram(context->createProgramFromPTXString(ptx, "triangle_attributes"));
+		geoTris->setVertices(p_mesh->vertices.size(), m_buffers.vertices, 0, sizeof(Vertex), RT_FORMAT_FLOAT3);
+		geoTris->setTriangleIndices(m_buffers.indices, RT_FORMAT_UNSIGNED_INT3);
+		geoTris->setBuildFlags(RTgeometrybuildflags(0));
 
-        geoTris["index_buffer"]->setBuffer(m_buffers.indices);
-        geoTris["vertex_buffer"]->setBuffer(m_buffers.vertices);
+		const char* ptx = optixUtil::getPtxString(0, "optixGeometryTriangles.cu");
+		attribute = context->createProgramFromPTXString(ptx, "triangle_attributes");
+		geoTris->setAttributeProgram(attribute);
 
-        geom_instance = context->createGeometryInstance(geoTris, material);
-
-        optix::GeometryGroup ggTris = context->createGeometryGroup();
-        ggTris->addChild(geom_instance);
-        ggTris->setAcceleration(context->createAcceleration("Trbvh"));
-
-        return ggTris; 
-    }
-
-
-    MeshBuffers m_buffers;
-    std::shared_ptr<Mesh> p_mesh;
-    // Input
-    optix::Context               context;       // required
-    optix::Material              material;      // optional single matl override
-
-    optix::Program               intersection;  // optional 
-    optix::Program               bounds;        // optional
-
-    optix::Program               closest_hit;   // optional multi matl override
-    optix::Program               any_hit;       // optional
+		ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
+		closest_hit = context->createProgramFromPTXString(ptx, "diffuse");
+		any_hit = context->createProgramFromPTXString(ptx, "shadow");
+		material->setClosestHitProgram(0, closest_hit);
+		material->setAnyHitProgram(1, any_hit);
+		glm::vec3 kd = p_mesh->mat.kd;
+		material["diffuse_color"]->setFloat(optix::make_float3(kd.r, kd.g, kd.b));
 
 
-    // Output
-    optix::GeometryInstance      geom_instance;
-    optix::float3                bbox_min;
-    optix::float3                bbox_max;
+		geoTris["index_buffer"]->setBuffer(m_buffers.indices);
+		geoTris["vertex_buffer"]->setBuffer(m_buffers.vertices);
 
-    int                          num_triangles;
+
+
+		geom_instance = context->createGeometryInstance(geoTris, material);
+
+		optix::GeometryGroup ggTris = context->createGeometryGroup();
+		ggTris->addChild(geom_instance);
+		ggTris->setAcceleration(context->createAcceleration("Trbvh"));
+
+		return ggTris;
+	}
+
+
+	MeshBuffers m_buffers;
+	std::shared_ptr<Mesh> p_mesh;
+	// Input
+	optix::Context               context;       // required
+	optix::Material              material;      // optional single matl override
+
+	//optix::Program               intersection;  // optional 
+	//optix::Program               bounds;        // optional
+	optix::Program               attribute;        // optional
+
+	optix::Program               closest_hit;   // optional multi matl override
+	optix::Program               any_hit;       // optional
+
+
+	// Output
+	optix::GeometryInstance      geom_instance;
+	//optix::float3                bbox_min;
+	//optix::float3                bbox_max;
+
+	unsigned int                 num_triangles;
 };

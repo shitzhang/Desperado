@@ -156,6 +156,9 @@
     <ClInclude Include="..\learnOpenGL\camera.h" />
     <ClInclude Include="..\learnOpenGL\FBO.h" />
     <ClInclude Include="..\learnOpenGL\global.h" />
+    <ClInclude Include="..\learnOpenGL\light.h" />
+    <ClInclude Include="..\learnOpenGL\mesh.h" />
+    <ClInclude Include="..\learnOpenGL\model.h" />
     <ClInclude Include="..\learnOpenGL\optixConfig.h" />
     <ClInclude Include="..\learnOpenGL\optixMesh.h" />
     <ClInclude Include="..\learnOpenGL\optixUtil.h" />
@@ -167,6 +170,7 @@
     <ClInclude Include="cuda\optixPathTracer\random.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cuda\optixGeometryTriangles.cu" />
     <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
     <None Include="cuda\optixPathTracer\parallelogram.cu" />
     <None Include="shader\5.1.framebuffers_screen.fs" />

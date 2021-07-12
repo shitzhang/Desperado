@@ -86,6 +86,15 @@
     <ClInclude Include="cuda\optixPathTracer\random.h">
       <Filter>源文件\cuda</Filter>
     </ClInclude>
+    <ClInclude Include="..\learnOpenGL\light.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\learnOpenGL\mesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\learnOpenGL\model.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixPathTracer\optixPathTracer.cu">
@@ -99,6 +108,9 @@
     </None>
     <None Include="shader\5.1.framebuffers_screen.vs">
       <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="cuda\optixGeometryTriangles.cu">
+      <Filter>源文件\cuda</Filter>
     </None>
   </ItemGroup>
 </Project>

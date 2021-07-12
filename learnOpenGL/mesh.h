@@ -71,6 +71,16 @@ public:
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
     }
+    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, Material mat,TRStransform trans) :transform(trans)
+    {
+        this->vertices = vertices;
+        this->indices = indices;
+        this->textures = textures;
+        this->mat = mat;
+
+        // now that we have all the required data, set the vertex buffers and its attribute pointers.
+        setupMesh();
+    }
 
     // render the mesh
     void Draw(Shader& shader)

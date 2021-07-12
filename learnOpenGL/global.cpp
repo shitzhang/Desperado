@@ -1,5 +1,6 @@
 #include "global.h"
 
+const char* const SAMPLE_NAME = "optixPathTracer";
 const unsigned int SCR_WIDTH = 1024;
 const unsigned int SCR_HEIGHT = 1024;
 

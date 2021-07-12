@@ -57,7 +57,7 @@ float lastFrame = 0.0f;
 
 //test optix
 using namespace optix;
-const char* const SAMPLE_NAME = "optixPathTracer";
+//const char* const SAMPLE_NAME = "optixPathTracer";
 
 Context        context = 0;
 uint32_t       width = SCR_WIDTH;
@@ -171,11 +171,11 @@ void loadGeometry()
 {
 	// Light buffer
 	ParallelogramLight light;
-	light.corner = make_float3(343.0f, 548.6f, 227.0f);
-	light.v1 = make_float3(-130.0f, 0.0f, 0.0f);
-	light.v2 = make_float3(0.0f, 0.0f, 105.0f);
+	light.corner = optix::make_float3(343.0f, 548.6f, 227.0f);
+	light.v1 = optix::make_float3(-130.0f, 0.0f, 0.0f);
+	light.v2 = optix::make_float3(0.0f, 0.0f, 105.0f);
 	light.normal = normalize(cross(light.v1, light.v2));
-	light.emission = make_float3(15.0f, 15.0f, 5.0f);
+	light.emission = optix::make_float3(15.0f, 15.0f, 5.0f);
 
 	Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
 	light_buffer->setFormat(RT_FORMAT_USER);
@@ -206,83 +206,83 @@ void loadGeometry()
 	// create geometry instances
 	std::vector<GeometryInstance> gis;
 
-	const float3 white = make_float3(0.8f, 0.8f, 0.8f);
-	const float3 green = make_float3(0.05f, 0.8f, 0.05f);
-	const float3 red = make_float3(0.8f, 0.05f, 0.05f);
-	const float3 light_em = make_float3(15.0f, 15.0f, 5.0f);
+	const float3 white = optix::make_float3(0.8f, 0.8f, 0.8f);
+	const float3 green = optix::make_float3(0.05f, 0.8f, 0.05f);
+	const float3 red = optix::make_float3(0.8f, 0.05f, 0.05f);
+	const float3 light_em = optix::make_float3(15.0f, 15.0f, 5.0f);
 
 	// Floor
-	gis.push_back(createParallelogram(make_float3(0.0f, 0.0f, 0.0f),
-		make_float3(0.0f, 0.0f, 559.2f),
-		make_float3(556.0f, 0.0f, 0.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(0.0f, 0.0f, 0.0f),
+		optix::make_float3(0.0f, 0.0f, 559.2f),
+		optix::make_float3(556.0f, 0.0f, 0.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 	// Ceiling
-	gis.push_back(createParallelogram(make_float3(0.0f, 548.8f, 0.0f),
-		make_float3(556.0f, 0.0f, 0.0f),
-		make_float3(0.0f, 0.0f, 559.2f)));
+	gis.push_back(createParallelogram(optix::make_float3(0.0f, 548.8f, 0.0f),
+		optix::make_float3(556.0f, 0.0f, 0.0f),
+		optix::make_float3(0.0f, 0.0f, 559.2f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 	// Back wall
-	gis.push_back(createParallelogram(make_float3(0.0f, 0.0f, 559.2f),
-		make_float3(0.0f, 548.8f, 0.0f),
-		make_float3(556.0f, 0.0f, 0.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(0.0f, 0.0f, 559.2f),
+		optix::make_float3(0.0f, 548.8f, 0.0f),
+		optix::make_float3(556.0f, 0.0f, 0.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 	// Right wall
-	gis.push_back(createParallelogram(make_float3(0.0f, 0.0f, 0.0f),
-		make_float3(0.0f, 548.8f, 0.0f),
-		make_float3(0.0f, 0.0f, 559.2f)));
+	gis.push_back(createParallelogram(optix::make_float3(0.0f, 0.0f, 0.0f),
+		optix::make_float3(0.0f, 548.8f, 0.0f),
+		optix::make_float3(0.0f, 0.0f, 559.2f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", green);
 
 	// Left wall
-	gis.push_back(createParallelogram(make_float3(556.0f, 0.0f, 0.0f),
-		make_float3(0.0f, 0.0f, 559.2f),
-		make_float3(0.0f, 548.8f, 0.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(556.0f, 0.0f, 0.0f),
+		optix::make_float3(0.0f, 0.0f, 559.2f),
+		optix::make_float3(0.0f, 548.8f, 0.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", red);
 
 	// Short block
-	gis.push_back(createParallelogram(make_float3(130.0f, 165.0f, 65.0f),
-		make_float3(-48.0f, 0.0f, 160.0f),
-		make_float3(160.0f, 0.0f, 49.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(130.0f, 165.0f, 65.0f),
+		optix::make_float3(-48.0f, 0.0f, 160.0f),
+		optix::make_float3(160.0f, 0.0f, 49.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(290.0f, 0.0f, 114.0f),
-		make_float3(0.0f, 165.0f, 0.0f),
-		make_float3(-50.0f, 0.0f, 158.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(290.0f, 0.0f, 114.0f),
+		optix::make_float3(0.0f, 165.0f, 0.0f),
+		optix::make_float3(-50.0f, 0.0f, 158.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(130.0f, 0.0f, 65.0f),
-		make_float3(0.0f, 165.0f, 0.0f),
-		make_float3(160.0f, 0.0f, 49.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(130.0f, 0.0f, 65.0f),
+		optix::make_float3(0.0f, 165.0f, 0.0f),
+		optix::make_float3(160.0f, 0.0f, 49.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(82.0f, 0.0f, 225.0f),
-		make_float3(0.0f, 165.0f, 0.0f),
-		make_float3(48.0f, 0.0f, -160.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(82.0f, 0.0f, 225.0f),
+		optix::make_float3(0.0f, 165.0f, 0.0f),
+		optix::make_float3(48.0f, 0.0f, -160.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(240.0f, 0.0f, 272.0f),
-		make_float3(0.0f, 165.0f, 0.0f),
-		make_float3(-158.0f, 0.0f, -47.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(240.0f, 0.0f, 272.0f),
+		optix::make_float3(0.0f, 165.0f, 0.0f),
+		optix::make_float3(-158.0f, 0.0f, -47.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 	// Tall block
-	gis.push_back(createParallelogram(make_float3(423.0f, 330.0f, 247.0f),
-		make_float3(-158.0f, 0.0f, 49.0f),
-		make_float3(49.0f, 0.0f, 159.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(423.0f, 330.0f, 247.0f),
+		optix::make_float3(-158.0f, 0.0f, 49.0f),
+		optix::make_float3(49.0f, 0.0f, 159.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(423.0f, 0.0f, 247.0f),
-		make_float3(0.0f, 330.0f, 0.0f),
-		make_float3(49.0f, 0.0f, 159.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(423.0f, 0.0f, 247.0f),
+		optix::make_float3(0.0f, 330.0f, 0.0f),
+		optix::make_float3(49.0f, 0.0f, 159.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(472.0f, 0.0f, 406.0f),
-		make_float3(0.0f, 330.0f, 0.0f),
-		make_float3(-158.0f, 0.0f, 50.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(472.0f, 0.0f, 406.0f),
+		optix::make_float3(0.0f, 330.0f, 0.0f),
+		optix::make_float3(-158.0f, 0.0f, 50.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(314.0f, 0.0f, 456.0f),
-		make_float3(0.0f, 330.0f, 0.0f),
-		make_float3(-49.0f, 0.0f, -160.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(314.0f, 0.0f, 456.0f),
+		optix::make_float3(0.0f, 330.0f, 0.0f),
+		optix::make_float3(-49.0f, 0.0f, -160.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
-	gis.push_back(createParallelogram(make_float3(265.0f, 0.0f, 296.0f),
-		make_float3(0.0f, 330.0f, 0.0f),
-		make_float3(158.0f, 0.0f, -49.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(265.0f, 0.0f, 296.0f),
+		optix::make_float3(0.0f, 330.0f, 0.0f),
+		optix::make_float3(158.0f, 0.0f, -49.0f)));
 	setMaterial(gis.back(), diffuse, "diffuse_color", white);
 
 	// Create shadow group (no light)
@@ -291,9 +291,9 @@ void loadGeometry()
 	context["top_shadower"]->set(shadow_group);
 
 	// Light
-	gis.push_back(createParallelogram(make_float3(343.0f, 548.6f, 227.0f),
-		make_float3(-130.0f, 0.0f, 0.0f),
-		make_float3(0.0f, 0.0f, 105.0f)));
+	gis.push_back(createParallelogram(optix::make_float3(343.0f, 548.6f, 227.0f),
+		optix::make_float3(-130.0f, 0.0f, 0.0f),
+		optix::make_float3(0.0f, 0.0f, 105.0f)));
 	setMaterial(gis.back(), diffuse_light, "emission_color", light_em);
 
 	// Create geometry group
@@ -322,11 +322,11 @@ void updateCamera()
 
 	float focal_length = (height / 2) / tanf(0.5f * fov * M_PIf / 180.0f);
 
-	camera_u = make_float3(camera->Right.x, camera->Right.y, camera->Right.z) * (float)width / 2;
-	camera_v = make_float3(camera->Up.x, camera->Up.y, camera->Up.z) * (float)height / 2;
-	camera_w = make_float3(camera->Front.x, camera->Front.y, camera->Front.z) * focal_length;
+	camera_u = optix::make_float3(camera->Right.x, camera->Right.y, camera->Right.z) * (float)width / 2;
+	camera_v = optix::make_float3(camera->Up.x, camera->Up.y, camera->Up.z) * (float)height / 2;
+	camera_w = optix::make_float3(camera->Front.x, camera->Front.y, camera->Front.z) * focal_length;
 
-	camera_eye = make_float3(camera->Position.x, camera->Position.y, camera->Position.z);
+	camera_eye = optix::make_float3(camera->Position.x, camera->Position.y, camera->Position.z);
 
 
 	//optixUtil::calculateCameraVariables(
@@ -402,6 +402,10 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+
+	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+
+	Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
 
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	// positions   // texCoords

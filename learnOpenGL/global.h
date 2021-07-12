@@ -19,6 +19,8 @@ using namespace std;
 extern const unsigned int SCR_WIDTH;
 extern const unsigned int SCR_HEIGHT;
 
+extern const char* const SAMPLE_NAME;
+
 extern const vector<string> skyboxFaces;
 
 extern unsigned int TextureFromFile(const char* path, const string& directory, bool gamma);
