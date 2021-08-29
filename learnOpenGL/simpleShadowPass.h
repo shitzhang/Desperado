@@ -24,7 +24,7 @@ public:
 	};
 
 	virtual void updateInfo() {
-		auto light = m_pScene->lights[0];		
+		auto light = m_pScene->directionalLights[0];		
 
 		m_pShader->use();	
 		auto dLight = dynamic_pointer_cast<DirectionalLight>(light);

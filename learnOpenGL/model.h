@@ -28,14 +28,15 @@ class Model
 public:
 	// model data 
 	vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-	vector<Mesh>    meshes;
+	//vector<Mesh>    meshes;
+	vector<std::shared_ptr<Mesh>> p_meshes;
 	string directory;
 	bool gammaCorrection;
 
 	TRStransform transform;
 
 	// constructor, expects a filepath to a 3D model.
-	Model(string const& path, TRStransform transform, bool gamma = false) : gammaCorrection(gamma), transform(transform)
+	Model(string const& path, TRStransform transform = TRStransform(), bool gamma = false) : gammaCorrection(gamma), transform(transform)
 	{
 		loadModel(path);
 	}
@@ -43,8 +44,8 @@ public:
 	// draws the model, and thus all its meshes
 	void Draw(Shader& shader)
 	{
-		for (unsigned int i = 0; i < meshes.size(); i++) {
-			meshes[i].Draw(shader);
+		for (unsigned int i = 0; i < p_meshes.size(); i++) {
+			p_meshes[i]->Draw(shader);
 		}
 	}
 
@@ -77,7 +78,7 @@ private:
 			// the node object only contains indices to index the actual objects in the scene. 
 			// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			meshes.push_back(processMesh(mesh, scene));
+			p_meshes.push_back(processMesh(mesh, scene));
 		}
 		// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -87,7 +88,7 @@ private:
 
 	}
 
-	Mesh processMesh(aiMesh* mesh, const aiScene* scene)
+	std::shared_ptr<Mesh> processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		// data to fill
 		vector<Vertex> vertices;
@@ -169,7 +170,8 @@ private:
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		// return a mesh object created from the extracted mesh data
-		return Mesh(vertices, indices, textures, mat, transform);
+		//return Mesh(vertices, indices, textures, mat, transform);
+		return std::make_shared<Mesh>(vertices, indices, textures, mat, transform);
 	}
 
 	// checks all material textures of a given type and loads the textures if they're not loaded yet.

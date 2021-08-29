@@ -9,7 +9,7 @@
 #include "shader.h"
 #include "scene.h"
 #include "camera.h"
-#include "light.h"
+//#include "light.h"
 #include "model.h"
 
 #include "SceneDepthPass.h"
@@ -22,14 +22,9 @@
 #include <optixu/optixu_math_stream_namespace.h>
 
 #include "optixUtil.h"
+#include "optixMesh.h"
+#include "optixLight.h"
 
-struct ParallelogramLight
-{
-	optix::float3 corner;
-	optix::float3 v1, v2;
-	optix::float3 normal;
-	optix::float3 emission;
-};
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -141,8 +136,8 @@ void createContext()
 	context = Context::create();
 	context->setRayTypeCount(2);
 	context->setEntryPointCount(1);
-	context->setStackSize(1800);
-	context->setMaxTraceDepth(2);
+	//context->setStackSize(1800);
+	//context->setMaxTraceDepth(2);
 
 	// Set Output Debugging via rtPrintf
 	context->setPrintEnabled(1);
@@ -156,8 +151,8 @@ void createContext()
 	context["output_buffer"]->set(buffer);
 
 	// Setup programs
-	const char* ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
-	context->setRayGenerationProgram(0, context->createProgramFromPTXString(ptx, "pathtrace_camera"));
+	const char* ptx = optixUtil::getPtxString(SAMPLE_NAME, "pinhole_camera.cu");
+	context->setRayGenerationProgram(0, context->createProgramFromPTXString(ptx, "pinhole_camera"));
 	context->setExceptionProgram(0, context->createProgramFromPTXString(ptx, "exception"));
 	context->setMissProgram(0, context->createProgramFromPTXString(ptx, "miss"));
 
@@ -170,7 +165,7 @@ void createContext()
 void loadGeometry()
 {
 	// Light buffer
-	ParallelogramLight light;
+	OptixParallelogramLight light;
 	light.corner = optix::make_float3(343.0f, 548.6f, 227.0f);
 	light.v1 = optix::make_float3(-130.0f, 0.0f, 0.0f);
 	light.v2 = optix::make_float3(0.0f, 0.0f, 105.0f);
@@ -403,10 +398,6 @@ int main()
 		return -1;
 	}
 
-	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-
-	Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	// positions   // texCoords
 	-1.0f,  1.0f,  0.0f, 1.0f,
@@ -434,8 +425,30 @@ int main()
 
 	//optix
 	createContext();
-	setupCamera();
-	loadGeometry();
+
+	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+
+	Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
+
+	// create geometry instances
+	std::vector<GeometryInstance> gis;
+
+	for (auto p_mesh : cornell_box.p_meshes) {
+		GLuint vbo = 0;
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, 16 * width * height, 0, GL_STREAM_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		optix::Buffer buff = context->createBufferFromGLBO(RT_BUFFER_INPUT, vbo);
+				
+		OptiXMesh op_mesh(p_mesh, context);
+		gis.push_back(op_mesh.getMeshGeometry());
+	}
+
+	// Create geometry group
+	GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
+	geometry_group->setAcceleration(context->createAcceleration("Trbvh"));
+	context["top_object"]->set(geometry_group);
 
 	context->validate();
 
@@ -455,6 +468,8 @@ int main()
 		context->launch(0, width, height);
 
 		optixUtil::displayBufferGL(getOutputBuffer(), screenTexID);
+
+		//gamma correction
 		glEnable(GL_FRAMEBUFFER_SRGB);
 
 		glActiveTexture(GL_TEXTURE0);

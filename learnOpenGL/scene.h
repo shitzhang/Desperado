@@ -10,14 +10,23 @@
 class Scene {
 public:
 	Scene() {}
-	std::vector<std::shared_ptr<Light>> lights;
+
+	std::vector<std::shared_ptr<DirectionalLight>> directionalLights;
+	std::vector<std::shared_ptr<PointLight>> pointLights;
+	std::vector<std::shared_ptr<ParallelogramLight>> parallelogramLights;
 	std::vector<std::shared_ptr<Model>> models;
 	std::vector<std::shared_ptr<Mesh>> meshes;
 
 	std::shared_ptr<Camera> pCamera;
 
-	void AddLight(std::shared_ptr<Light> l) {
-		lights.push_back(l);
+	void AddDirectionalLight(std::shared_ptr<DirectionalLight> l) {
+		directionalLights.push_back(l);
+	};
+	void AddPointLight(std::shared_ptr<PointLight> l) {
+		pointLights.push_back(l);
+	};
+	void AddParallelogramLight(std::shared_ptr<ParallelogramLight> l) {
+		parallelogramLights.push_back(l);
 	};
 	void AddModel(std::shared_ptr<Model> m) {
 		models.push_back(m);
@@ -27,14 +36,14 @@ public:
 	};
 
 	void DrawLights() {
-		for (int i = 0; i < lights.size(); i++) {
-			auto light = lights[i];
+		for (int i = 0; i < directionalLights.size(); i++) {
+			auto light = directionalLights[i];
 
 			glm::mat4 modelMatrix(1.0f);
 			glm::mat4 viewMatrix(1.0f);
 			glm::mat4 projectionMatrix(1.0f);
 
-			TRStransform trans = light->entity.transform;
+			TRStransform trans = light->entity->transform;
 
 			modelMatrix = glm::translate(modelMatrix, trans.translate);
 
@@ -49,12 +58,70 @@ public:
 			projectionMatrix = pCamera->GetPerspectiveMatrix();
 
 			auto shader = light->shader;
-			shader.use();
-			shader.setMat4("uModelMatrix", modelMatrix);
-			shader.setMat4("uViewMatrix", viewMatrix);
-			shader.setMat4("uProjectionMatrix", projectionMatrix);
+			shader->use();
+			shader->setMat4("uModelMatrix", modelMatrix);
+			shader->setMat4("uViewMatrix", viewMatrix);
+			shader->setMat4("uProjectionMatrix", projectionMatrix);
 
-			lights[i]->Draw();
+			directionalLights[i]->Draw();
+		}
+		for (int i = 0; i < pointLights.size(); i++) {
+			auto light = pointLights[i];
+
+			glm::mat4 modelMatrix(1.0f);
+			glm::mat4 viewMatrix(1.0f);
+			glm::mat4 projectionMatrix(1.0f);
+
+			TRStransform trans = light->entity->transform;
+
+			modelMatrix = glm::translate(modelMatrix, trans.translate);
+
+			modelMatrix = glm::scale(modelMatrix, trans.scale);
+
+			if (trans.rotateAngle) {
+				modelMatrix = glm::rotate(modelMatrix, trans.rotateAngle, trans.rotateAxis);
+			}
+
+
+			viewMatrix = pCamera->GetViewMatrix();
+			projectionMatrix = pCamera->GetPerspectiveMatrix();
+
+			auto shader = light->shader;
+			shader->use();
+			shader->setMat4("uModelMatrix", modelMatrix);
+			shader->setMat4("uViewMatrix", viewMatrix);
+			shader->setMat4("uProjectionMatrix", projectionMatrix);
+
+			pointLights[i]->Draw();
+		}
+		for (int i = 0; i < parallelogramLights.size(); i++) {
+			auto light = parallelogramLights[i];
+
+			glm::mat4 modelMatrix(1.0f);
+			glm::mat4 viewMatrix(1.0f);
+			glm::mat4 projectionMatrix(1.0f);
+
+			TRStransform trans = light->entity->transform;
+
+			modelMatrix = glm::translate(modelMatrix, trans.translate);
+
+			modelMatrix = glm::scale(modelMatrix, trans.scale);
+
+			if (trans.rotateAngle) {
+				modelMatrix = glm::rotate(modelMatrix, trans.rotateAngle, trans.rotateAxis);
+			}
+
+
+			viewMatrix = pCamera->GetViewMatrix();
+			projectionMatrix = pCamera->GetPerspectiveMatrix();
+
+			auto shader = light->shader;
+			shader->use();
+			shader->setMat4("uModelMatrix", modelMatrix);
+			shader->setMat4("uViewMatrix", viewMatrix);
+			shader->setMat4("uProjectionMatrix", projectionMatrix);
+
+			parallelogramLights[i]->Draw();
 		}
 	}
 

@@ -13,6 +13,8 @@
 enum class AttachmentType
 {
 	AttachmentType_Depth,
+	AttachmentType_CubeDepth,
+	AttachmentType_GBuffer,
 	AttachmentType_NormalWorld,
 	AttachmentType_Visibility,
 	AttachmentType_PosWorld,
@@ -22,20 +24,20 @@ enum class AttachmentType
 class FBO
 {
 public:
-	unsigned int fbo_idx;
-	int GBufferNum;
-	int resolution = 0;
+	AttachmentType type;
+	unsigned int resolution_width = 0;
+	unsigned int resolution_height = 0;
 	std::vector<unsigned int> textures;
 	std::vector<unsigned int> attachments;  //使用的颜色附件单元
-	FBO();
-	FBO(int GbuffNum);
-	FBO(int GbuffNum, int resolution);
+	FBO(AttachmentType type,unsigned int resolution_width,unsigned int resolution_height);
 	~FBO();
 	void init();
 	void error();
 	unsigned int CreateAndBindColorTargetTexture(unsigned int attachment);
-private:
 
+	unsigned int getFboIdx();
+private:
+	unsigned int fbo_idx;
 };
 
 

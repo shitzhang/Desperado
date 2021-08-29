@@ -172,7 +172,7 @@ private:
 };
 
 
-static Mesh cube(TRStransform transform) {
+static shared_ptr<Mesh> cube(TRStransform transform) {
     const glm::vec3 positions[24] = {
             // Front face
             glm::vec3(-1.0, -1.0, 1.0),
@@ -225,8 +225,8 @@ static Mesh cube(TRStransform transform) {
         vertices.push_back(v);
     }
     vector<Texture> textures;
-    return Mesh(vertices, indices, textures, transform);
-    //return make_shared<Mesh>(vertices, indices, textures, transform);
+    //return Mesh(vertices, indices, textures, transform);
+    return make_shared<Mesh>(vertices, indices, textures, transform);
 }
 
 #endif

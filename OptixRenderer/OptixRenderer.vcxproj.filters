@@ -19,6 +19,9 @@
     <Filter Include="源文件\shader">
       <UniqueIdentifier>{1cfca6df-d002-48f0-ac26-911bb2430450}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\cuda\optixMeshViewer">
+      <UniqueIdentifier>{195ed372-1ab7-40f8-944e-360f2cb15768}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -95,6 +98,21 @@
     <ClInclude Include="..\learnOpenGL\model.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\learnOpenGL\scene.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="optixLight.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\optixMeshViewer\common.h">
+      <Filter>源文件\cuda\optixMeshViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\optixMeshViewer\helpers.h">
+      <Filter>源文件\cuda\optixMeshViewer</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\optixMeshViewer\phong.h">
+      <Filter>源文件\cuda\optixMeshViewer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixPathTracer\optixPathTracer.cu">
@@ -111,6 +129,13 @@
     </None>
     <None Include="cuda\optixGeometryTriangles.cu">
       <Filter>源文件\cuda</Filter>
+    </None>
+    <None Include="packages.config" />
+    <None Include="cuda\optixMeshViewer\pinhole_camera.cu">
+      <Filter>源文件\cuda\optixMeshViewer</Filter>
+    </None>
+    <None Include="cuda\optixMeshViewer\phong.cu">
+      <Filter>源文件\cuda\optixMeshViewer</Filter>
     </None>
   </ItemGroup>
 </Project>

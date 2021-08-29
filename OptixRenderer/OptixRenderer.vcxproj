@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);F:\learnOpenGL\learnOpenGL\third\glfw-3.3.4\include;F:\learnOpenGL\learnOpenGL\third\glm;F:\learnOpenGL\learnOpenGL\third\glad\include;F:\learnOpenGL\learnOpenGL\third\Optix\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;F:\learnOpenGL\learnOpenGL\third\assimp-5.0.1\include;F:\learnOpenGL\learnOpenGL</IncludePath>
-    <LibraryPath>F:\learnOpenGL\learnOpenGL\third\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Project\DesperadoRenderer\learnOpenGL\third\glfw-3.3.4\include;C:\Project\DesperadoRenderer\learnOpenGL\third\glm;C:\Project\DesperadoRenderer\learnOpenGL\third\glad\include;C:\Project\DesperadoRenderer\learnOpenGL\third\Optix\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Project\DesperadoRenderer\learnOpenGL\third\assimp-5.0.1\include;C:\Project\DesperadoRenderer\learnOpenGL</IncludePath>
+    <LibraryPath>C:\Project\DesperadoRenderer\learnOpenGL\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -163,20 +163,37 @@
     <ClInclude Include="..\learnOpenGL\optixMesh.h" />
     <ClInclude Include="..\learnOpenGL\optixUtil.h" />
     <ClInclude Include="..\learnOpenGL\pass.h" />
+    <ClInclude Include="..\learnOpenGL\scene.h" />
     <ClInclude Include="..\learnOpenGL\SceneDepthPass.h" />
     <ClInclude Include="..\learnOpenGL\shader.h" />
     <ClInclude Include="..\learnOpenGL\stb_image.h" />
+    <ClInclude Include="cuda\optixMeshViewer\common.h" />
+    <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
+    <ClInclude Include="cuda\optixMeshViewer\phong.h" />
     <ClInclude Include="cuda\optixPathTracer\common.h" />
     <ClInclude Include="cuda\optixPathTracer\random.h" />
+    <ClInclude Include="optixLight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixGeometryTriangles.cu" />
+    <None Include="cuda\optixMeshViewer\phong.cu" />
+    <None Include="cuda\optixMeshViewer\pinhole_camera.cu" />
     <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
     <None Include="cuda\optixPathTracer\parallelogram.cu" />
+    <None Include="packages.config" />
     <None Include="shader\5.1.framebuffers_screen.fs" />
     <None Include="shader\5.1.framebuffers_screen.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+    <Import Project="..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+    <Error Condition="!Exists('..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+  </Target>
 </Project>

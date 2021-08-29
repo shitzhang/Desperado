@@ -30,13 +30,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="H:\glad\src\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="include.cpp">
@@ -54,7 +48,7 @@
     <ClCompile Include="SceneDepthPass.cpp">
       <Filter>源文件\passes</Filter>
     </ClCompile>
-    <ClCompile Include="optixUtil.cpp">
+    <ClCompile Include="glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,14 +92,8 @@
     <ClInclude Include="skybox.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="optixMesh.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="optixUtil.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="optixConfig.h">
-      <Filter>源文件</Filter>
+    <ClInclude Include="cubeDepthPass.h">
+      <Filter>源文件\passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

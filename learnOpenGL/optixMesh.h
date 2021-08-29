@@ -22,13 +22,16 @@ struct MeshBuffers
 class OptiXMesh
 {
 public:
-	OptiXMesh(std::shared_ptr<Mesh> mesh) :p_mesh(mesh)
+	OptiXMesh(std::shared_ptr<Mesh> mesh,optix::Context context) :p_mesh(mesh),context(context)
 	{
-		getMeshGeometry();
+		init();
 	}
-	optix::GeometryGroup getMeshGeometry() {
+	void init() {
 
 		unsigned int num_triangles = p_mesh->indices.size() / 3;
+
+		auto vbo = p_mesh->getVBO();
+		auto ebo = p_mesh->getEBO();
 
 		m_buffers.vertices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getVBO());
 		m_buffers.vertices->setFormat(RT_FORMAT_USER);
@@ -50,13 +53,13 @@ public:
 		attribute = context->createProgramFromPTXString(ptx, "triangle_attributes");
 		geoTris->setAttributeProgram(attribute);
 
-		ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
-		closest_hit = context->createProgramFromPTXString(ptx, "diffuse");
-		any_hit = context->createProgramFromPTXString(ptx, "shadow");
+		ptx = optixUtil::getPtxString(SAMPLE_NAME, "phong.cu");
+		closest_hit = context->createProgramFromPTXString(ptx, "closest_hit_radiance");
+		any_hit = context->createProgramFromPTXString(ptx, "any_hit_shadow");
 		material->setClosestHitProgram(0, closest_hit);
 		material->setAnyHitProgram(1, any_hit);
 		glm::vec3 kd = p_mesh->mat.kd;
-		material["diffuse_color"]->setFloat(optix::make_float3(kd.r, kd.g, kd.b));
+		material["kd"]->setFloat(optix::make_float3(kd.r, kd.g, kd.b));
 
 
 		geoTris["index_buffer"]->setBuffer(m_buffers.indices);
@@ -64,20 +67,26 @@ public:
 
 
 
-		geom_instance = context->createGeometryInstance(geoTris, material);
+		geom_instance = context->createGeometryInstance();
+		geom_instance->setGeometryTriangles(geoTris);
 
-		optix::GeometryGroup ggTris = context->createGeometryGroup();
-		ggTris->addChild(geom_instance);
-		ggTris->setAcceleration(context->createAcceleration("Trbvh"));
+		//optix::GeometryGroup ggTris = context->createGeometryGroup();
+		//ggTris->addChild(geom_instance);
+		//ggTris->setAcceleration(context->createAcceleration("Trbvh"));
 
-		return ggTris;
+		//return ggTris;
 	}
 
+	optix::GeometryInstance getMeshGeometry() {
+		return geom_instance;
+	}
 
-	MeshBuffers m_buffers;
 	std::shared_ptr<Mesh> p_mesh;
-	// Input
+
 	optix::Context               context;       // required
+
+private:
+	MeshBuffers m_buffers;
 	optix::Material              material;      // optional single matl override
 
 	//optix::Program               intersection;  // optional 

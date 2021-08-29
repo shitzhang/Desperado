@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>H:\glfw-3.3.4\include;H:\glm;H:\glad\include;H:\assimp-5.0.1\include;F:\learnOpenGL\learnOpenGL\third\Optix\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>H:\glfw-3.3.4\build\src\Debug;H:\assimp-5.0.1\build\code\Release;F:\learnOpenGL\learnOpenGL\third\Optix\lib64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Project\DesperadoRenderer\learnOpenGL\third\glfw-3.3.4\include;C:\Project\DesperadoRenderer\learnOpenGL\third\glm;C:\Project\DesperadoRenderer\learnOpenGL\third\glad\include;C:\Project\DesperadoRenderer\learnOpenGL\third\assimp-5.0.1\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Project\DesperadoRenderer\learnOpenGL\third\lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,7 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;optix.6.5.0.lib;optix_prime.6.5.0.lib;optixu.6.5.0.lib;nvrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;nvrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,25 +147,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FBO.cpp" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="global.cpp" />
-    <ClCompile Include="H:\glad\src\glad.c" />
     <ClCompile Include="include.cpp" />
-    <ClCompile Include="optixUtil.cpp" />
     <ClCompile Include="pass.cpp" />
     <ClCompile Include="SceneDepthPass.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cubeDepthPass.h" />
     <ClInclude Include="FBO.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
-    <ClInclude Include="optixConfig.h" />
-    <ClInclude Include="optixMesh.h" />
-    <ClInclude Include="optixUtil.h" />
     <ClInclude Include="pass.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="SceneDepthPass.h" />
