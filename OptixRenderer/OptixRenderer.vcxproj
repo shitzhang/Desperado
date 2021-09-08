@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Project\DesperadoRenderer\learnOpenGL\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Project\DesperadoRenderer\learnOpenGL\third\glfw-3.3.4\include;C:\Project\DesperadoRenderer\learnOpenGL\third\glm;C:\Project\DesperadoRenderer\learnOpenGL\third\glad\include;C:\Project\DesperadoRenderer\learnOpenGL\third\Optix\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;C:\Project\DesperadoRenderer\learnOpenGL\third\assimp-5.0.1\include;C:\Project\DesperadoRenderer\learnOpenGL</IncludePath>
-    <LibraryPath>C:\Project\DesperadoRenderer\learnOpenGL\third\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>F:\Project\DesperadoRenderer\learnOpenGL\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);F:\Project\DesperadoRenderer\learnOpenGL\third\glfw-3.3.4\include;F:\Project\DesperadoRenderer\learnOpenGL\third\glm;F:\Project\DesperadoRenderer\learnOpenGL\third\glad\include;F:\Project\DesperadoRenderer\learnOpenGL\third\Optix\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;F:\Project\DesperadoRenderer\learnOpenGL\third\assimp-5.0.1\include;F:\Project\DesperadoRenderer\learnOpenGL</IncludePath>
+    <LibraryPath>F:\Project\DesperadoRenderer\learnOpenGL\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
