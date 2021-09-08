@@ -15,7 +15,7 @@ SceneDepthPass::SceneDepthPass(const std::string& vPassName, int vExcutionOrder,
 void SceneDepthPass::initInfo() {
 	m_pShader = std::make_shared<Shader>("shader/sceneDepthShader/depthVertex.glsl", "shader/sceneDepthShader/depthFragment.glsl");
 	auto light = m_pScene->directionalLights[0];
-	light->pFbo = std::make_shared<FBO>(1, m_resolution);
+	light->pFbo = std::make_shared<FBO>(AttachmentType::AttachmentType_Depth, m_resolution, m_resolution);
 	m_fbo = light->pFbo->getFboIdx();
 
 };
@@ -31,7 +31,7 @@ void SceneDepthPass::updateInfo() {
 
 	//auto dLight = (DirectionalLight*)(light.get());
 
-	glm::mat4 lightVP = light->CalcLightVP();
+	glm::mat4 lightVP = light->getLightTrans();
 
 	m_pShader->setMat4("uLightVP", lightVP);
 };

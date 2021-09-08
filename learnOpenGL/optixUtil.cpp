@@ -448,7 +448,7 @@ void optixUtil::displayBufferGL(optix::Buffer buffer,unsigned int &screen_tex_id
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
     else
         imageData = buffer->map(0, RT_BUFFER_MAP_READ);
-
+    
     //RTsize elmt_size = buffer->getElementSize();
     //if (elmt_size % 8 == 0) glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
     //else if (elmt_size % 4 == 0) glPixelStorei(GL_UNPACK_ALIGNMENT, 4);

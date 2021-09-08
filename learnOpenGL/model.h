@@ -3,6 +3,7 @@
 
 #include <glad/glad.h> 
 
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "stb_image.h"
@@ -21,7 +22,6 @@
 #include <vector>
 using namespace std;
 
-unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 
 class Model
 {
@@ -163,10 +163,10 @@ private:
 		vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		// 3. normal maps
-		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 		// 4. height maps
-		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		// return a mesh object created from the extracted mesh data
@@ -184,10 +184,13 @@ private:
 			
 			aiColor3D color(0.f, 0.f, 0.f);
 			mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-			unsigned char data[] = { color.r * 255,color.g * 255,color.b * 255 ,255 };		
+			unsigned char data[] = {color.r * 255,color.g * 255,color.b * 255 ,255,
+									color.r * 255,color.g * 255,color.b * 255 ,255 ,
+									color.r * 255,color.g * 255,color.b * 255 ,255 ,
+									color.r * 255,color.g * 255,color.b * 255 ,255 };
 			texture.id = createConstantTexture(data, false);
 			texture.type = typeName;
-			texture.path = "kd";
+			texture.path = "Kd";
 			textures.push_back(texture);
 		}
 		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -224,13 +227,13 @@ private:
 		float shininess;
 
 		mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		material.kd = glm::vec3(color.r, color.b, color.g);
+		material.Kd = glm::vec3(color.r, color.b, color.g);
 
 		mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-		material.ka = glm::vec3(color.r, color.b, color.g);
+		material.Ka = glm::vec3(color.r, color.b, color.g);
 
 		mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-		material.ks = glm::vec3(color.r, color.b, color.g);
+		material.Ks = glm::vec3(color.r, color.b, color.g);
 
 		mat->Get(AI_MATKEY_SHININESS, shininess);
 		material.Shininess = shininess;

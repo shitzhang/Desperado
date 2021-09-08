@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define CUDA_DIR "C:/Project/DesperadoRenderer/OptixRenderer/cuda"
-#define PTX_DIR "C:/Project/DesperadoRenderer/OptixRenderer/ptx"
+#define CUDA_DIR "F:/Project/DesperadoRenderer/OptixRenderer/cuda"
+#define PTX_DIR "F:/Project/DesperadoRenderer/OptixRenderer/ptx"
 
  // Include directories
 #define SAMPLES_RELATIVE_INCLUDE_DIRS \

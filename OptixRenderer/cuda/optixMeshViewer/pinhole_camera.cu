@@ -45,7 +45,7 @@ rtDeclareVariable(float3,        V, , );
 rtDeclareVariable(float3,        W, , );
 rtDeclareVariable(float3,        bad_color, , );
 rtDeclareVariable(float,         scene_epsilon, , );
-rtBuffer<uchar4, 2>              output_buffer;
+rtBuffer<float4, 2>              output_buffer;
 rtDeclareVariable(rtObject,      top_object, , );
 
 rtDeclareVariable(uint2, launch_index, rtLaunchIndex, );
@@ -68,14 +68,14 @@ RT_PROGRAM void pinhole_camera()
 
   rtTrace(top_object, ray, prd ) ;
 
-  output_buffer[launch_index] = make_color( prd.result );
-
+  output_buffer[launch_index] = make_float4( prd.result , 1.0f );
+  
 }
 
 RT_PROGRAM void exception()
 {
   rtPrintExceptionDetails();
-  output_buffer[launch_index] = make_color( bad_color );
+  output_buffer[launch_index] = make_float4( bad_color , 1.0f );
 }
 
 

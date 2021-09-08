@@ -23,7 +23,8 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 	glGenTextures(1, &textureID);
 
 	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, STBI_rgb_alpha);
+
 	if (data)
 	{
 		GLenum format;
@@ -35,9 +36,10 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 			format = GL_RGBA;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
+		glGenerateMipmap(GL_TEXTURE_2D);
+		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -59,11 +61,11 @@ unsigned int createConstantTexture(const unsigned char* color, bool gamma)
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 
-	int width = 1;
-	int height = 1;
+	int width = 2;
+	int height = 2;
 
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, color);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, color);
 	/*glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

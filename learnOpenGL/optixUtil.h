@@ -10,11 +10,11 @@
 
 
 // Default catch block
-#define SUTIL_CATCH( ctx ) catch( const sutil::APIError& e ) {     \
-    sutil::handleError( ctx, e.code, e.file.c_str(), e.line );     \
+#define OPTIXUTIL_CATCH( ctx ) catch( const optixUtil::APIError& e ) {     \
+    optixUtil::handleError( ctx, e.code, e.file.c_str(), e.line );     \
   }                                                                \
   catch( const std::exception& e ) {                               \
-    sutil::reportErrorMessage( e.what() );                         \
+    optixUtil::reportErrorMessage( e.what() );                         \
     exit(1);                                                       \
   }
 
@@ -23,7 +23,7 @@
   do {                                                             \
     RTresult code = func;                                          \
     if( code != RT_SUCCESS )                                       \
-      throw sutil::APIError( code, __FILE__, __LINE__ );           \
+      throw optixUtil::APIError( code, __FILE__, __LINE__ );           \
   } while(0)
 
 

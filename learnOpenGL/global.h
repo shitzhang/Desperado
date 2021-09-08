@@ -23,7 +23,7 @@ extern const char* const SAMPLE_NAME;
 
 extern const vector<string> skyboxFaces;
 
-extern unsigned int TextureFromFile(const char* path, const string& directory, bool gamma);
+extern unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 extern unsigned int createConstantTexture(const unsigned char* color, bool gamma);
 extern unsigned int loadTexture(char const* path);
 extern unsigned int loadCubemap(vector<std::string> faces);

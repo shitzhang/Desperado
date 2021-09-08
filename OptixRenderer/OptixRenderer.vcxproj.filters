@@ -33,13 +33,7 @@
     <ClCompile Include="..\learnOpenGL\global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\learnOpenGL\shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\learnOpenGL\FBO.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\learnOpenGL\include.cpp">
@@ -49,6 +43,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\learnOpenGL\SceneDepthPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\learnOpenGL\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

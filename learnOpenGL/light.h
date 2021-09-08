@@ -91,7 +91,7 @@ public:
 		lightPos = pos;
 	}
 
-	virtual std::vector<glm::mat4> getPointLightTrans() {
+	std::vector<glm::mat4> getPointLightTrans() {
 
 		glm::mat4 shadowProj = glm::perspective(glm::radians(fov), (float)shadow_width / (float)shadow_height, near_plane, far_plane);
 		std::vector<glm::mat4> shadowTransforms;

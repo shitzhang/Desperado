@@ -28,7 +28,7 @@ public:
 
 		m_pShader->use();	
 		auto dLight = dynamic_pointer_cast<DirectionalLight>(light);
-		glm::mat4 lightVP = dLight->CalcLightVP();
+		glm::mat4 lightVP = dLight->getLightTrans();
 		m_pShader->setMat4("uLightVP", lightVP);
 
 		unsigned int depthTex = light->pFbo->textures[0];

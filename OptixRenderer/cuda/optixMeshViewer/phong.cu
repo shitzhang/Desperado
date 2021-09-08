@@ -32,21 +32,13 @@
 
 using namespace optix;
 
-struct PerRayData_radiance
-{
-	float3 result;
-};
-
-struct PerRayData_shadow
-{
-	float3 attenuation;
-};
-
 
 rtDeclareVariable(float3,       Kd, , );
+rtTextureSampler<float4, 2> texture_diffuse1;
 
 rtDeclareVariable(float3, geometric_normal, attribute geometric_normal, ); 
 rtDeclareVariable(float3, shading_normal, attribute shading_normal, ); 
+rtDeclareVariable(float2, texcoord, attribute texcoord, ); 
 
 rtDeclareVariable(PerRayData_radiance, prd, rtPayload, );
 rtDeclareVariable(PerRayData_shadow, prd_shadow, rtPayload, );
@@ -64,7 +56,10 @@ RT_PROGRAM void closest_hit_radiance()
   float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
 
   float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
-  prd.result = kd;
+
+  float3 Kd_val = make_float3(tex2D( texture_diffuse1, texcoord.x, texcoord.y ));
+  prd.result = Kd_val;
+  //printf("color %f %f %f   ",prd.result.x,prd.result.y,prd.result.z);
 }
 
 
