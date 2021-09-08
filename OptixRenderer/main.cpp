@@ -38,7 +38,7 @@ unsigned int loadCubemap(vector<std::string> faces);
 // camera
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(.0f, .0f, .0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f);
+shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(.0f, 10.0f, .0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f);
 
 
 float lastX = SCR_WIDTH / 2.0f;
@@ -262,12 +262,12 @@ int main()
 	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
 
 	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-	//Model sponza("model/sponza-simple/sponza.obj", sponzaTrans);
+	Model sponza("model/sponza-simple/sponza.obj", sponzaTrans);
 	//Model Mary("model/Marry/Marry.obj", MarryTrans);
 	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
 	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
 	//Model breakfast_room("model/breakfast_room/breakfast_room.obj", bedTrans);
-	Model sibenik("model/sibenik/sibenik.obj", sponzaTrans);
+	//Model sibenik("model/sibenik/sibenik.obj", sponzaTrans);
 	
 
 	try {
@@ -277,7 +277,7 @@ int main()
 		std::vector<optix::GeometryInstance> gis;
 
 
-		for (auto p_mesh : sibenik.p_meshes) {
+		for (auto p_mesh : sponza.p_meshes) {
 
 			OptiXMesh op_mesh(p_mesh, context);
 
