@@ -55,27 +55,50 @@ public:
 		m_buffers.indices->setFormat(RT_FORMAT_UNSIGNED_INT3);
 		m_buffers.indices->setSize(num_triangles);
 
-		optix::GeometryTriangles geoTris = context->createGeometryTriangles(); 
-		geoTris->setPrimitiveCount(num_triangles);
+		//optix::GeometryTriangles geoTris = context->createGeometryTriangles(); 
+		//geoTris->setPrimitiveCount(num_triangles);
 
-		geoTris->setVertices(p_mesh->vertices.size(), m_buffers.vertices, 0, sizeof(float) * 8, RT_FORMAT_FLOAT3);
-		geoTris->setTriangleIndices(m_buffers.indices, RT_FORMAT_UNSIGNED_INT3);
-		//geoTris->setBuildFlags(RTgeometrybuildflags(0));
+		//geoTris->setVertices(p_mesh->vertices.size(), m_buffers.vertices, 0, sizeof(float) * 8, RT_FORMAT_FLOAT3);
+		//geoTris->setTriangleIndices(m_buffers.indices, RT_FORMAT_UNSIGNED_INT3);
+		////geoTris->setBuildFlags(RTgeometrybuildflags(0));
 
-		geoTris["index_buffer"]->setBuffer(m_buffers.indices);
-		geoTris["vertex_buffer"]->setBuffer(m_buffers.vertices);
+		//geoTris["index_buffer"]->setBuffer(m_buffers.indices);
+		//geoTris["vertex_buffer"]->setBuffer(m_buffers.vertices);
 
-		const char* ptx = optixUtil::getPtxString(0, "optixGeometryTriangles.cu");
-		attribute = context->createProgramFromPTXString(ptx, "triangle_attributes");
-		geoTris->setAttributeProgram(attribute);
+		//const char* ptx = optixUtil::getPtxString(0, "optixGeometryTriangles.cu");
+		//attribute = context->createProgramFromPTXString(ptx, "triangle_attributes");
+		//geoTris->setAttributeProgram(attribute);
 
-		ptx = optixUtil::getPtxString(SAMPLE_NAME, "phong.cu");
-		closest_hit = context->createProgramFromPTXString(ptx, "closest_hit_radiance");
-		any_hit = context->createProgramFromPTXString(ptx, "any_hit_shadow");
+		optix::Geometry g = context->createGeometry();
+		g["vertex_buffer"]->setBuffer(m_buffers.vertices);
+		g["index_buffer"]->setBuffer(m_buffers.indices);
+		g->setPrimitiveCount(num_triangles);
+
+		std::string ptx = optixUtil::getPtxString(0, "triangle_mesh.cu");
+		intersection = context->createProgramFromPTXString(ptx, "mesh_intersect");
+		bounds = context->createProgramFromPTXString(ptx, "mesh_bounds");
+		
+		g->setIntersectionProgram(intersection);
+		g->setBoundingBoxProgram(bounds);
+
+		/*ptx = optixUtil::getPtxString(SAMPLE_NAME, "phong.cu");
+		closest_hit = context->createProgramFromPTXString(ptx, "closest_hit");
+		any_hit = context->createProgramFromPTXString(ptx, "any_hit");
+		any_hit_shadow = context->createProgramFromPTXString(ptx, "any_hit_shadow");
 
 		material = context->createMaterial();
 		material->setClosestHitProgram(0, closest_hit);
-		material->setAnyHitProgram(1, any_hit);
+		material->setAnyHitProgram(0, any_hit);
+		material->setAnyHitProgram(1, any_hit_shadow);*/
+
+		material = context->createMaterial();
+		ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
+		closest_hit = context->createProgramFromPTXString(ptx, "closest_hit");
+		any_hit = context->createProgramFromPTXString(ptx, "any_hit");
+		any_hit_shadow = context->createProgramFromPTXString(ptx, "any_hit_shadow");
+		material->setClosestHitProgram(0, closest_hit);
+		material->setAnyHitProgram(0, any_hit);
+		material->setAnyHitProgram(1, any_hit_shadow);
 
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
@@ -107,6 +130,7 @@ public:
 				sampler->setWrapMode(1, RT_WRAP_REPEAT);
 				map_textureSampler[p_mesh->textures[i].id] = sampler;
 				material[name + number]->setTextureSampler(sampler);
+
 			}
 			else {
 				material[name + number]->setTextureSampler(p->second);
@@ -126,7 +150,7 @@ public:
 
 	
 		geom_instance = context->createGeometryInstance();
-		geom_instance->setGeometryTriangles(geoTris);
+		geom_instance->setGeometry(g);
 		geom_instance->addMaterial(material);
 	}
 
@@ -142,12 +166,13 @@ private:
 	MeshBuffers m_buffers;
 	optix::Material              material;      // optional single matl override
 
-	//optix::Program               intersection;  // optional 
-	//optix::Program               bounds;        // optional
+	optix::Program               intersection;  // optional 
+	optix::Program               bounds;        // optional
 	optix::Program               attribute;        // optional
 
 	optix::Program               closest_hit;   // optional multi matl override
 	optix::Program               any_hit;       // optional
+	optix::Program				 any_hit_shadow;
 
 
 	// Output

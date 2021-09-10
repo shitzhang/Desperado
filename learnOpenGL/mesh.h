@@ -15,6 +15,7 @@ using namespace std;
 class TRStransform {
 public:
     TRStransform() {};
+    TRStransform(glm::vec3 translate) :translate(translate) {};
     TRStransform(glm::vec3 translate, glm::vec3 scale) :translate(translate), scale(scale) {};
     TRStransform(glm::vec3 translate, glm::vec3 scale, glm::vec3 rotateAxis, float rotateAngle) :translate(translate), scale(scale), rotateAxis(rotateAxis), rotateAngle(rotateAngle) {};
     glm::vec3 translate = glm::vec3(0.0, 0.0, 0.0);
@@ -85,10 +86,10 @@ public:
     // render the mesh
     void Draw(Shader& shader)
     {
-        shader.setVec3("Kd", this->mat.Kd);
-        shader.setVec3("Ks", this->mat.Ks);
-        shader.setVec3("Ka", this->mat.Ka);
-        shader.setFloat("Shininess", this->mat.Shininess);
+        //shader.setVec3("Kd", this->mat.Kd);
+        //shader.setVec3("Ks", this->mat.Ks);
+        //shader.setVec3("Ka", this->mat.Ka);
+        //shader.setFloat("Shininess", this->mat.Shininess);
 
         // bind appropriate textures
         unsigned int diffuseNr = 1;
@@ -110,8 +111,8 @@ public:
                 number = std::to_string(heightNr++); 
 
 
-            //glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            shader.setInt(name + number, i);
+            glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+            //shader.setInt(name + number, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 

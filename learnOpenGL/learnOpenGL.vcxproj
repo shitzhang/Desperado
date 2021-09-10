@@ -182,7 +182,7 @@
     <None Include="shader\blendingf.glsl" />
     <None Include="shader\blendingv.glsl" />
     <None Include="shader\fshader.glsl" />
-    <None Include="shader\light.fs" />
+    <None Include="shader\diffuse.fs" />
     <None Include="shader\f_stencil.glsl" />
     <None Include="shader\lightShader\lightCube.fs" />
     <None Include="shader\lightShader\lightCube.vs" />
@@ -190,7 +190,7 @@
     <None Include="shader\sceneDepthShader\depthVertex.glsl" />
     <None Include="shader\simpleShadowShader\simpleShadow.fs" />
     <None Include="shader\simpleShadowShader\simpleShadow.vs" />
-    <None Include="shader\light.vs" />
+    <None Include="shader\diffuse.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

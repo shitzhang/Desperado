@@ -166,12 +166,14 @@
     <ClInclude Include="..\learnOpenGL\SceneDepthPass.h" />
     <ClInclude Include="..\learnOpenGL\shader.h" />
     <ClInclude Include="..\learnOpenGL\stb_image.h" />
+    <ClInclude Include="cuda\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\common.h" />
     <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\phong.h" />
     <ClInclude Include="cuda\optixPathTracer\common.h" />
     <ClInclude Include="cuda\optixPathTracer\random.h" />
     <ClInclude Include="optixLight.h" />
+    <ClInclude Include="optixRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixGeometryTriangles.cu" />
@@ -179,20 +181,10 @@
     <None Include="cuda\optixMeshViewer\pinhole_camera.cu" />
     <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
     <None Include="cuda\optixPathTracer\parallelogram.cu" />
-    <None Include="packages.config" />
+    <None Include="cuda\triangle_mesh.cu" />
     <None Include="shader\5.1.framebuffers_screen.fs" />
     <None Include="shader\5.1.framebuffers_screen.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" />
-    <Import Project="..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v120.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
-    <Error Condition="!Exists('..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\build\native\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

@@ -100,10 +100,10 @@
     <None Include="shader\fshader.glsl">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\light.vs">
+    <None Include="shader\diffuse.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\light.fs">
+    <None Include="shader\diffuse.fs">
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\f_stencil.glsl">

@@ -110,6 +110,12 @@
     <ClInclude Include="cuda\optixMeshViewer\phong.h">
       <Filter>源文件\cuda\optixMeshViewer</Filter>
     </ClInclude>
+    <ClInclude Include="optixRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\helpers.h">
+      <Filter>源文件\cuda</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixPathTracer\optixPathTracer.cu">
@@ -127,12 +133,14 @@
     <None Include="cuda\optixGeometryTriangles.cu">
       <Filter>源文件\cuda</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="cuda\optixMeshViewer\pinhole_camera.cu">
       <Filter>源文件\cuda\optixMeshViewer</Filter>
     </None>
     <None Include="cuda\optixMeshViewer\phong.cu">
       <Filter>源文件\cuda\optixMeshViewer</Filter>
+    </None>
+    <None Include="cuda\triangle_mesh.cu">
+      <Filter>源文件\cuda</Filter>
     </None>
   </ItemGroup>
 </Project>

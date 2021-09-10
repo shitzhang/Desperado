@@ -61,10 +61,12 @@ uint32_t       height = SCR_HEIGHT;
 bool           use_pbo = true;
 
 int            frame_number = 1;
-int            sqrt_num_samples = 2;
+int            sqrt_num_samples = 1;
 int            rr_begin_depth = 1;
 optix::Program        pgram_intersection = 0;
 optix::Program        pgram_bounding_box = 0;
+
+std::vector<optix::GeometryInstance> light_gis;
 
 // Camera state
 optix::float3         camera_up;
@@ -77,6 +79,7 @@ optix::Buffer getOutputBuffer();
 void destroyContext();
 void registerExitHandler();
 void createContext();
+void setupLights();
 void loadGeometry();
 void setupCamera();
 void updateCamera();
@@ -110,24 +113,84 @@ void createContext()
 	context->setPrintBufferSize(4096);
 
 	context["scene_epsilon"]->setFloat(1.e-3f);
-	//context["rr_begin_depth"]->setUint(rr_begin_depth);
-
+	context["rr_begin_depth"]->setUint(rr_begin_depth);
+	context["sqrt_num_samples"]->setUint(sqrt_num_samples);
 	//Buffer buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
 	optix::Buffer buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
 	context["output_buffer"]->set(buffer);
 
 	// Setup programs
-	const char* ptx = optixUtil::getPtxString(SAMPLE_NAME, "pinhole_camera.cu");
-	context->setRayGenerationProgram(0, context->createProgramFromPTXString(ptx, "pinhole_camera"));
+	const char* ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
+	context->setRayGenerationProgram(0, context->createProgramFromPTXString(ptx, "pathtrace_camera"));
 	context->setExceptionProgram(0, context->createProgramFromPTXString(ptx, "exception"));
 	context->setMissProgram(0, context->createProgramFromPTXString(ptx, "miss"));
 
 	//context["sqrt_num_samples"]->setUint(sqrt_num_samples);
 	context["bad_color"]->setFloat(1000000.0f, 0.0f, 1000000.0f); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
-	context["bg_color"]->setFloat(optix::make_float3(0.5f));
+	context["bg_color"]->setFloat(optix::make_float3(0.0f));
 }
 
+optix::GeometryInstance createParallelogram(
+	const optix::float3& anchor,
+	const optix::float3& offset1,
+	const optix::float3& offset2)
+{
+	optix::Geometry parallelogram = context->createGeometry();
+	parallelogram->setPrimitiveCount(1u);
+	parallelogram->setIntersectionProgram(pgram_intersection);
+	parallelogram->setBoundingBoxProgram(pgram_bounding_box);
 
+	optix::float3 normal = normalize(cross(offset1, offset2));
+	float d = dot(normal, anchor);
+	optix::float4 plane = make_float4(normal, d);
+
+	optix::float3 v1 = offset1 / dot(offset1, offset1);
+	optix::float3 v2 = offset2 / dot(offset2, offset2);
+
+	parallelogram["plane"]->setFloat(plane);
+	parallelogram["anchor"]->setFloat(anchor);
+	parallelogram["v1"]->setFloat(v1);
+	parallelogram["v2"]->setFloat(v2);
+
+	optix::GeometryInstance gi = context->createGeometryInstance();
+	gi->setGeometry(parallelogram);
+	return gi;
+}
+
+void setupLights() {
+	// Light buffer
+	OptixParallelogramLight light;
+	light.corner = optix::make_float3(0.0f, 800.0f, 0.0f);
+	light.v1 = optix::make_float3(-800.0f, 0.0f, 0.0f);
+	light.v2 = optix::make_float3(0.0f, 0.0f, 200.0f);
+	light.normal = normalize(cross(light.v1, light.v2));
+	light.emission = optix::make_float3(15.0f, 15.0f, 15.0f);
+
+	optix::Buffer light_buffer = context->createBuffer(RT_BUFFER_INPUT);
+	light_buffer->setFormat(RT_FORMAT_USER);
+	light_buffer->setElementSize(sizeof(OptixParallelogramLight));
+	light_buffer->setSize(1u);
+	memcpy(light_buffer->map(), &light, sizeof(light));
+	light_buffer->unmap();
+	context["lights"]->setBuffer(light_buffer);
+
+	optix::Material diffuse_light = context->createMaterial();
+	std::string ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
+	optix::Program closest_hit_emitter = context->createProgramFromPTXString(ptx, "closest_hit_emitter");
+	diffuse_light->setClosestHitProgram(0, closest_hit_emitter);
+
+
+	ptx = optixUtil::getPtxString(SAMPLE_NAME, "parallelogram.cu");
+	pgram_bounding_box = context->createProgramFromPTXString(ptx, "bounds");
+	pgram_intersection = context->createProgramFromPTXString(ptx, "intersect");
+
+	const optix::float3 light_em = optix::make_float3(15.0f, 15.0f, 5.0f);
+
+	// Light
+	light_gis.push_back(createParallelogram(light.corner, light.v1, light.v2));
+	light_gis.back()->addMaterial(diffuse_light);
+	light_gis.back()["emission_color"]->setFloat(light_em);
+}
 
 void setupCamera()
 {
@@ -153,31 +216,6 @@ void updateCamera()
 	camera_w = optix::make_float3(camera->Front.x, camera->Front.y, camera->Front.z) * focal_length;
 
 	camera_eye = optix::make_float3(camera->Position.x, camera->Position.y, camera->Position.z);
-
-
-	//optixUtil::calculateCameraVariables(
-	//    camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
-	//    camera_u, camera_v, camera_w, /*fov_is_vertical*/ true);
-	////view to world
-	//const Matrix4x4 frame = Matrix4x4::fromBasis(
-	//    normalize(camera_u),
-	//    normalize(camera_v),
-	//    normalize(-camera_w),
-	//    camera_lookat);
-	////world to view
-	//const Matrix4x4 frame_inv = frame.inverse();
-	//// Apply camera rotation twice to match old SDK behavior
-	//const Matrix4x4 trans = frame * camera_rotate * camera_rotate * frame_inv;
-
-	//camera_eye = make_float3(trans * make_float4(camera_eye, 1.0f));
-	//camera_lookat = make_float3(trans * make_float4(camera_lookat, 1.0f));
-	//camera_up = make_float3(trans * make_float4(camera_up, 0.0f));
-
-	//optixUtil::calculateCameraVariables(
-	//    camera_eye, camera_lookat, camera_up, fov, aspect_ratio,
-	//    camera_u, camera_v, camera_w, true);
-
-	//camera_rotate = Matrix4x4::identity();
 
 	if (camera_changed) // reset accumulation
 		frame_number = 1;
@@ -255,14 +293,14 @@ int main()
 	Shader screenShader("shader/5.1.framebuffers_screen.vs", "shader/5.1.framebuffers_screen.fs");
 	unsigned int screenTexID = 0;
 
-	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-	TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-	TRStransform MarryTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-	TRStransform nanoTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
-	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0));
+	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform MarryTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform nanoTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
 
 	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-	Model sponza("model/sponza-simple/sponza.obj", sponzaTrans);
+	Model sponza("model/sponza/sponza.obj", sponzaTrans);
 	//Model Mary("model/Marry/Marry.obj", MarryTrans);
 	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
 	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
@@ -273,6 +311,7 @@ int main()
 	try {
 		//optix
 		createContext();
+		setupLights();
 		// create geometry instances
 		std::vector<optix::GeometryInstance> gis;
 
@@ -285,7 +324,14 @@ int main()
 		}
 
 		// Create geometry group
+		optix::GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
+		shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
+		context["top_shadower"]->set(shadow_group);
+
 		optix::GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
+		for (auto light_gi : light_gis) {
+			geometry_group->addChild(light_gi);
+		}
 		geometry_group->setAcceleration(context->createAcceleration("Trbvh"));
 		context["top_object"]->set(geometry_group);
 
