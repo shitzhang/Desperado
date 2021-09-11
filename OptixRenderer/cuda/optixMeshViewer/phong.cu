@@ -49,8 +49,13 @@ RT_PROGRAM void any_hit_shadow()
 	rtTerminateRay();
 }
 
+RT_PROGRAM void any_hit() {
+  if (tex2D(texture_diffuse1, texcoord.x, texcoord.y).w < 0.1f) {
+    rtIgnoreIntersection();
+  } 
+}
 
-RT_PROGRAM void closest_hit_radiance()
+RT_PROGRAM void closest_hit()
 {
   float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
   float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
@@ -58,6 +63,7 @@ RT_PROGRAM void closest_hit_radiance()
   float3 ffnormal = faceforward( world_shading_normal, -ray.direction, world_geometric_normal );
 
   float3 Kd_val = make_float3(tex2D( texture_diffuse1, texcoord.x, texcoord.y ));
+  //float3 Kd_val = make_float3(tex2D( texture_diffuse1, 0.5f, 0.5f ));
   prd.result = Kd_val;
   //printf("color %f %f %f   ",prd.result.x,prd.result.y,prd.result.z);
 }

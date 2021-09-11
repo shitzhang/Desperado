@@ -147,9 +147,9 @@ public:
 			projectionMatrix = pCamera->GetPerspectiveMatrix();
 
 			shader.use();
-			shader.setMat4("uModelMatrix", modelMatrix);
-			shader.setMat4("uViewMatrix", viewMatrix);
-			shader.setMat4("uProjectionMatrix", projectionMatrix);
+			shader.setMat4("model", modelMatrix);
+			shader.setMat4("view", viewMatrix);
+			shader.setMat4("projection", projectionMatrix);
 
 			models[i]->Draw(shader);
 		}

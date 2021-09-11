@@ -1,6 +1,6 @@
 #include "global.h"
 
-const char* const SAMPLE_NAME = "optixMeshViewer";
+const char* const SAMPLE_NAME = "optixPathTracer";
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
@@ -23,7 +23,7 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 	glGenTextures(1, &textureID);
 
 	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, STBI_rgb_alpha);
+	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 
 	if (data)
 	{

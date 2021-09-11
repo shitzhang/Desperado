@@ -26,9 +26,7 @@ unsigned int loadTexture(char const* path);
 unsigned int loadCubemap(vector<std::string> faces);
 
 // camera
-//Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-
-shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(30.0f, 30.0f, 30.0f));
+shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 0.0f));
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -45,9 +43,9 @@ int main()
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -77,86 +75,12 @@ int main()
 		return -1;
 	}
 
-	// configure global opengl state
-	// -----------------------------
+
 	glEnable(GL_DEPTH_TEST);
 
-	// build and compile shaders
-	// -------------------------
-	Shader asteroidShader("shader/10.3.asteroids.vs", "shader/10.3.asteroids.fs");
-	Shader planetShader("shader/10.3.planet.vs", "shader/10.3.planet.fs");
-
-	// load models
-	// -----------
-	Model rock("model/rock/rock.obj");
-	Model planet("model/planet/planet.obj");
-
-	// generate a large list of semi-random model transformation matrices
-	// ------------------------------------------------------------------
-	unsigned int amount = 10000000;
-	glm::mat4* modelMatrices;
-	modelMatrices = new glm::mat4[amount];
-	srand(glfwGetTime()); // initialize random seed	
-	float radius = 150.0;
-	float offset = 25.0f;
-	for (unsigned int i = 0; i < amount; i++)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-		float angle = (float)i / (float)amount * 360.0f;
-		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float x = sin(angle) * radius + displacement;
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float z = cos(angle) * radius + displacement;
-		model = glm::translate(model, glm::vec3(x, y, z));
-
-		// 2. scale: Scale between 0.05 and 0.25f
-		float scale = (rand() % 20) / 100.0f + 0.05;
-		model = glm::scale(model, glm::vec3(scale));
-
-		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-		float rotAngle = (rand() % 360);
-		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
-
-		// 4. now add to list of matrices
-		modelMatrices[i] = model;
-	}
-
-	// configure instanced array
-	// -------------------------
-	unsigned int buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-
-	// set transformation matrices as an instance vertex attribute (with divisor 1)
-	// note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
-	// normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
-	// -----------------------------------------------------------------------------------------------------------------------------------
-	for (unsigned int i = 0; i < rock.p_meshes.size(); i++)
-	{
-		unsigned int VAO = rock.p_meshes[i]->VAO;
-		glBindVertexArray(VAO);
-		// set attribute pointers for matrix (4 times vec4)
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-		glVertexAttribDivisor(3, 1);
-		glVertexAttribDivisor(4, 1);
-		glVertexAttribDivisor(5, 1);
-		glVertexAttribDivisor(6, 1);
-
-		glBindVertexArray(0);
-	}
-
+	
+	auto shader = make_shared<Shader>("../shader/diffuse.vs", "../shader/diffuse.fs");
+	//shader.use();
 	//camera->pFbo = make_shared<FBO>();
 
 	//glm::vec3 lightRadiance = glm::vec3(1.0, 1.0, 1.0);
@@ -175,14 +99,14 @@ int main()
 	//dl->entity= cube(lightTrans);
 	//dl->shader = make_shared<Shader>("shader/lightShader/lightCube.vs", "shader/lightShader/lightCube.fs");
 
-	//auto scene = make_shared<Scene>();
+	auto scene = make_shared<Scene>();
 	//scene->AddDirectionalLight(dl);
 
-	//TRStransform maryTrans1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(20.0, 20.0, 20.0));
+	//TRStransform maryTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(10.0, 10.0, 10.0));
 
-	//auto mary1 = make_shared<Model>("model/Marry/Marry.obj", maryTrans1);
+	//auto mary = make_shared<Model>("model/Marry/Marry.obj", maryTrans);
 
-	//scene->AddModel(mary1);
+	//scene->AddModel(mary);
 
 	//TRStransform maryTrans2(glm::vec3(40.0, 0.0, -40.0), glm::vec3(10.0, 10.0, 10.0));
 
@@ -196,15 +120,31 @@ int main()
 
 	//scene->AddModel(floor);
 
-	//scene->pCamera = camera;
+	scene->pCamera = camera;
+	//glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-
-	////passes
+	//passes
 	//SceneDepthPass depthPass(scene, camera);
 	//SimpleShadowPass simpleShadowPass(scene, camera);
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2));
+	TRStransform MarryTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform nanoTrans(glm::vec3(0.0, 0.0, 0.0));
+	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
+
+	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
+	auto sponza = make_shared<Model>("../model/sponza/sponza.obj", sponzaTrans);
+	//Model Mary("model/Marry/Marry.obj", MarryTrans);
+	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
+	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
+	//Model breakfast_room("model/breakfast_room/breakfast_room.obj", bedTrans);
+	//Model sibenik("model/sibenik/sibenik.obj", sponzaTrans);
+
+	scene->AddModel(sponza);
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(window))
@@ -217,37 +157,12 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// configure transformation matrices
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-		glm::mat4 view = camera->GetViewMatrix();
-		asteroidShader.use();
-		asteroidShader.setMat4("projection", projection);
-		asteroidShader.setMat4("view", view);
-		planetShader.use();
-		planetShader.setMat4("projection", projection);
-		planetShader.setMat4("view", view);
-
-		// draw planet
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		planetShader.setMat4("model", model);
-		planet.Draw(planetShader);
-
-		// draw meteorites
-		asteroidShader.use();
-		asteroidShader.setInt("texture_diffuse1", 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id); // note: we also made the textures_loaded vector public (instead of private) from the model class.
-		for (unsigned int i = 0; i < rock.p_meshes.size(); i++)
-		{
-			glBindVertexArray(rock.p_meshes[i]->VAO);
-			glDrawElementsInstanced(GL_TRIANGLES, rock.p_meshes[i]->indices.size(), GL_UNSIGNED_INT, 0, amount);
-			glBindVertexArray(0);
-		}
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		scene->DrawModels(*shader);
+		
 
 
 		// 交换缓冲并查询IO事件

@@ -183,13 +183,14 @@ static void getCuStringFromFile(std::string& cu, std::string& location, const ch
 {
     std::vector<std::string> source_locations;
 
-    std::string base_dir = std::string(CUDA_DIR);
+    std::string base_dir = std::filesystem::current_path().string() + "\\cuda";
+    //std::string base_dir = std::string(CUDA_DIR);
 
     // Potential source locations (in priority order)
     if (sample_name)
-        source_locations.push_back(base_dir + "/" + sample_name + "/" + filename);
+        source_locations.push_back(base_dir + "\\" + sample_name + "\\" + filename);
     else {
-        source_locations.push_back(base_dir + "/" + filename);
+        source_locations.push_back(base_dir + "\\" + filename);
     }
 
     for (std::vector<std::string>::const_iterator it = source_locations.begin(); it != source_locations.end(); ++it) {
@@ -217,13 +218,14 @@ static void getPtxFromCuString(std::string& ptx, const char* sample_name, const 
     // Gather NVRTC options
     std::vector<const char*> options;
 
-    std::string base_dir = std::string(CUDA_DIR);
+    std::string base_dir = std::filesystem::current_path().string() + "\\cuda";
+    //std::string base_dir = std::string(CUDA_DIR);
 
     // Set sample dir as the primary include path
     std::string sample_dir;
     if (sample_name)
     {
-        sample_dir = std::string("-I") + base_dir + "/" + sample_name;
+        sample_dir = std::string("-I") + base_dir + "\\" + sample_name;
         options.push_back(sample_dir.c_str());
     }
 
