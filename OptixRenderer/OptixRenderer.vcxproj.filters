@@ -25,6 +25,9 @@
     <Filter Include="源文件\shader">
       <UniqueIdentifier>{094cfccd-012f-4b7d-9a58-621ce397bf64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\optix">
+      <UniqueIdentifier>{eee6ee63-2856-4070-9ada-309ba5cf65d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\passes\pass.cpp">
@@ -45,11 +48,11 @@
     <ClCompile Include="..\src\include.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\optixUtil.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\optix\optixUtil.cpp">
+      <Filter>源文件\optix</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,21 +104,6 @@
     <ClInclude Include="..\src\model.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\optixConfig.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\optixLight.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\optixMesh.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\optixRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\optixUtil.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\scene.h">
       <Filter>源文件</Filter>
     </ClInclude>
@@ -127,6 +115,21 @@
     </ClInclude>
     <ClInclude Include="..\src\stb_image.h">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixConfig.h">
+      <Filter>源文件\optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixLight.h">
+      <Filter>源文件\optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixMesh.h">
+      <Filter>源文件\optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixRenderer.h">
+      <Filter>源文件\optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixUtil.h">
+      <Filter>源文件\optix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

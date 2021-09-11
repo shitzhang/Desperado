@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src</IncludePath>
+    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src;..\src\optix</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +147,7 @@
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
-    <ClCompile Include="..\src\optixUtil.cpp" />
+    <ClCompile Include="..\src\optix\optixUtil.cpp" />
     <ClCompile Include="..\src\passes\pass.cpp" />
     <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
     <ClCompile Include="main.cpp" />
@@ -159,11 +159,11 @@
     <ClInclude Include="..\src\light.h" />
     <ClInclude Include="..\src\mesh.h" />
     <ClInclude Include="..\src\model.h" />
-    <ClInclude Include="..\src\optixConfig.h" />
-    <ClInclude Include="..\src\optixLight.h" />
-    <ClInclude Include="..\src\optixMesh.h" />
-    <ClInclude Include="..\src\optixRenderer.h" />
-    <ClInclude Include="..\src\optixUtil.h" />
+    <ClInclude Include="..\src\optix\optixConfig.h" />
+    <ClInclude Include="..\src\optix\optixLight.h" />
+    <ClInclude Include="..\src\optix\optixMesh.h" />
+    <ClInclude Include="..\src\optix\optixRenderer.h" />
+    <ClInclude Include="..\src\optix\optixUtil.h" />
     <ClInclude Include="..\src\passes\cubeDepthPass.h" />
     <ClInclude Include="..\src\passes\pass.h" />
     <ClInclude Include="..\src\passes\SceneDepthPass.h" />
