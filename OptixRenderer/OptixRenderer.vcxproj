@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\learnOpenGL</IncludePath>
+    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,48 +143,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\learnOpenGL\FBO.cpp" />
-    <ClCompile Include="..\learnOpenGL\glad.c" />
-    <ClCompile Include="..\learnOpenGL\global.cpp" />
-    <ClCompile Include="..\learnOpenGL\include.cpp" />
-    <ClCompile Include="..\learnOpenGL\optixUtil.cpp" />
-    <ClCompile Include="..\learnOpenGL\pass.cpp" />
-    <ClCompile Include="..\learnOpenGL\SceneDepthPass.cpp" />
+    <ClCompile Include="..\src\FBO.cpp" />
+    <ClCompile Include="..\src\glad.c" />
+    <ClCompile Include="..\src\global.cpp" />
+    <ClCompile Include="..\src\include.cpp" />
+    <ClCompile Include="..\src\optixUtil.cpp" />
+    <ClCompile Include="..\src\passes\pass.cpp" />
+    <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\learnOpenGL\camera.h" />
-    <ClInclude Include="..\learnOpenGL\FBO.h" />
-    <ClInclude Include="..\learnOpenGL\global.h" />
-    <ClInclude Include="..\learnOpenGL\light.h" />
-    <ClInclude Include="..\learnOpenGL\mesh.h" />
-    <ClInclude Include="..\learnOpenGL\model.h" />
-    <ClInclude Include="..\learnOpenGL\optixConfig.h" />
-    <ClInclude Include="..\learnOpenGL\optixMesh.h" />
-    <ClInclude Include="..\learnOpenGL\optixUtil.h" />
-    <ClInclude Include="..\learnOpenGL\pass.h" />
-    <ClInclude Include="..\learnOpenGL\scene.h" />
-    <ClInclude Include="..\learnOpenGL\SceneDepthPass.h" />
-    <ClInclude Include="..\learnOpenGL\shader.h" />
-    <ClInclude Include="..\learnOpenGL\stb_image.h" />
+    <ClInclude Include="..\src\camera.h" />
+    <ClInclude Include="..\src\FBO.h" />
+    <ClInclude Include="..\src\global.h" />
+    <ClInclude Include="..\src\light.h" />
+    <ClInclude Include="..\src\mesh.h" />
+    <ClInclude Include="..\src\model.h" />
+    <ClInclude Include="..\src\optixConfig.h" />
+    <ClInclude Include="..\src\optixLight.h" />
+    <ClInclude Include="..\src\optixMesh.h" />
+    <ClInclude Include="..\src\optixRenderer.h" />
+    <ClInclude Include="..\src\optixUtil.h" />
+    <ClInclude Include="..\src\passes\cubeDepthPass.h" />
+    <ClInclude Include="..\src\passes\pass.h" />
+    <ClInclude Include="..\src\passes\SceneDepthPass.h" />
+    <ClInclude Include="..\src\passes\simpleShadowPass.h" />
+    <ClInclude Include="..\src\scene.h" />
+    <ClInclude Include="..\src\shader.h" />
+    <ClInclude Include="..\src\skybox.h" />
+    <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="cuda\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\common.h" />
     <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\phong.h" />
     <ClInclude Include="cuda\optixPathTracer\common.h" />
     <ClInclude Include="cuda\optixPathTracer\random.h" />
-    <ClInclude Include="optixLight.h" />
-    <ClInclude Include="optixRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shader\framebuffers_screen.fs" />
+    <None Include="..\shader\framebuffers_screen.vs" />
     <None Include="cuda\optixGeometryTriangles.cu" />
     <None Include="cuda\optixMeshViewer\phong.cu" />
     <None Include="cuda\optixMeshViewer\pinhole_camera.cu" />
     <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
     <None Include="cuda\optixPathTracer\parallelogram.cu" />
     <None Include="cuda\triangle_mesh.cu" />
-    <None Include="shader\5.1.framebuffers_screen.fs" />
-    <None Include="shader\5.1.framebuffers_screen.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

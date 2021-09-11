@@ -16,90 +16,48 @@
     <Filter Include="源文件\cuda">
       <UniqueIdentifier>{e184bce5-919c-43f5-a790-dbe5893d7ed6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\shader">
-      <UniqueIdentifier>{1cfca6df-d002-48f0-ac26-911bb2430450}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\cuda\optixMeshViewer">
       <UniqueIdentifier>{195ed372-1ab7-40f8-944e-360f2cb15768}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\passes">
+      <UniqueIdentifier>{a2831437-0f04-47c7-8a82-a2e88d5513aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\shader">
+      <UniqueIdentifier>{094cfccd-012f-4b7d-9a58-621ce397bf64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\passes\pass.cpp">
+      <Filter>源文件\passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\passes\SceneDepthPass.cpp">
+      <Filter>源文件\passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FBO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\global.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\include.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\optixUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\learnOpenGL\optixUtil.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\global.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\FBO.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\include.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\pass.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\SceneDepthPass.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\learnOpenGL\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\learnOpenGL\camera.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\optixConfig.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\optixMesh.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\optixUtil.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\global.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\shader.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\FBO.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\pass.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\SceneDepthPass.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\stb_image.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="cuda\optixPathTracer\common.h">
       <Filter>源文件\cuda</Filter>
     </ClInclude>
     <ClInclude Include="cuda\optixPathTracer\random.h">
       <Filter>源文件\cuda</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\light.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\mesh.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\model.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\learnOpenGL\scene.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="optixLight.h">
-      <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="cuda\optixMeshViewer\common.h">
       <Filter>源文件\cuda\optixMeshViewer</Filter>
@@ -110,11 +68,65 @@
     <ClInclude Include="cuda\optixMeshViewer\phong.h">
       <Filter>源文件\cuda\optixMeshViewer</Filter>
     </ClInclude>
-    <ClInclude Include="optixRenderer.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="cuda\helpers.h">
       <Filter>源文件\cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\cubeDepthPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\pass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\SceneDepthPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\simpleShadowPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\camera.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FBO.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\global.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\light.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\model.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optixConfig.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optixLight.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optixMesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optixRenderer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optixUtil.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shader.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\skybox.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stb_image.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -123,12 +135,6 @@
     </None>
     <None Include="cuda\optixPathTracer\parallelogram.cu">
       <Filter>源文件\cuda</Filter>
-    </None>
-    <None Include="shader\5.1.framebuffers_screen.fs">
-      <Filter>源文件\shader</Filter>
-    </None>
-    <None Include="shader\5.1.framebuffers_screen.vs">
-      <Filter>源文件\shader</Filter>
     </None>
     <None Include="cuda\optixGeometryTriangles.cu">
       <Filter>源文件\cuda</Filter>
@@ -141,6 +147,12 @@
     </None>
     <None Include="cuda\triangle_mesh.cu">
       <Filter>源文件\cuda</Filter>
+    </None>
+    <None Include="..\shader\framebuffers_screen.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\framebuffers_screen.vs">
+      <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>
 </Project>

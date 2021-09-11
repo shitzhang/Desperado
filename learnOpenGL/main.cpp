@@ -79,7 +79,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	
-	auto shader = make_shared<Shader>("shader/diffuse.vs", "shader/diffuse.fs");
+	auto shader = make_shared<Shader>("../shader/diffuse.vs", "../shader/diffuse.fs");
 	//shader.use();
 	//camera->pFbo = make_shared<FBO>();
 
@@ -137,7 +137,7 @@ int main()
 	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
 
 	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-	auto sponza = make_shared<Model>("model/sponza/sponza.obj", sponzaTrans);
+	auto sponza = make_shared<Model>("../model/sponza/sponza.obj", sponzaTrans);
 	//Model Mary("model/Marry/Marry.obj", MarryTrans);
 	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
 	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);

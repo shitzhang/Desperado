@@ -290,7 +290,7 @@ int main()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	Shader screenShader("shader/5.1.framebuffers_screen.vs", "shader/5.1.framebuffers_screen.fs");
+	Shader screenShader("../shader/framebuffers_screen.vs", "../shader/framebuffers_screen.fs");
 	unsigned int screenTexID = 0;
 
 	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0));
@@ -300,7 +300,7 @@ int main()
 	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
 
 	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-	Model sponza("model/sponza/sponza.obj", sponzaTrans);
+	Model sponza("../model/sponza/sponza.obj", sponzaTrans);
 	//Model Mary("model/Marry/Marry.obj", MarryTrans);
 	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
 	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
