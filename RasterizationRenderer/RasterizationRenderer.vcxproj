@@ -81,9 +81,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c1f9a970-4b75-45a2-8224-11db59bb7717}</ProjectGuid>
-    <RootNamespace>learnOpenGL</RootNamespace>
+    <RootNamespace>RasterizationRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>learnOpenGL</ProjectName>
+    <ProjectName>RasterizationRenderer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
