@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\shader">
+      <UniqueIdentifier>{279d2506-60d5-4d11-a073-0145b94ee9c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\passes">
+      <UniqueIdentifier>{280c23fb-3de6-44db-8636-758b66988f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\shader\NewFilter1">
+      <UniqueIdentifier>{9cd59ad8-b5d4-48aa-948c-14bac43c9c42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\passes\cubeDepthPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\pass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\SceneDepthPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\simpleShadowPass.h">
+      <Filter>源文件\passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\camera.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\FBO.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\global.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\light.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mesh.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\model.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scene.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shader.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\skybox.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stb_image.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\passes\pass.cpp">
+      <Filter>源文件\passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\passes\SceneDepthPass.cpp">
+      <Filter>源文件\passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\FBO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\global.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\include.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shader\5.1.framebuffers.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\5.1.framebuffers.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\5.1.framebuffers_screen.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\5.1.framebuffers_screen.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\6.1.cubemaps.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\6.1.cubemaps.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\6.1.skybox.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\6.1.skybox.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\8.advanced_glsl.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\8.blue.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\8.green.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\8.red.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\8.yellow.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\9.3.default.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\9.3.default.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\9.3.normal_visualization.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\9.3.normal_visualization.gs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\9.3.normal_visualization.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.2.instancing.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.2.instancing.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.3.asteroids.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.3.asteroids.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.3.planet.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\10.3.planet.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\blendingf.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\blendingv.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\diffuse.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\diffuse.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\f_stencil.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\framebuffers_screen.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\framebuffers_screen.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="..\shader\fshader.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>

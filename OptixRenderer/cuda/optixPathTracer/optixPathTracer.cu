@@ -55,6 +55,7 @@ struct PerRayData_pathtrace_shadow
 rtDeclareVariable(float,         scene_epsilon, , );
 rtDeclareVariable(rtObject,      top_object, , );
 rtDeclareVariable(uint2,         launch_index, rtLaunchIndex, );
+rtDeclareVariable(uint2,         launch_dim,   rtLaunchDim, );
 
 rtDeclareVariable(PerRayData_pathtrace, current_prd, rtPayload, );
 
@@ -92,7 +93,7 @@ RT_PROGRAM void pathtrace_camera()
     float3 result = make_float3(0.0f);
 
     unsigned int seed = tea<16>(screen.x*launch_index.y+launch_index.x, frame_number);
-    while(--samples_per_pixel)
+    while(samples_per_pixel--)
     {
         //
         // Sample pixel using jittering
@@ -180,7 +181,7 @@ RT_PROGRAM void pathtrace_camera()
 
 rtDeclareVariable(float3,        emission_color, , );
 
-RT_PROGRAM void diffuseEmitter()
+RT_PROGRAM void closest_hit_emitter()
 {
     current_prd.radiance = current_prd.countEmitted ? emission_color : make_float3(0.f);
     current_prd.done = true;
@@ -193,14 +194,16 @@ RT_PROGRAM void diffuseEmitter()
 //
 //-----------------------------------------------------------------------------
 
-rtDeclareVariable(float3,     diffuse_color, , );
+rtDeclareVariable(float3,       Kd, , );
+rtTextureSampler<float4, 2> texture_diffuse1;
 rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3,     shading_normal,   attribute shading_normal, );
+rtDeclareVariable(float2,     texcoord,         attribute texcoord, ); 
 rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
 
 
-RT_PROGRAM void diffuse()
+RT_PROGRAM void closest_hit()
 {
     float3 world_shading_normal   = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, shading_normal ) );
     float3 world_geometric_normal = normalize( rtTransformNormal( RT_OBJECT_TO_WORLD, geometric_normal ) );
@@ -223,6 +226,7 @@ RT_PROGRAM void diffuse()
 
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
+    float3 diffuse_color = make_float3(tex2D(texture_diffuse1, texcoord.x, texcoord.y));
     current_prd.attenuation = current_prd.attenuation * diffuse_color;
     current_prd.countEmitted = false;
 
@@ -277,10 +281,17 @@ RT_PROGRAM void diffuse()
 
 rtDeclareVariable(PerRayData_pathtrace_shadow, current_prd_shadow, rtPayload, );
 
-RT_PROGRAM void shadow()
+RT_PROGRAM void any_hit_shadow()
 {
     current_prd_shadow.inShadow = true;
     rtTerminateRay();
+}
+
+RT_PROGRAM void any_hit()
+{
+    if (tex2D(texture_diffuse1, texcoord.x, texcoord.y).w < 0.1f) {
+        rtIgnoreIntersection();
+    } 
 }
 
 

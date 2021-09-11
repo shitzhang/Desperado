@@ -18,12 +18,72 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\camera.h" />
+    <ClInclude Include="..\src\FBO.h" />
+    <ClInclude Include="..\src\global.h" />
+    <ClInclude Include="..\src\light.h" />
+    <ClInclude Include="..\src\mesh.h" />
+    <ClInclude Include="..\src\model.h" />
+    <ClInclude Include="..\src\passes\cubeDepthPass.h" />
+    <ClInclude Include="..\src\passes\pass.h" />
+    <ClInclude Include="..\src\passes\SceneDepthPass.h" />
+    <ClInclude Include="..\src\passes\simpleShadowPass.h" />
+    <ClInclude Include="..\src\scene.h" />
+    <ClInclude Include="..\src\shader.h" />
+    <ClInclude Include="..\src\skybox.h" />
+    <ClInclude Include="..\src\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\FBO.cpp" />
+    <ClCompile Include="..\src\glad.c" />
+    <ClCompile Include="..\src\global.cpp" />
+    <ClCompile Include="..\src\include.cpp" />
+    <ClCompile Include="..\src\passes\pass.cpp" />
+    <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shader\10.2.instancing.fs" />
+    <None Include="..\shader\10.2.instancing.vs" />
+    <None Include="..\shader\10.3.asteroids.fs" />
+    <None Include="..\shader\10.3.asteroids.vs" />
+    <None Include="..\shader\10.3.planet.fs" />
+    <None Include="..\shader\10.3.planet.vs" />
+    <None Include="..\shader\5.1.framebuffers.fs" />
+    <None Include="..\shader\5.1.framebuffers.vs" />
+    <None Include="..\shader\5.1.framebuffers_screen.fs" />
+    <None Include="..\shader\5.1.framebuffers_screen.vs" />
+    <None Include="..\shader\6.1.cubemaps.fs" />
+    <None Include="..\shader\6.1.cubemaps.vs" />
+    <None Include="..\shader\6.1.skybox.fs" />
+    <None Include="..\shader\6.1.skybox.vs" />
+    <None Include="..\shader\8.advanced_glsl.vs" />
+    <None Include="..\shader\8.blue.fs" />
+    <None Include="..\shader\8.green.fs" />
+    <None Include="..\shader\8.red.fs" />
+    <None Include="..\shader\8.yellow.fs" />
+    <None Include="..\shader\9.3.default.fs" />
+    <None Include="..\shader\9.3.default.vs" />
+    <None Include="..\shader\9.3.normal_visualization.fs" />
+    <None Include="..\shader\9.3.normal_visualization.gs" />
+    <None Include="..\shader\9.3.normal_visualization.vs" />
+    <None Include="..\shader\blendingf.glsl" />
+    <None Include="..\shader\blendingv.glsl" />
+    <None Include="..\shader\diffuse.fs" />
+    <None Include="..\shader\diffuse.vs" />
+    <None Include="..\shader\framebuffers_screen.fs" />
+    <None Include="..\shader\framebuffers_screen.vs" />
+    <None Include="..\shader\fshader.glsl" />
+    <None Include="..\shader\f_stencil.glsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{23ddbb14-3288-4b9c-bc63-2357df495d0d}</ProjectGuid>
-    <RootNamespace>OptixRenderer</RootNamespace>
+    <ProjectGuid>{c1f9a970-4b75-45a2-8224-11db59bb7717}</ProjectGuid>
+    <RootNamespace>RasterizationRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>RasterizationRenderer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,13 +132,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>H:\glfw-3.3.4\include;H:\glad\include;$(IncludePath)</IncludePath>
+    <LibraryPath>H:\glfw-3.3.4\build\src\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src;..\src\optix</IncludePath>
+    <IncludePath>..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\assimp-5.0.1\include;..\third\CUDA\v10.1\include;..\src;..\src\passes;$(IncludePath)</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -94,6 +156,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,14 +179,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;OpenGL32.lib;assimp-vc142-mt.lib;optix.6.5.0.lib;optix_prime.6.5.0.lib;optixu.6.5.0.lib;nvrtc.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mt.lib;nvrtc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,53 +205,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\FBO.cpp" />
-    <ClCompile Include="..\src\glad.c" />
-    <ClCompile Include="..\src\global.cpp" />
-    <ClCompile Include="..\src\include.cpp" />
-    <ClCompile Include="..\src\optix\optixUtil.cpp" />
-    <ClCompile Include="..\src\passes\pass.cpp" />
-    <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\camera.h" />
-    <ClInclude Include="..\src\FBO.h" />
-    <ClInclude Include="..\src\global.h" />
-    <ClInclude Include="..\src\light.h" />
-    <ClInclude Include="..\src\mesh.h" />
-    <ClInclude Include="..\src\model.h" />
-    <ClInclude Include="..\src\optix\optixConfig.h" />
-    <ClInclude Include="..\src\optix\optixLight.h" />
-    <ClInclude Include="..\src\optix\optixMesh.h" />
-    <ClInclude Include="..\src\optix\optixRenderer.h" />
-    <ClInclude Include="..\src\optix\optixUtil.h" />
-    <ClInclude Include="..\src\passes\cubeDepthPass.h" />
-    <ClInclude Include="..\src\passes\pass.h" />
-    <ClInclude Include="..\src\passes\SceneDepthPass.h" />
-    <ClInclude Include="..\src\passes\simpleShadowPass.h" />
-    <ClInclude Include="..\src\scene.h" />
-    <ClInclude Include="..\src\shader.h" />
-    <ClInclude Include="..\src\skybox.h" />
-    <ClInclude Include="..\src\stb_image.h" />
-    <ClInclude Include="cuda\helpers.h" />
-    <ClInclude Include="cuda\optixMeshViewer\common.h" />
-    <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
-    <ClInclude Include="cuda\optixMeshViewer\phong.h" />
-    <ClInclude Include="cuda\optixPathTracer\common.h" />
-    <ClInclude Include="cuda\optixPathTracer\random.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shader\framebuffers_screen.fs" />
-    <None Include="..\shader\framebuffers_screen.vs" />
-    <None Include="cuda\optixGeometryTriangles.cu" />
-    <None Include="cuda\optixMeshViewer\phong.cu" />
-    <None Include="cuda\optixMeshViewer\pinhole_camera.cu" />
-    <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
-    <None Include="cuda\optixPathTracer\parallelogram.cu" />
-    <None Include="cuda\triangle_mesh.cu" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>
