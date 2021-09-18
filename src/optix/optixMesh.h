@@ -47,8 +47,7 @@ public:
 		m_buffers.vertices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getVBO());
 		m_buffers.vertices->setFormat(RT_FORMAT_USER);
 
-		//m_buffers.vertices->setElementSize(sizeof(Vertex));
-		m_buffers.vertices->setElementSize(sizeof(float) * 8);
+		m_buffers.vertices->setElementSize(sizeof(Vertex));
 		m_buffers.vertices->setSize(p_mesh->vertices.size());
 
 		m_buffers.indices = context->createBufferFromGLBO(RT_BUFFER_INPUT, p_mesh->getEBO());

@@ -105,6 +105,7 @@ RT_PROGRAM void pathtrace_camera()
         //printf("Hello from index %u, %u!\n", launch_index.x, launch_index.y);
         //printf("jitter %f\n%f\n\n",x - rnd(seed), y - rnd(seed));
         float2 jitter = make_float2(x+rnd(seed), y+rnd(seed));
+        //float2 jitter = make_float2(x+0.5, y+0.5);
         
         float2 d = pixel + jitter*jitter_scale;
         float3 ray_origin = eye;

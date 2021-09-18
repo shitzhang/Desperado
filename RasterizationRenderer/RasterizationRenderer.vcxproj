@@ -33,6 +33,8 @@
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\skybox.h" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\utils\InternalDictionary.h" />
+    <ClInclude Include="..\src\utils\Math\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\FBO.cpp" />

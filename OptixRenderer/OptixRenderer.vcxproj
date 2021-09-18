@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src;..\src\optix</IncludePath>
+    <IncludePath>..\third;$(VC_IncludePath);$(WindowsSDK_IncludePath);..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\Optix\include;..\third\CUDA\v10.1\include;..\third\assimp-5.0.1\include;..\src\passes;..\src\Utils;..\src\optix</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,6 +119,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,8 +149,7 @@
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
     <ClCompile Include="..\src\optix\optixUtil.cpp" />
-    <ClCompile Include="..\src\passes\pass.cpp" />
-    <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
+    <ClCompile Include="..\src\passes\RenderPass.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,14 +164,13 @@
     <ClInclude Include="..\src\optix\optixMesh.h" />
     <ClInclude Include="..\src\optix\optixRenderer.h" />
     <ClInclude Include="..\src\optix\optixUtil.h" />
-    <ClInclude Include="..\src\passes\cubeDepthPass.h" />
-    <ClInclude Include="..\src\passes\pass.h" />
-    <ClInclude Include="..\src\passes\SceneDepthPass.h" />
-    <ClInclude Include="..\src\passes\simpleShadowPass.h" />
+    <ClInclude Include="..\src\passes\RenderPass.h" />
     <ClInclude Include="..\src\scene.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\skybox.h" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\utils\InternalDictionary.h" />
+    <ClInclude Include="..\src\utils\Math\Vector.h" />
     <ClInclude Include="cuda\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\common.h" />
     <ClInclude Include="cuda\optixMeshViewer\helpers.h" />

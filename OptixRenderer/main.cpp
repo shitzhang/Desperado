@@ -13,8 +13,8 @@
 //#include "light.h"
 #include "model.h"
 
-#include "SceneDepthPass.h"
-#include "simpleShadowPass.h"
+//#include "SceneDepthPass.h"
+//#include "simpleShadowPass.h"
 
 #include<iostream>
 
@@ -260,6 +260,7 @@ int main()
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	//glfwSwapInterval(0);
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -363,8 +364,8 @@ int main()
 			glBindTexture(GL_TEXTURE_2D, screenTexID);
 
 			{
-				//static unsigned frame_count = 0;
-				//optixUtil::displayFps(frame_count++);
+				static unsigned frame_count = 0;
+				displayFps(frame_count++,window);
 			}
 
 			// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture

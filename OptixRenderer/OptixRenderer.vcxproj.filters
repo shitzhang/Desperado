@@ -28,14 +28,14 @@
     <Filter Include="源文件\optix">
       <UniqueIdentifier>{eee6ee63-2856-4070-9ada-309ba5cf65d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{9722b897-d318-4e7d-8306-341425b7e661}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utils\Math">
+      <UniqueIdentifier>{797a7c4e-2844-4e0e-9ca0-a28be0442932}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\passes\pass.cpp">
-      <Filter>源文件\passes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\passes\SceneDepthPass.cpp">
-      <Filter>源文件\passes</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\FBO.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -53,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="..\src\optix\optixUtil.cpp">
       <Filter>源文件\optix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\passes\RenderPass.cpp">
+      <Filter>源文件\passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,18 +76,6 @@
     </ClInclude>
     <ClInclude Include="cuda\helpers.h">
       <Filter>源文件\cuda</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\passes\cubeDepthPass.h">
-      <Filter>源文件\passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\passes\pass.h">
-      <Filter>源文件\passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\passes\SceneDepthPass.h">
-      <Filter>源文件\passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\passes\simpleShadowPass.h">
-      <Filter>源文件\passes</Filter>
     </ClInclude>
     <ClInclude Include="..\src\camera.h">
       <Filter>源文件</Filter>
@@ -130,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="..\src\optix\optixUtil.h">
       <Filter>源文件\optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\Math\Vector.h">
+      <Filter>源文件\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\InternalDictionary.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\passes\RenderPass.h">
+      <Filter>源文件\passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

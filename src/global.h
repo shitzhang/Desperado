@@ -1,9 +1,10 @@
 #pragma once
 
 #include <glad/glad.h> 
-
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "stb_image.h"
 
 
@@ -13,6 +14,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
 using namespace std;
 
 // settings
@@ -27,3 +29,6 @@ extern unsigned int TextureFromFile(const char* path, const string& directory, b
 extern unsigned int createConstantTexture(const unsigned char* color, bool gamma);
 extern unsigned int loadTexture(char const* path);
 extern unsigned int loadCubemap(vector<std::string> faces);
+extern void displayFps(unsigned int frame_count, GLFWwindow* window);
+
+extern const float FPS_UPDATE_INTERVAL;

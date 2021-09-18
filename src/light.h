@@ -8,7 +8,7 @@
 
 
 
-class Light {
+class Light:public std::enable_shared_from_this<Light> {
 public:
 	//virtual glm::mat4 CalcLightVP() = 0;
 	void setLightMesh(std::shared_ptr<Mesh> p_mesh) {

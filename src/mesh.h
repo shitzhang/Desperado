@@ -32,9 +32,9 @@ struct Vertex {
     // texCoords
     glm::vec2 TexCoords;
     // tangent
-    //glm::vec3 Tangent;
+    glm::vec3 Tangent;
     // bitangent
-    //glm::vec3 Bitangent;
+    glm::vec3 Bitangent;
 };
 
 struct Texture {
@@ -86,10 +86,10 @@ public:
     // render the mesh
     void Draw(Shader& shader)
     {
-        //shader.setVec3("Kd", this->mat.Kd);
-        //shader.setVec3("Ks", this->mat.Ks);
-        //shader.setVec3("Ka", this->mat.Ka);
-        //shader.setFloat("Shininess", this->mat.Shininess);
+        shader.setVec3("Kd", this->mat.Kd);
+        shader.setVec3("Ks", this->mat.Ks);
+        shader.setVec3("Ka", this->mat.Ka);
+        shader.setFloat("Shininess", this->mat.Shininess);
 
         // bind appropriate textures
         unsigned int diffuseNr = 1;
@@ -101,18 +101,18 @@ public:
             glActiveTexture(GL_TEXTURE0 + i); 
             string number;
             string name = textures[i].type;
-            if (name == "texture_diffuse")
+            if (name == "diffuseMap")
                 number = std::to_string(diffuseNr++);
-            else if (name == "texture_specular")
+            else if (name == "specularMap")
                 number = std::to_string(specularNr++); 
-            else if (name == "texture_normal")
+            else if (name == "normalMap")
                 number = std::to_string(normalNr++); 
-            else if (name == "texture_height")
+            else if (name == "heightMap")
                 number = std::to_string(heightNr++); 
 
 
-            glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            //shader.setInt(name + number, i);
+            //glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
+            shader.setInt(name + number, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 
@@ -164,11 +164,11 @@ private:
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
         // vertex tangent
-        //glEnableVertexAttribArray(3);
-        //glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
         // vertex bitangent
-        //glEnableVertexAttribArray(4);
-        //glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
         glBindVertexArray(0);
     }

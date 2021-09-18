@@ -22,6 +22,12 @@
     <Filter Include="源文件\shader\NewFilter1">
       <UniqueIdentifier>{9cd59ad8-b5d4-48aa-948c-14bac43c9c42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{420b75ef-68c2-4245-83f2-f47a2eba708a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utils\Math">
+      <UniqueIdentifier>{30c8e633-d603-4817-b0aa-3f5f25ba5b05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\passes\cubeDepthPass.h">
@@ -66,6 +72,12 @@
     <ClInclude Include="..\src\stb_image.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\utils\Math\Vector.h">
+      <Filter>源文件\Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils\InternalDictionary.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\passes\pass.cpp">
@@ -83,10 +95,10 @@
     <ClCompile Include="..\src\global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\include.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\src\include.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

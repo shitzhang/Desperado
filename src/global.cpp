@@ -140,3 +140,64 @@ unsigned int loadCubemap(vector<std::string> faces) {
 
 	return textureID;
 }
+
+const float FPS_UPDATE_INTERVAL = 0.5;  
+
+
+void displayFps(unsigned int frame_count,GLFWwindow* window)
+{
+	static double fps = -1.0;
+	static unsigned last_frame_count = 0;
+	static double last_update_time = glfwGetTime();
+	static double current_time = 0.0;
+	current_time = glfwGetTime();
+	if (current_time - last_update_time > FPS_UPDATE_INTERVAL) {
+		fps = (frame_count - last_frame_count) / (current_time - last_update_time);
+		last_frame_count = frame_count;
+		last_update_time = current_time;
+	}
+	if (frame_count > 0 && fps >= 0.0) {	
+		static char fps_text[32];
+		sprintf_s(fps_text, "fps: %7.2f", fps);
+		glfwSetWindowTitle(window, fps_text);
+	}
+}
+
+//double currentTime()
+//{
+//#if defined(_WIN32)
+//
+//	// inv_freq is 1 over the number of ticks per second.
+//	static double inv_freq;
+//	static bool freq_initialized = false;
+//	static BOOL use_high_res_timer = 0;
+//
+//	if (!freq_initialized)
+//	{
+//		LARGE_INTEGER freq;
+//		use_high_res_timer = QueryPerformanceFrequency(&freq);
+//		inv_freq = 1.0 / freq.QuadPart;
+//		freq_initialized = true;
+//	}
+//
+//	if (use_high_res_timer)
+//	{
+//		LARGE_INTEGER c_time;
+//		if (QueryPerformanceCounter(&c_time))
+//			return c_time.QuadPart * inv_freq;
+//		else
+//			throw std::exception("currentTime: QueryPerformanceCounter failed");
+//	}
+//
+//	return static_cast<double>(timeGetTime()) * 1.0e-3;
+//
+//#else
+//
+//	struct timeval tv;
+//	if (gettimeofday(&tv, 0))
+//		throw Exception("optixUtil::urrentTime(): gettimeofday failed!\n");
+//
+//	return  tv.tv_sec + tv.tv_usec * 1.0e-6;
+//
+//#endif
+//}

@@ -12,6 +12,8 @@ struct Vertex {
   float3 position;
   float3 normal;
   float2 texCoord;
+  float3 tangent;
+  float3 bitangent;
 };
 
 rtBuffer<Vertex,  1>  vertex_buffer;

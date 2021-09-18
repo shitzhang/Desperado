@@ -476,8 +476,6 @@ void optixUtil::displayBufferGL(optix::Buffer buffer,unsigned int &screen_tex_id
         buffer->unmap();
 }
 
-static const float FPS_UPDATE_INTERVAL = 0.5;  //seconds
-
 
 void optixUtil::displayFps(unsigned int frame_count)
 {
