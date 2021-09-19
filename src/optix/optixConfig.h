@@ -11,7 +11,7 @@
 #define SAMPLES_ABSOLUTE_INCLUDE_DIRS \
   "..\\third\\OptiX\\include", \
   "..\\third\\OptiX\\include\\optixu", \
-  "..\\third\\CUDA\\v10.1\\include", 
+  "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\include", 
 
 // Signal whether to use NVRTC or not
 #define CUDA_NVRTC_ENABLED 1

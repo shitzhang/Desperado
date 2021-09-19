@@ -19,9 +19,6 @@
     <Filter Include="源文件\cuda\optixMeshViewer">
       <UniqueIdentifier>{195ed372-1ab7-40f8-944e-360f2cb15768}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\passes">
-      <UniqueIdentifier>{a2831437-0f04-47c7-8a82-a2e88d5513aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\shader">
       <UniqueIdentifier>{094cfccd-012f-4b7d-9a58-621ce397bf64}</UniqueIdentifier>
     </Filter>
@@ -53,9 +50,6 @@
     </ClCompile>
     <ClCompile Include="..\src\optix\optixUtil.cpp">
       <Filter>源文件\optix</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\passes\RenderPass.cpp">
-      <Filter>源文件\passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,9 +121,6 @@
     </ClInclude>
     <ClInclude Include="..\src\utils\InternalDictionary.h">
       <Filter>源文件\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\passes\RenderPass.h">
-      <Filter>源文件\passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

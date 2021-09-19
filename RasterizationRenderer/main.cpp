@@ -12,8 +12,6 @@
 #include "light.h"
 #include "model.h"
 
-#include "SceneDepthPass.h"
-#include "simpleShadowPass.h"
 
 #include<iostream>
 

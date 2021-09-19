@@ -25,10 +25,6 @@
     <ClInclude Include="..\src\light.h" />
     <ClInclude Include="..\src\mesh.h" />
     <ClInclude Include="..\src\model.h" />
-    <ClInclude Include="..\src\passes\cubeDepthPass.h" />
-    <ClInclude Include="..\src\passes\pass.h" />
-    <ClInclude Include="..\src\passes\SceneDepthPass.h" />
-    <ClInclude Include="..\src\passes\simpleShadowPass.h" />
     <ClInclude Include="..\src\scene.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\skybox.h" />
@@ -41,43 +37,13 @@
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
-    <ClCompile Include="..\src\passes\pass.cpp" />
-    <ClCompile Include="..\src\passes\SceneDepthPass.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shader\10.2.instancing.fs" />
-    <None Include="..\shader\10.2.instancing.vs" />
-    <None Include="..\shader\10.3.asteroids.fs" />
-    <None Include="..\shader\10.3.asteroids.vs" />
-    <None Include="..\shader\10.3.planet.fs" />
-    <None Include="..\shader\10.3.planet.vs" />
-    <None Include="..\shader\5.1.framebuffers.fs" />
-    <None Include="..\shader\5.1.framebuffers.vs" />
-    <None Include="..\shader\5.1.framebuffers_screen.fs" />
-    <None Include="..\shader\5.1.framebuffers_screen.vs" />
-    <None Include="..\shader\6.1.cubemaps.fs" />
-    <None Include="..\shader\6.1.cubemaps.vs" />
-    <None Include="..\shader\6.1.skybox.fs" />
-    <None Include="..\shader\6.1.skybox.vs" />
-    <None Include="..\shader\8.advanced_glsl.vs" />
-    <None Include="..\shader\8.blue.fs" />
-    <None Include="..\shader\8.green.fs" />
-    <None Include="..\shader\8.red.fs" />
-    <None Include="..\shader\8.yellow.fs" />
-    <None Include="..\shader\9.3.default.fs" />
-    <None Include="..\shader\9.3.default.vs" />
-    <None Include="..\shader\9.3.normal_visualization.fs" />
-    <None Include="..\shader\9.3.normal_visualization.gs" />
-    <None Include="..\shader\9.3.normal_visualization.vs" />
-    <None Include="..\shader\blendingf.glsl" />
-    <None Include="..\shader\blendingv.glsl" />
     <None Include="..\shader\diffuse.fs" />
     <None Include="..\shader\diffuse.vs" />
     <None Include="..\shader\framebuffers_screen.fs" />
     <None Include="..\shader\framebuffers_screen.vs" />
-    <None Include="..\shader\fshader.glsl" />
-    <None Include="..\shader\f_stencil.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -142,7 +108,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\assimp-5.0.1\include;..\third\CUDA\v10.1\include;..\src;..\src\passes;$(IncludePath)</IncludePath>
+    <IncludePath>..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\assimp-5.0.1\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;..\src;..\src\passes;$(IncludePath)</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
