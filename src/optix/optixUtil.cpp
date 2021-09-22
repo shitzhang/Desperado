@@ -1,3 +1,4 @@
+#include "stdafx.h"
 
 #include "optixUtil.h"
 #include "optixConfig.h"

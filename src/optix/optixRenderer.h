@@ -8,8 +8,8 @@
 #include <optixu/optixu_math_namespace.h>
 
 
-
-class OptixRenderer {
+namespace Desperado {
+    class OptixRenderer {
     public:
         OptixRenderer(std::string const& ptxDir);
         ~OptixRenderer();
@@ -29,7 +29,7 @@ class OptixRenderer {
         optix::Program _material_any_hit = 0;
         optix::Program _material_shadow_any_hit = 0;
 
-        optix::Geometry getMeshGeometry(const shared_ptr<Model> model );
+        optix::Geometry getMeshGeometry(const shared_ptr<Model> model);
         optix::Geometry getMeshGeometry(const shared_ptr<Mesh> mesh);
 
         optix::TextureSampler getTextureSampler(const Texture* tex);
@@ -82,5 +82,6 @@ class OptixRenderer {
         void setHdrmap(std::string const& map);
         inline void setBlackBackground() { backgroundMode = BLACK; };
         inline void setProceduralSkyBackground() { backgroundMode = PROCEDURAL_SKY; };
- };
+    };
+}
 

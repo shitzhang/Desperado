@@ -4,12 +4,12 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 
-uniform sampler2D texture_diffuse1;
+uniform sampler2D diffuse_map1;
 
 void main()
 {
-    vec4 color = texture2D(texture_diffuse1, TexCoords);
-    FragColor = texture2D(texture_diffuse1, TexCoords); 
+    vec4 color = texture2D(diffuse_map1, TexCoords);
+    FragColor = texture2D(diffuse_map1, TexCoords); 
     if(color.a < 0.1)
         discard;
     FragColor = color; 

@@ -31,6 +31,12 @@
     <Filter Include="源文件\Utils\Math">
       <UniqueIdentifier>{797a7c4e-2844-4e0e-9ca0-a28be0442932}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Core">
+      <UniqueIdentifier>{918ff2f9-7c56-4ac3-9f02-e4ccb20d071d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Core\API">
+      <UniqueIdentifier>{d74f7dcd-1223-4ce4-bcd2-1ce2e68f2363}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\FBO.cpp">
@@ -42,14 +48,26 @@
     <ClCompile Include="..\src\global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\include.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\optix\optixUtil.cpp">
       <Filter>源文件\optix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Utils\Threading.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\optix\optixMesh.cpp">
+      <Filter>源文件\optix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\include.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Core\API\Texture.cpp">
+      <Filter>源文件\Core\API</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +139,24 @@
     </ClInclude>
     <ClInclude Include="..\src\utils\InternalDictionary.h">
       <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\DesperadoConfig.h">
+      <Filter>源文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Desperado.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdafx.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\Framework.h">
+      <Filter>源文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\Threading.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\API\Texture.h">
+      <Filter>源文件\Core\API</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

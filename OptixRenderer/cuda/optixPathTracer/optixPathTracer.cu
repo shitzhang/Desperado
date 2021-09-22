@@ -196,7 +196,7 @@ RT_PROGRAM void closest_hit_emitter()
 //-----------------------------------------------------------------------------
 
 rtDeclareVariable(float3,       Kd, , );
-rtTextureSampler<float4, 2> texture_diffuse1;
+rtTextureSampler<float4, 2>   diffuse_map1;
 rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3,     shading_normal,   attribute shading_normal, );
 rtDeclareVariable(float2,     texcoord,         attribute texcoord, ); 
@@ -227,7 +227,7 @@ RT_PROGRAM void closest_hit()
 
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
-    float3 diffuse_color = make_float3(tex2D(texture_diffuse1, texcoord.x, texcoord.y));
+    float3 diffuse_color = make_float3(tex2D(diffuse_map1, texcoord.x, texcoord.y));
     current_prd.attenuation = current_prd.attenuation * diffuse_color;
     current_prd.countEmitted = false;
 
@@ -290,7 +290,7 @@ RT_PROGRAM void any_hit_shadow()
 
 RT_PROGRAM void any_hit()
 {
-    if (tex2D(texture_diffuse1, texcoord.x, texcoord.y).w < 0.1f) {
+    if (tex2D(diffuse_map1, texcoord.x, texcoord.y).w < 0.1f) {
         rtIgnoreIntersection();
     } 
 }
@@ -304,6 +304,7 @@ RT_PROGRAM void any_hit()
 
 RT_PROGRAM void exception()
 {
+    printf("optix: gg");
     output_buffer[launch_index] = make_float4(bad_color, 1.0f);
 }
 

@@ -120,6 +120,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,15 +145,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Core\API\Texture.cpp" />
     <ClCompile Include="..\src\FBO.cpp" />
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
+    <ClCompile Include="..\src\optix\optixMesh.cpp" />
     <ClCompile Include="..\src\optix\optixUtil.cpp" />
+    <ClCompile Include="..\src\stdafx.cpp" />
+    <ClCompile Include="..\src\Utils\Threading.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.h" />
+    <ClInclude Include="..\src\Core\API\Texture.h" />
+    <ClInclude Include="..\src\Core\DesperadoConfig.h" />
+    <ClInclude Include="..\src\Core\Framework.h" />
+    <ClInclude Include="..\src\Desperado.h" />
     <ClInclude Include="..\src\FBO.h" />
     <ClInclude Include="..\src\global.h" />
     <ClInclude Include="..\src\light.h" />
@@ -167,8 +176,10 @@
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\skybox.h" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\utils\InternalDictionary.h" />
     <ClInclude Include="..\src\utils\Math\Vector.h" />
+    <ClInclude Include="..\src\Utils\Threading.h" />
     <ClInclude Include="cuda\helpers.h" />
     <ClInclude Include="cuda\optixMeshViewer\common.h" />
     <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
