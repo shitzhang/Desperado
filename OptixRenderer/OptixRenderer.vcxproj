@@ -145,8 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Core\API\FBO.cpp" />
     <ClCompile Include="..\src\Core\API\Texture.cpp" />
-    <ClCompile Include="..\src\FBO.cpp" />
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
@@ -158,11 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.h" />
+    <ClInclude Include="..\src\Core\API\FBO.h" />
     <ClInclude Include="..\src\Core\API\Texture.h" />
     <ClInclude Include="..\src\Core\DesperadoConfig.h" />
     <ClInclude Include="..\src\Core\Framework.h" />
     <ClInclude Include="..\src\Desperado.h" />
-    <ClInclude Include="..\src\FBO.h" />
     <ClInclude Include="..\src\global.h" />
     <ClInclude Include="..\src\light.h" />
     <ClInclude Include="..\src\mesh.h" />

@@ -2,12 +2,13 @@
 
 #include "mesh.h"
 #include "shader.h"
-#include "FBO.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 
 namespace Desperado {
+	class Fbo;
 	class Light :public std::enable_shared_from_this<Light> {
 	public:
 		//virtual glm::mat4 CalcLightVP() = 0;
@@ -41,7 +42,7 @@ namespace Desperado {
 		std::shared_ptr<Mesh> entity;
 		std::shared_ptr<Shader> shader;
 
-		std::shared_ptr<FBO> pFbo;
+		std::shared_ptr<Fbo> pFbo;
 	};
 
 	class DirectionalLight :public Light {

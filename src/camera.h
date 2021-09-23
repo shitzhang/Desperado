@@ -6,7 +6,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
-#include "FBO.h"
 
 namespace Desperado {
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
@@ -26,13 +25,13 @@ namespace Desperado {
     const float ZNEAR = 1e-2;
     const float ZFAR = 1000.0f;
 
-
+    class Fbo;
     // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
     class Camera
     {
     public:
         //FBO fbo;
-        std::shared_ptr<FBO> pFbo;
+        std::shared_ptr<Fbo> pFbo;
         // camera Attributes
         glm::vec3 Position;
         glm::vec3 Front;

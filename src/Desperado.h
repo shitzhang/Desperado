@@ -45,7 +45,7 @@
 //#include "Core/API/DescriptorPool.h"
 //#include "Core/API/DescriptorSet.h"
 //#include "Core/API/Device.h"
-//#include "Core/API/FBO.h"
+#include "Core/API/FBO.h"
 //#include "Core/API/FencedPool.h"
 //#include "Core/API/Formats.h"
 //#include "Core/API/GpuFence.h"

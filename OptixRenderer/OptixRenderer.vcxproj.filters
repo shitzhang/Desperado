@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\FBO.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -69,6 +66,9 @@
     <ClCompile Include="..\src\Core\API\Texture.cpp">
       <Filter>源文件\Core\API</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Core\API\FBO.cpp">
+      <Filter>源文件\Core\API</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cuda\optixPathTracer\common.h">
@@ -90,9 +90,6 @@
       <Filter>源文件\cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\src\camera.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\FBO.h">
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\global.h">
@@ -156,6 +153,9 @@
       <Filter>源文件\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Core\API\Texture.h">
+      <Filter>源文件\Core\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Core\API\FBO.h">
       <Filter>源文件\Core\API</Filter>
     </ClInclude>
   </ItemGroup>
