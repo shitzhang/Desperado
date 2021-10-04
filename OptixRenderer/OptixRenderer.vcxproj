@@ -150,8 +150,11 @@
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
+    <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\optix\optixMesh.cpp" />
     <ClCompile Include="..\src\optix\optixUtil.cpp" />
+    <ClCompile Include="..\src\Passes\FullScreenPass.cpp" />
+    <ClCompile Include="..\src\passes\RenderPass.cpp" />
     <ClCompile Include="..\src\stdafx.cpp" />
     <ClCompile Include="..\src\Utils\Threading.cpp" />
     <ClCompile Include="main.cpp" />
@@ -172,6 +175,9 @@
     <ClInclude Include="..\src\optix\optixMesh.h" />
     <ClInclude Include="..\src\optix\optixRenderer.h" />
     <ClInclude Include="..\src\optix\optixUtil.h" />
+    <ClInclude Include="..\src\Passes\FullScreenPass.h" />
+    <ClInclude Include="..\src\passes\RenderPass.h" />
+    <ClInclude Include="..\src\Passes\SVGFPass.h" />
     <ClInclude Include="..\src\scene.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\skybox.h" />
@@ -180,21 +186,27 @@
     <ClInclude Include="..\src\utils\InternalDictionary.h" />
     <ClInclude Include="..\src\utils\Math\Vector.h" />
     <ClInclude Include="..\src\Utils\Threading.h" />
+    <ClInclude Include="cuda\common.h" />
     <ClInclude Include="cuda\helpers.h" />
-    <ClInclude Include="cuda\optixMeshViewer\common.h" />
-    <ClInclude Include="cuda\optixMeshViewer\helpers.h" />
-    <ClInclude Include="cuda\optixMeshViewer\phong.h" />
-    <ClInclude Include="cuda\optixPathTracer\common.h" />
-    <ClInclude Include="cuda\optixPathTracer\random.h" />
+    <ClInclude Include="cuda\MeshViewer\phong.h" />
+    <ClInclude Include="cuda\PathTracer\optixPathTracer.h" />
+    <ClInclude Include="cuda\random.h" />
+    <ClInclude Include="cuda\SVGF\optixSVGF.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shader\framebuffers_screen.fs" />
     <None Include="..\shader\framebuffers_screen.vs" />
+    <None Include="..\shader\SVGF\SVGFAtrous.fs" />
+    <None Include="..\shader\SVGF\SVGFFilterMoments.fs" />
+    <None Include="..\shader\SVGF\SVGFFinalModulate.fs" />
+    <None Include="..\shader\SVGF\SVGFpackLinearZAndNormal.fs" />
+    <None Include="..\shader\SVGF\SVGFReproject.fs" />
+    <None Include="cuda\MeshViewer\phong.cu" />
+    <None Include="cuda\MeshViewer\pinhole_camera.cu" />
     <None Include="cuda\optixGeometryTriangles.cu" />
-    <None Include="cuda\optixMeshViewer\phong.cu" />
-    <None Include="cuda\optixMeshViewer\pinhole_camera.cu" />
-    <None Include="cuda\optixPathTracer\optixPathTracer.cu" />
-    <None Include="cuda\optixPathTracer\parallelogram.cu" />
+    <None Include="cuda\parallelogram.cu" />
+    <None Include="cuda\PathTracer\optixPathTracer.cu" />
+    <None Include="cuda\SVGF\optixSVGF.cu" />
     <None Include="cuda\triangle_mesh.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

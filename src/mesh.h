@@ -34,19 +34,12 @@ namespace Desperado {
         glm::vec3 Bitangent;
     };
 
-    //struct Texture {
-    //    unsigned int id;
-    //    string type;
-    //    string path;
-    //};
-
     struct Material {
         glm::vec3 Kd;
         glm::vec3 Ks;
         glm::vec3 Ka;
         float Shininess;
     };
-
 
     class Mesh {
     public:
@@ -56,64 +49,14 @@ namespace Desperado {
         Material             mat;
         unsigned int VAO;
 
+        static unsigned int mesh_id_count;
+
         TRStransform transform;
 
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, TRStransform trans) :transform(trans)
-        {
-            this->vertices = vertices;
-            this->indices = indices;
-            this->textures = textures;
+        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, TRStransform trans);
+        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, Material mat, TRStransform trans);
 
-            setupMesh();
-        }
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, Material mat, TRStransform trans) :transform(trans)
-        {
-            this->vertices = vertices;
-            this->indices = indices;
-            this->textures = textures;
-            this->mat = mat;
-
-            setupMesh();
-        }
-
-        void Draw(Shader& shader)
-        {
-            shader.setVec3("Kd", this->mat.Kd);
-            shader.setVec3("Ks", this->mat.Ks);
-            shader.setVec3("Ka", this->mat.Ka);
-            shader.setFloat("Shininess", this->mat.Shininess);
-
-            unsigned int diffuseNr = 1;
-            unsigned int specularNr = 1;
-            unsigned int normalNr = 1;
-            unsigned int heightNr = 1;
-            for (unsigned int i = 0; i < textures.size(); i++)
-            {
-                glActiveTexture(GL_TEXTURE0 + i);
-                string number;
-                string name = textures[i]->getDesc();
-                if (name == "diffuse_map")
-                    number = std::to_string(diffuseNr++);
-                else if (name == "specular_map")
-                    number = std::to_string(specularNr++);
-                else if (name == "normal_map")
-                    number = std::to_string(normalNr++);
-                else if (name == "height_map")
-                    number = std::to_string(heightNr++);
-
-
-                //glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-                shader.setInt(name + number, i);
-                //glBindTexture(GL_TEXTURE_2D, textures[i].id);
-                textures[i]->bind();
-            }
-
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
-
-            glActiveTexture(GL_TEXTURE0);
-        }
+        void Draw(Shader& shader);
 
         unsigned int getVBO() {
             return VBO;
@@ -121,104 +64,17 @@ namespace Desperado {
         unsigned int getEBO() {
             return EBO;
         }
+        unsigned int getMeshID() {
+            return mesh_ID;
+        }
+
+        static shared_ptr<Mesh> createCube(TRStransform transform);
 
     private:
         unsigned int VBO, EBO;
+        unsigned int mesh_ID;
 
-        void setupMesh()
-        {
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glGenBuffers(1, &EBO);
-
-            glBindVertexArray(VAO);
-
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            // A great thing about structs is that their memory layout is sequential for all its items.
-            // The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
-            // again translates to 3/2 floats which translates to a byte array.
-            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-            // set the vertex attribute pointers
-            // vertex Positions
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-            // vertex normals
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-            // vertex texture coords
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-            // vertex tangent
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
-            // vertex bitangent
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
-
-            glBindVertexArray(0);
-        }
+        void setupMesh();
     };
-
-
-    static shared_ptr<Mesh> cube(TRStransform transform) {
-        const glm::vec3 positions[24] = {
-            // Front face
-            glm::vec3(-1.0, -1.0, 1.0),
-            glm::vec3(1.0, -1.0, 1.0),
-            glm::vec3(1.0, 1.0, 1.0),
-            glm::vec3(-1.0, 1.0, 1.0),
-
-            // Back face
-            glm::vec3(-1.0, -1.0, -1.0),
-            glm::vec3(-1.0, 1.0, -1.0),
-            glm::vec3(1.0, 1.0, -1.0),
-            glm::vec3(1.0, -1.0, -1.0),
-
-            // Top face
-            glm::vec3(-1.0, 1.0, -1.0),
-            glm::vec3(-1.0, 1.0, 1.0),
-            glm::vec3(1.0, 1.0, 1.0),
-            glm::vec3(1.0, 1.0, -1.0),
-
-            // Bottom face
-            glm::vec3(-1.0, -1.0, -1.0),
-            glm::vec3(1.0, -1.0, -1.0),
-            glm::vec3(1.0, -1.0, 1.0),
-            glm::vec3(-1.0, -1.0, 1.0),
-
-            // Right face
-            glm::vec3(1.0, -1.0, -1.0),
-            glm::vec3(1.0, 1.0, -1.0),
-            glm::vec3(1.0, 1.0, 1.0),
-            glm::vec3(1.0, -1.0, 1.0),
-
-            // Left face
-            glm::vec3(-1.0, -1.0, -1.0),
-            glm::vec3(-1.0, -1.0, 1.0),
-            glm::vec3(-1.0, 1.0, 1.0),
-            glm::vec3(-1.0, 1.0, -1.0),
-        };
-        vector<unsigned int> indices = {
-                0, 1, 2, 0, 2, 3,    // front
-                4, 5, 6, 4, 6, 7,    // back
-                8, 9, 10, 8, 10, 11,   // top
-                12, 13, 14, 12, 14, 15,   // bottom
-                16, 17, 18, 16, 18, 19,   // right
-                20, 21, 22, 20, 22, 23,   // left
-        };
-        vector<Vertex> vertices;
-        for (int i = 0; i < 24; i++) {
-            Vertex v;
-            v.Position = positions[i];
-            vertices.push_back(v);
-        }
-        vector<std::shared_ptr<Texture>> textures;
-        return make_shared<Mesh>(vertices, indices, textures, transform);
-    }
 }
-
 #endif

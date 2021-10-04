@@ -20,6 +20,15 @@ namespace Desperado {
 
 		std::shared_ptr<Camera> pCamera;
 
+		//SVGF use
+		glm::mat4 preViewMatrix = glm::mat4(1.0f);
+		glm::mat4 preProjectionMatrix = glm::mat4(1.0f);
+
+		uint32_t frameNum = 0;
+
+		void SetCamera(std::shared_ptr<Camera> pC) {
+			pCamera = pC;
+		};
 		void AddDirectionalLight(std::shared_ptr<DirectionalLight> l) {
 			directionalLights.push_back(l);
 		};
@@ -143,6 +152,8 @@ namespace Desperado {
 					modelMatrix = glm::rotate(modelMatrix, trans.rotateAngle, trans.rotateAxis);
 				}
 
+				preViewMatrix = viewMatrix;
+				preProjectionMatrix = projectionMatrix;
 
 				viewMatrix = pCamera->GetViewMatrix();
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
@@ -151,6 +162,9 @@ namespace Desperado {
 				shader.setMat4("model", modelMatrix);
 				shader.setMat4("view", viewMatrix);
 				shader.setMat4("projection", projectionMatrix);
+
+				shader.setMat4("pre_view", preViewMatrix);
+				shader.setMat4("pre_projection", preProjectionMatrix);
 
 				models[i]->Draw(shader);
 			}

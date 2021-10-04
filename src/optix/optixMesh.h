@@ -72,8 +72,9 @@ namespace Desperado {
 			optix::Geometry g = context->createGeometry();
 			g["vertex_buffer"]->setBuffer(m_buffers.vertices);
 			g["index_buffer"]->setBuffer(m_buffers.indices);
+			g["mesh_ID"]->setUint(p_mesh->getMeshID());
 			g->setPrimitiveCount(num_triangles);
-
+			
 			std::string ptx = optixUtil::getPtxString(0, "triangle_mesh.cu");
 			intersection = context->createProgramFromPTXString(ptx, "mesh_intersect");
 			bounds = context->createProgramFromPTXString(ptx, "mesh_bounds");
@@ -92,7 +93,7 @@ namespace Desperado {
 			material->setAnyHitProgram(1, any_hit_shadow);*/
 
 			material = context->createMaterial();
-			ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixPathTracer.cu");
+			ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixSVGF.cu");
 			closest_hit = context->createProgramFromPTXString(ptx, "closest_hit");
 			any_hit = context->createProgramFromPTXString(ptx, "any_hit");
 			any_hit_shadow = context->createProgramFromPTXString(ptx, "any_hit_shadow");

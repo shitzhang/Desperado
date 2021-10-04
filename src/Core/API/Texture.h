@@ -64,12 +64,16 @@ namespace Desperado
         GLenum getInternalFormat() const { return mInternalFormat; }
         GLenum getFormat() const { return mFormat; }
 
-        static SharedPtr create1D(uint32_t width, GLenum internalFormat, GLenum format, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
-        static SharedPtr create2D(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
-        static SharedPtr create3D(uint32_t width, uint32_t height, uint32_t depth, GLenum internalFormat, GLenum format, uint32_t mipLevels = 0, const void* pInitData = nullptr);
-        static SharedPtr createCube(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
-        static SharedPtr createFromFile(const std::string& path, const string& directory, bool loadAsSrgb);
-        static SharedPtr createConstant(const unsigned char* color, bool loadAsSrgb);
+        static SharedPtr create1D(uint32_t width, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
+        static SharedPtr create2D(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
+        static SharedPtr create3D(uint32_t width, uint32_t height, uint32_t depth, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t mipLevels = 0, const void* pInitData = nullptr);
+        static SharedPtr createCube(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
+        static SharedPtr createFromFile(const std::string& path, const string& directory, bool loadAsSrgb, GLenum dataFormat = GL_UNSIGNED_BYTE);
+        static SharedPtr createConstant(const unsigned char* color, bool loadAsSrgb, GLenum dataFormat = GL_UNSIGNED_BYTE);
+        static SharedPtr createFromPBO(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, const uint32_t pboId, uint32_t arraySize = 1, uint32_t mipLevels = 0);
+
+        SharedPtr biltFromPBO(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, const uint32_t pboId, uint32_t arraySize = 1, uint32_t mipLevels = 0);
+        void biltFromCPU(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
 
         void captureToFile(uint32_t mipLevel, uint32_t arraySlice, const std::string& filename);
 
@@ -80,7 +84,7 @@ namespace Desperado
 
     protected:
         Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t arraySize, uint32_t mipLevels, uint32_t sampleCount, GLenum internalFormat,GLenum format, GLenum type);
-        void uploadInitData(const void* pData);
+        void uploadInitData(const void* pData, GLenum dataFormat);
 
         std::string mPath;
         GLenum mType;

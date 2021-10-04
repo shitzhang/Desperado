@@ -18,6 +18,8 @@ struct Vertex {
 
 rtBuffer<Vertex,  1>  vertex_buffer;
 rtBuffer<uint3,   1>  index_buffer;
+rtDeclareVariable(uint, mesh_ID, , );
+
 
 
 rtDeclareVariable(float2,     texcoord,         attribute texcoord,         ); 
@@ -25,6 +27,7 @@ rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3,     shading_normal,   attribute shading_normal,   ); 
 
 rtDeclareVariable(float3,     hit_point,        attribute hit_point,        ); 
+rtDeclareVariable(uint,       mesh_id,          attribute mesh_id, );
 
 rtDeclareVariable(optix::Ray, ray,              rtCurrentRay,               );
 
@@ -55,6 +58,7 @@ static __device__ void meshIntersect(int primIdx) {
       texcoord         = t1*beta + t2*gamma + t0*(1.0f-beta-gamma);
 
       hit_point        = ray.origin + ray.direction * t;
+      mesh_id = mesh_ID;
       rtReportIntersection(0);
     }
   }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "global.h"
 
-const char* const SAMPLE_NAME = "optixPathTracer";
+const char* const SAMPLE_NAME = "SVGF";
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 

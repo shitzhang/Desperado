@@ -5,10 +5,8 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
-const float offset = 1.0 / 300.0;  
-
 void main()
 {
-    vec3 col = texture(screenTexture, TexCoords).rgb;
-    FragColor = vec4(col, 1.0);
+    vec2 col = texture(screenTexture, TexCoords).rg;
+    FragColor = vec4(0.5,0.5,0.0, 1.0);
 }

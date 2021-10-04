@@ -188,7 +188,7 @@ namespace Desperado {
 										color.r * 255,color.g * 255,color.b * 255 ,255 ,
 										color.r * 255,color.g * 255,color.b * 255 ,255 ,
 										color.r * 255,color.g * 255,color.b * 255 ,255 };
-				auto tex = Texture::createConstant(data, false);
+				auto tex = Texture::createConstant(data, false, GL_UNSIGNED_BYTE);
 				tex->setDesc(typeName);
 				tex->setPath("Kd");
 				textures.push_back(tex);
@@ -210,7 +210,7 @@ namespace Desperado {
 				}
 				if (!skip)
 				{   // if texture hasn't been loaded already, load it
-					auto tex = Texture::createFromFile(str.C_Str(), directory, false);
+					auto tex = Texture::createFromFile(str.C_Str(), directory, false, GL_UNSIGNED_BYTE);
 					tex->setDesc(typeName);
 					tex->setPath(str.C_Str());				
 					textures.push_back(tex);

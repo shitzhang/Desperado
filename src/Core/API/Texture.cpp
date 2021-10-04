@@ -3,35 +3,35 @@
 
 namespace Desperado
 {
-    Texture::SharedPtr Texture::create1D(uint32_t width, GLenum internalFormat, GLenum format, uint32_t arraySize, uint32_t mipLevels, const void* pData)
+    Texture::SharedPtr Texture::create1D(uint32_t width, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize, uint32_t mipLevels, const void* pData)
     {
         Texture::SharedPtr pTexture = SharedPtr(new Texture(width, 1, 1, arraySize, mipLevels, 1, internalFormat,format, GL_TEXTURE_1D));
-        pTexture->uploadInitData(pData);
+        pTexture->uploadInitData(pData, dataFormat);
         return pTexture;
     }
 
-    Texture::SharedPtr Texture::create2D(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, uint32_t arraySize, uint32_t mipLevels, const void* pData)
+    Texture::SharedPtr Texture::create2D(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize, uint32_t mipLevels, const void* pData)
     {
         Texture::SharedPtr pTexture = SharedPtr(new Texture(width, height, 1, arraySize, mipLevels, 1, internalFormat,format, GL_TEXTURE_2D));
-        pTexture->uploadInitData(pData);
+        pTexture->uploadInitData(pData, dataFormat);
         return pTexture;
     }
 
-    Texture::SharedPtr Texture::create3D(uint32_t width, uint32_t height, uint32_t depth, GLenum internalFormat, GLenum format, uint32_t mipLevels, const void* pData)
+    Texture::SharedPtr Texture::create3D(uint32_t width, uint32_t height, uint32_t depth, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t mipLevels, const void* pData)
     {
         Texture::SharedPtr pTexture = SharedPtr(new Texture(width, height, depth, 1, mipLevels, 1, internalFormat,format, GL_TEXTURE_3D));
-        pTexture->uploadInitData(pData);
+        pTexture->uploadInitData(pData, dataFormat);
         return pTexture;
     }
 
-    Texture::SharedPtr Texture::createCube(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, uint32_t arraySize, uint32_t mipLevels, const void* pData)
+    Texture::SharedPtr Texture::createCube(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize, uint32_t mipLevels, const void* pData)
     {
         Texture::SharedPtr pTexture = SharedPtr(new Texture(width, height, 1, arraySize, mipLevels, 1, internalFormat,format, GL_TEXTURE_CUBE_MAP));
-        pTexture->uploadInitData(pData);
+        pTexture->uploadInitData(pData, dataFormat);
         return pTexture;
     }
 
-    Texture::SharedPtr Texture::createFromFile(const std::string& path, const string& directory, bool loadAsSrgb)
+    Texture::SharedPtr Texture::createFromFile(const std::string& path, const string& directory, bool loadAsSrgb, GLenum dataFormat)
     {
         string filename = path;
         filename = directory + '/' + filename;
@@ -57,7 +57,7 @@ namespace Desperado
 
         if (data)
         {          
-            pTexture->uploadInitData(data);           
+            pTexture->uploadInitData(data, dataFormat);
         }
         else
         {
@@ -67,11 +67,70 @@ namespace Desperado
         return pTexture;
     }
 
-    Texture::SharedPtr Texture::createConstant(const unsigned char* color, bool loadAsSrgb){       
+    Texture::SharedPtr Texture::createConstant(const unsigned char* color, bool loadAsSrgb, GLenum dataFormat){
         int width = 2;
         int height = 2;
 
-        return create2D(width, height, GL_RGBA8, GL_RGBA, 1, 0, color);
+        return create2D(width, height, GL_RGBA8, GL_RGBA, dataFormat, 1, 0, color);
+    }
+
+    Texture::SharedPtr Texture::createFromPBO(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, const uint32_t pboId, uint32_t arraySize, uint32_t mipLevels)
+    {
+        if (pboId == 0) {
+            std::cout << "Texture: pboId can't be zero" << std::endl;
+        }
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
+       
+        if (dataFormat == GL_FLOAT)               glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        else if (dataFormat  == GL_UNSIGNED_INT)  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        else if (dataFormat  == GL_UNSIGNED_BYTE) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        Texture::SharedPtr pTexture = create2D(width, height, internalFormat, format, dataFormat, arraySize, mipLevels, 0);
+
+        if (pboId)
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+        return pTexture;
+    }
+
+    Texture::SharedPtr Texture::biltFromPBO(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, const uint32_t pboId, uint32_t arraySize, uint32_t mipLevels)
+    {
+        if (pboId == 0) {
+            std::cout << "Texture: pboId can't be zero" << std::endl;
+        }
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboId);
+
+        if (dataFormat == GL_FLOAT)               glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        else if (dataFormat == GL_UNSIGNED_INT)  glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        else if (dataFormat == GL_UNSIGNED_BYTE) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        mWidth = width;
+        mHeight = height;
+        mInternalFormat = internalFormat;
+        mFormat = format;
+        mArraySize = arraySize;
+        mMipLevels = mipLevels;
+        
+        uploadInitData(0, dataFormat);
+
+        if (pboId)
+            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+        return shared_from_this();
+    }
+
+    void Texture::biltFromCPU(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize, uint32_t mipLevels, const void* pInitData)
+    {
+        mWidth = width;
+        mHeight = height;
+        mInternalFormat = internalFormat;
+        mFormat = format;
+        mArraySize = arraySize;
+        mMipLevels = mipLevels;
+
+        uploadInitData(pInitData, dataFormat);
+
+        //return shared_from_this();
     }
 
     Texture::Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t arraySize, uint32_t mipLevels, uint32_t sampleCount, GLenum internalFormat ,GLenum format, GLenum type)
@@ -94,20 +153,24 @@ namespace Desperado
 
     }
 
-    void Texture::uploadInitData(const void* pData)
+    void Texture::uploadInitData(const void* pData,GLenum dataFormat)
     {
-        assert(pData);
+        //may be need to seperate filter for load obj and display optix buffer
+        //assert(pData);
+        //if (pData == nullptr) {
+        //    return;
+        //}
         bind();
-        glTexImage2D(mType, mMipLevels, mInternalFormat, mWidth, mHeight, 0, mFormat, GL_UNSIGNED_BYTE, pData);
+        glTexImage2D(mType, mMipLevels, mInternalFormat, mWidth, mHeight, 0, mFormat, dataFormat, pData);
 
         if (mMipLevels>0) {
             glGenerateMipmap(mType);
         }
-
+        
         glTexParameteri(mType, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(mType, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(mType, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(mType, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         unBind();
     }
 

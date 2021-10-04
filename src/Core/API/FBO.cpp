@@ -15,7 +15,7 @@ namespace Desperado
                 return true;
             }
 
-            if (mipLevel >= pTexture->getMipCount())
+            if (mipLevel > pTexture->getMipCount())
             {
                 std::cout << ("Error when attaching texture to FBO. Requested mip-level is out-of-bound.") << std::endl;
                 return false;
@@ -134,7 +134,9 @@ namespace Desperado
         mColorAttachments[rtIndex].pTexture = pTexture;
         mColorAttachments[rtIndex].mipLevel = mipLevel;
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pTexture->getId(), mipLevel);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + rtIndex, GL_TEXTURE_2D, pTexture->getId(), mipLevel);
+
+        //glDrawBuffer(GL_COLOR_ATTACHMENT0 + rtIndex);
     }
 
     uint32_t Fbo::getMaxColorTargetCount()
@@ -161,18 +163,36 @@ namespace Desperado
 
     void Fbo::finalize() const
     {
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-        for (auto const &attachment : mColorAttachments) {
-            const Texture* pTexture = attachment.pTexture.get();
-            mWidth = std::min(mWidth, pTexture->getWidth(attachment.mipLevel));
-            mHeight = std::min(mHeight, pTexture->getHeight(attachment.mipLevel));
-            mDepth = std::min(mDepth, pTexture->getDepth(attachment.mipLevel));
+        auto fbState = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (fbState == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT) {
+            std::cout << "ERROR::FRAMEBUFFER:: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT!" << std::endl;
         }
-        const Texture* pTexture = mDepthStencil.pTexture.get();
-        mWidth = std::min(mWidth, pTexture->getWidth(mDepthStencil.mipLevel));
-        mHeight = std::min(mHeight, pTexture->getHeight(mDepthStencil.mipLevel));
-        mDepth = std::min(mDepth, pTexture->getDepth(mDepthStencil.mipLevel));
+        else if (fbState == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
+            std::cout << "ERROR::FRAMEBUFFER:: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT!" << std::endl;
+        }
+        else if (fbState == GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER) {
+            std::cout << "ERROR::FRAMEBUFFER:: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER!" << std::endl;
+        }
+        else if (fbState == GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER) {
+            std::cout << "ERROR::FRAMEBUFFER:: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER!" << std::endl;
+        }
+        else if (fbState == GL_FRAMEBUFFER_UNSUPPORTED) {
+            std::cout << "ERROR::FRAMEBUFFER:: GL_FRAMEBUFFER_UNSUPPORTED!" << std::endl;
+        }
+        //for (auto const &attachment : mColorAttachments) {
+        //    const Texture* pTexture = attachment.pTexture.get();
+        //    if (pTexture != nullptr) {
+        //        mWidth = std::min(mWidth, pTexture->getWidth(attachment.mipLevel));
+        //        mHeight = std::min(mHeight, pTexture->getHeight(attachment.mipLevel));
+        //        mDepth = std::min(mDepth, pTexture->getDepth(attachment.mipLevel));
+        //    }
+        //}
+        //const Texture* pTexture = mDepthStencil.pTexture.get();
+        //if (pTexture != nullptr) {
+        //    mWidth = std::min(mWidth, pTexture->getWidth(mDepthStencil.mipLevel));
+        //    mHeight = std::min(mHeight, pTexture->getHeight(mDepthStencil.mipLevel));
+        //    mDepth = std::min(mDepth, pTexture->getDepth(mDepthStencil.mipLevel));
+        //}
     }
 
     Fbo::SharedPtr Fbo::create2D(uint32_t width, uint32_t height, const Fbo::Desc& fboDesc, uint32_t mipLevels)
@@ -189,21 +209,27 @@ namespace Desperado
         pFbo->mDepth = 1;
 
         pFbo->bind();
+
+        std::vector<GLenum> attachments;
         // Create the color targets
         for (uint32_t i = 0; i < Fbo::getMaxColorTargetCount(); i++)
         {
             if (fboDesc.getColorTargetFormat(i) != 0)
             {              
-                Texture::SharedPtr pTex = Texture::create2D(width, height, fboDesc.getColorTargetInternalFormat(i), fboDesc.getColorTargetFormat(i), 1, mipLevels, nullptr);
+                Texture::SharedPtr pTex = Texture::create2D(width, height, fboDesc.getColorTargetInternalFormat(i), fboDesc.getColorTargetFormat(i), GL_FLOAT, 1, mipLevels, nullptr);
                 pFbo->attachColorTarget(pTex, i, 0);
             }
+            attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
         }
 
         if (fboDesc.getDepthStencilFormat() != 0)
         {
-            Texture::SharedPtr pDepth = Texture::create2D(width, height, fboDesc.getDepthStencilInternalFormat(), fboDesc.getDepthStencilFormat(), 1, mipLevels, nullptr);
-            pFbo->attachDepthStencilTarget(pDepth, 0);
+            Texture::SharedPtr pDepthStencil = Texture::create2D(width, height, fboDesc.getDepthStencilInternalFormat(), fboDesc.getDepthStencilFormat(), GL_FLOAT, 1, mipLevels, nullptr);
+            pFbo->attachDepthStencilTarget(pDepthStencil, 0);
         }
+
+       
+        glDrawBuffers(attachments.size(), &attachments[0]);
 
         pFbo->finalize();
 
@@ -230,13 +256,13 @@ namespace Desperado
         // Create the color targets
         for (uint32_t i = 0; i < getMaxColorTargetCount(); i++)
         {
-            auto pTex = Texture::createCube(width, height, fboDesc.getColorTargetFormat(i), fboDesc.getColorTargetFormat(i), 1, mipLevels, nullptr);
+            auto pTex = Texture::createCube(width, height, fboDesc.getColorTargetFormat(i), fboDesc.getColorTargetFormat(i), GL_FLOAT, 1, mipLevels, nullptr);
             pFbo->attachColorTarget(pTex, i, 0);
         }
 
         if (fboDesc.getDepthStencilFormat() != 0)
         {
-            auto pDepth = Texture::createCube(width, height, fboDesc.getDepthStencilFormat(), fboDesc.getDepthStencilFormat(), 1, mipLevels, nullptr);
+            auto pDepth = Texture::createCube(width, height, fboDesc.getDepthStencilFormat(), fboDesc.getDepthStencilFormat(), GL_FLOAT, 1, mipLevels, nullptr);
             pFbo->attachDepthStencilTarget(pDepth, 0);
         }
 
@@ -270,7 +296,7 @@ namespace Desperado
 
     void Fbo::bind() const {
         glBindFramebuffer(GL_FRAMEBUFFER, mId);
-        //glViewport(0, 0, mWidth, mHeight);
+        glViewport(0, 0, mWidth, mHeight);
     }
 
     void Fbo::unBind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
