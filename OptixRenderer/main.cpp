@@ -294,35 +294,16 @@
 		Desperado::TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0));
 		Desperado::TRStransform MarryTrans(glm::vec3(0.0, 0.0, 0.0));
 		Desperado::TRStransform nanoTrans(glm::vec3(0.0, 0.0, 0.0));
-		Desperado::TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
 
 		//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-		//Desperado::Model sponza("../model/sponza/sponza.obj", sponzaTrans);
 		auto sponza = make_shared<Desperado::Model>("../model/sponza/sponza.obj", sponzaTrans);
 		//Model Mary("model/Marry/Marry.obj", MarryTrans);
 		//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
-		//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
-		//Model breakfast_room("model/breakfast_room/breakfast_room.obj", bedTrans);
-		//Model sibenik("model/sibenik/sibenik.obj", sponzaTrans);
 
-		auto pScene = std::make_shared<Desperado::Scene>();
+		auto pScene = std::make_shared<Desperado::Scene>(camera);
 		pScene->AddModel(sponza);
-		pScene->SetCamera(camera);
-
-		auto screenTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, 0);
-		auto colorTex = Desperado::Texture::create2D(width, height, GL_RGB32F, GL_RGB, GL_FLOAT, 1, 0, 0);
-		auto directColorTex = Desperado::Texture::create2D(width, height, GL_RGB32F, GL_RGB, GL_FLOAT, 1, 0, 0);
-		auto indirectColorTex = Desperado::Texture::create2D(width, height, GL_RGB32F, GL_RGB, GL_FLOAT, 1, 0, 0);
-
-		auto normalTex = Desperado::Texture::create2D(width, height, GL_RGB32F, GL_RGB, GL_FLOAT, 1, 0, 0);
-		auto normalFwidthTex = Desperado::Texture::create2D(width, height, GL_RGB32F, GL_RGB, GL_FLOAT, 1, 0, 0);
-		auto albedoTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, 0);
-		//auto depthTex = Desperado::Texture::create2D(width, height, GL_R32F, GL_R, GL_FLOAT, 1, 0, 0);
-		//auto meshIDTex = Desperado::Texture::create2D(width, height, GL_R32UI, GL_R, GL_UNSIGNED_INT, 1, 0, 0);
-		//auto motionVectorTex = Desperado::Texture::create2D(width, height, GL_RG32F, GL_RG, GL_FLOAT, 1, 0, 0);
 
 		Desperado::Shader SVGFGbufferShader("../shader/SVGF/SVGFGbuffer.vs", "../shader/SVGF/SVGFGbuffer.fs");
-		Desperado::Shader diffuseShader("../shader/diffuse.vs", "../shader/diffuse.fs");
 
 		Desperado::Fbo::Desc GbufferDesc;		
 		GbufferDesc.setColorTarget(0, GL_RGBA32F, GL_RGBA);       // gPositionMeshId
@@ -381,6 +362,7 @@
 				//context->launch(0, width, height);
 				glBindFramebuffer(GL_FRAMEBUFFER, GbufferFbo->getId());
 
+				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				//glClearDepth(1.0);
 				glEnable(GL_DEPTH_TEST);
@@ -400,18 +382,6 @@
 				auto motionTex = GbufferFbo->getColorTexture(5);
 				//auto meshIDBuffer = context["meshID_buffer"]->getBuffer();
 				auto emissionTex = GbufferFbo->getColorTexture(7);
-
-				//optixUtil::displayBufferGL(getOutputBuffer(), screenTex);
-				//optixUtil::displayBufferGL(colorBuffer, colorTex);
-				//optixUtil::displayBufferGL(directColorBuffer, directColorTex);
-				//optixUtil::displayBufferGL(indirectColorBuffer, indirectColorTex);
-
-				//optixUtil::displayBufferGL(normalBuffer, normalTex);
-				//optixUtil::displayBufferGL(normalFwidthBuffer, normalFwidthTex);
-				//optixUtil::displayBufferGL(albedoBuffer, albedoTex);
-				//optixUtil::displayBufferGL(depthBuffer, depthTex);
-				//optixUtil::displayBufferGL(meshIDBuffer, meshIDTex);
-				//optixUtil::displayBufferGL(motionVectorBuffer, motionVectorTex);
 
 				//auto renderData = Desperado::RenderData("SVGF", nullptr);
 				//renderData[""]
@@ -434,7 +404,7 @@
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 				// clear all relevant buffers
-				glClearColor(0.5f, 0.5f, 0.5f, 0.5f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+				glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				glBindVertexArray(quadVAO);

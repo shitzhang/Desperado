@@ -26,12 +26,6 @@ float LinearizeDepth(float depth)
     return (2.0 * 100.0 * 5000.0) / (5000.0 + 100.0 - z * (5000.0 - 100.0));    
 }
 
-/******************************************************************************
-
-    Motion vectors
-
-******************************************************************************/
-
 /** Calculate screen-space motion vector.
     \param[in] pixelCrd Sample in current frame expressed in pixel coordinates with origin in the top-left corner.
     \param[in] prevPosH Sample in previous frame expressed in homogeneous clip space coordinates. Note that the definition differs between D3D12 and Vulkan.
@@ -77,6 +71,6 @@ void main()
     gNormal = normalize(Normal);
     gPositionNormalFwidth = fwidth(Normal);
     gAlbedo = color.rgb;
-    //gMotion = calcMotionVector();
+    gMotion = calcMotionVector();
     gEmission = vec3(0.0);
 }  

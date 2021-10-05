@@ -10,8 +10,19 @@
 namespace Desperado {
 	class Scene {
 	public:
-		Scene() {}
+		Scene(std::shared_ptr<Camera> pC) {
+			if (pC == nullptr) {
+				std::cout << "Error: camera is nullptr" << std::endl;
+				return;
+			}
+			pCamera = pC;
+			viewMatrix = pCamera->GetViewMatrix();
+			projectionMatrix = pCamera->GetPerspectiveMatrix();
 
+			preViewMatrix = pCamera->GetViewMatrix();
+			preProjectionMatrix = pCamera->GetPerspectiveMatrix();
+		}
+	private:
 		std::vector<std::shared_ptr<DirectionalLight>> directionalLights;
 		std::vector<std::shared_ptr<PointLight>> pointLights;
 		std::vector<std::shared_ptr<ParallelogramLight>> parallelogramLights;
@@ -21,11 +32,15 @@ namespace Desperado {
 		std::shared_ptr<Camera> pCamera;
 
 		//SVGF use
-		glm::mat4 preViewMatrix = glm::mat4(1.0f);
-		glm::mat4 preProjectionMatrix = glm::mat4(1.0f);
+		glm::mat4 viewMatrix;
+		glm::mat4 projectionMatrix;
+
+		glm::mat4 preViewMatrix;
+		glm::mat4 preProjectionMatrix;
 
 		uint32_t frameNum = 0;
 
+	public:
 		void SetCamera(std::shared_ptr<Camera> pC) {
 			pCamera = pC;
 		};
@@ -140,8 +155,8 @@ namespace Desperado {
 				auto model = models[i];
 
 				glm::mat4 modelMatrix(1.0f);
-				glm::mat4 viewMatrix(1.0f);
-				glm::mat4 projectionMatrix(1.0f);
+				//glm::mat4 viewMatrix(1.0f);
+				//glm::mat4 projectionMatrix(1.0f);
 
 				TRStransform trans = model->transform;
 
