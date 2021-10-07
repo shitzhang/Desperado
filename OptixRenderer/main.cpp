@@ -94,28 +94,14 @@
 		context["sqrt_num_samples"]->setUint(sqrt_num_samples);
 		//Buffer buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
 		optix::Buffer output_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
-		optix::Buffer color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, width, height);
-		optix::Buffer direct_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, width, height);
-		optix::Buffer indirect_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, width, height);
-
-		optix::Buffer normal_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, width, height);
-		optix::Buffer normalFwidth_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, width, height);
-		optix::Buffer albedo_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
-		optix::Buffer depth_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT, width, height);
-		optix::Buffer meshID_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_UNSIGNED_INT, width, height);
-		//optix::Buffer motion_vector_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT2, width, height);		
+		optix::Buffer color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+		optix::Buffer direct_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+		optix::Buffer indirect_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);	
 
 		context["output_buffer"]->set(output_buffer);
 		context["color_buffer"]->set(color_buffer);
 		context["direct_color_buffer"]->set(direct_color_buffer);
 		context["indirect_color_buffer"]->set(indirect_color_buffer);
-
-		context["normal_buffer"]->set(normal_buffer);
-		context["normalFwidth_buffer"]->set(normalFwidth_buffer);
-		context["albedo_buffer"]->set(albedo_buffer);
-		context["depth_buffer"]->set(depth_buffer);
-		context["meshID_buffer"]->set(meshID_buffer);
-		//context["motion_vector_buffer"]->set(motion_vector_buffer);
 
 		// Setup programs
 		const char* ptx = optixUtil::getPtxString(SAMPLE_NAME, "optixSVGF.cu");
@@ -266,29 +252,7 @@
 			return -1;
 		}
 
-		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-		// positions   // texCoords
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
-		};
-		// screen quad VAO
-		unsigned int quadVAO, quadVBO;
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-		Desperado::Shader screenShader("../shader/framebuffers_screen.vs", "../shader/framebuffers_screen.fs");
+		auto screenShader = std::make_shared<Desperado::Shader>("../shader/framebuffers_screen.vs", "../shader/framebuffers_screen.fs");
 
 		Desperado::TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0));
 		Desperado::TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0));
@@ -303,119 +267,126 @@
 		auto pScene = std::make_shared<Desperado::Scene>(camera);
 		pScene->AddModel(sponza);
 
-		Desperado::Shader SVGFGbufferShader("../shader/SVGF/SVGFGbuffer.vs", "../shader/SVGF/SVGFGbuffer.fs");
+		auto SVGFGbufferShader = std::make_shared<Desperado::Shader>("../shader/SVGF/SVGFGbuffer.vs", "../shader/SVGF/SVGFGbuffer.fs");
 
 		Desperado::Fbo::Desc GbufferDesc;		
-		GbufferDesc.setColorTarget(0, GL_RGBA32F, GL_RGBA);       // gPositionMeshId
-		GbufferDesc.setColorTarget(1, GL_RG32F, GL_RG);        // gLinearZ
-		GbufferDesc.setColorTarget(2, GL_RGB32F, GL_RGB);     // gNormal
-		GbufferDesc.setColorTarget(3, GL_RGB32F, GL_RGB);    // gPositionNormalFwidth
-		GbufferDesc.setColorTarget(4, GL_RGB32F, GL_RGB);   // gAlbedo
-		GbufferDesc.setColorTarget(5, GL_RG32F, GL_RG);    // gMotion
-		//GbufferDesc.setColorTarget(6, GL_R32F, GL_R);    // gMeshId
-		GbufferDesc.setColorTarget(7, GL_RGB32F, GL_RGB);    // gEmission
+		GbufferDesc.setColorTarget(0, GL_RGBA32F, GL_RGBA);			// gPositionMeshId
+		GbufferDesc.setColorTarget(1, GL_RG32F, GL_RG);				// gLinearZ
+		GbufferDesc.setColorTarget(2, GL_RGB32F, GL_RGB);			// gNormal
+		GbufferDesc.setColorTarget(3, GL_RG32F, GL_RG);			// gPositionNormalFwidth
+		GbufferDesc.setColorTarget(4, GL_RGB32F, GL_RGB);			// gAlbedo
+		GbufferDesc.setColorTarget(5, GL_RG32F, GL_RG);				// gMotion
+		//GbufferDesc.setColorTarget(6, GL_R32F, GL_R);				// gMeshId
+		GbufferDesc.setColorTarget(7, GL_RGB32F, GL_RGB);			// gEmission
 		GbufferDesc.setDepthStencilTarget(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT);
 		auto GbufferFbo = Desperado::Fbo::create2D(width, height, GbufferDesc);
 
+		auto screenDisplayPass = Desperado::FullScreenPass::create();
+
+		auto colorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+		auto directColorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+		auto indirectColorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+
+		auto outputTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+
+		auto svgfPass = Desperado::SVGFPass::create();
 		try {
-			////optix
-			//createContext();
-			//setupLights();
-			//// create geometry instances
-			//std::vector<optix::GeometryInstance> gis;
+			//optix
+			createContext();
+			setupLights();
+			// create geometry instances
+			std::vector<optix::GeometryInstance> gis;
+
+			for (auto p_mesh : sponza->p_meshes) {
+				Desperado::OptiXMesh op_mesh(p_mesh, context);
+				gis.push_back(op_mesh.getMeshGeometry());
+			}
+
+			// Create geometry group
+			optix::GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
+			shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
+			context["top_shadower"]->set(shadow_group);
+
+			optix::GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
+			for (auto light_gi : light_gis) {
+				geometry_group->addChild(light_gi);
+			}
+			geometry_group->setAcceleration(context->createAcceleration("Trbvh"));
+			context["top_object"]->set(geometry_group);
+
+			context->validate();
 
 
-			//for (auto p_mesh : sponza.p_meshes) {
-
-			//	Desperado::OptiXMesh op_mesh(p_mesh, context);
-
-			//	gis.push_back(op_mesh.getMeshGeometry());
-			//}
-
-			//// Create geometry group
-			//optix::GeometryGroup shadow_group = context->createGeometryGroup(gis.begin(), gis.end());
-			//shadow_group->setAcceleration(context->createAcceleration("Trbvh"));
-			//context["top_shadower"]->set(shadow_group);
-
-			//optix::GeometryGroup geometry_group = context->createGeometryGroup(gis.begin(), gis.end());
-			//for (auto light_gi : light_gis) {
-			//	geometry_group->addChild(light_gi);
-			//}
-			//geometry_group->setAcceleration(context->createAcceleration("Trbvh"));
-			//context["top_object"]->set(geometry_group);
-
-			//context->validate();
-
-
-			// 渲染循环
+			// render loop
 			while (!glfwWindowShouldClose(window))
 			{
 				float currentFrame = glfwGetTime();
 				deltaTime = currentFrame - lastFrame;
 				lastFrame = currentFrame;
-				// 输入
-				processInput(window);
 
-				// render
-				// ------       
-				//updateCamera();
-				//context->launch(0, width, height);
-				glBindFramebuffer(GL_FRAMEBUFFER, GbufferFbo->getId());
+				processInput(window);
+   
+				updateCamera();
+				context->launch(0, width, height);
+				//glBindFramebuffer(GL_FRAMEBUFFER, GbufferFbo->getId());
+				GbufferFbo->bind();
 
 				glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				//glClearDepth(1.0);
+				
 				glEnable(GL_DEPTH_TEST);
-				SVGFGbufferShader.use();
-				//diffuseShader.use();
+				SVGFGbufferShader->use();
 				pScene->DrawModels(SVGFGbufferShader);
 
-				//auto colorBuffer = context["color_buffer"]->getBuffer();
-				//auto directColorBuffer = context["direct_color_buffer"]->getBuffer();
-			    //auto indirectColorBuffer = context["indirect_color_buffer"]->getBuffer();
+				auto colorBuffer = context["color_buffer"]->getBuffer();
+				auto directColorBuffer = context["direct_color_buffer"]->getBuffer();
+			    auto indirectColorBuffer = context["indirect_color_buffer"]->getBuffer();
+
+				optixUtil::displayBufferGL(colorBuffer, colorTex);
+				optixUtil::displayBufferGL(directColorBuffer, directColorTex);
+				optixUtil::displayBufferGL(indirectColorBuffer, indirectColorTex);
 
 				auto posMeshIdTex = GbufferFbo->getColorTexture(0);
 				auto linearZTex = GbufferFbo->getColorTexture(1);
 				auto normalTex = GbufferFbo->getColorTexture(2);
-				auto normalFwidthTex = GbufferFbo->getColorTexture(3);
+				auto posNormalFwidthTex = GbufferFbo->getColorTexture(3);
 				auto albedoTex = GbufferFbo->getColorTexture(4);
 				auto motionTex = GbufferFbo->getColorTexture(5);
-				//auto meshIDBuffer = context["meshID_buffer"]->getBuffer();
+				//auto meshIDTex = GbufferFbo->getColorTexture(6);
 				auto emissionTex = GbufferFbo->getColorTexture(7);
 
-				//auto renderData = Desperado::RenderData("SVGF", nullptr);
-				//renderData[""]
+				auto renderData = Desperado::RenderData("SVGF", nullptr);
+				renderData["gPositionMeshId"] = posMeshIdTex;
+				renderData["gLinearZ"] = linearZTex;
+				renderData["gNormal"] = normalTex;
+				renderData["gPositionNormalFwidth"] = posNormalFwidthTex;
+				renderData["gAlbedo"] = albedoTex;
+				renderData["gMotion"] = motionTex;
+				//renderData["gMeshId"] = meshIDTex;
+				renderData["gEmission"] = emissionTex;
+
+				renderData["color"] = colorTex;
+				renderData["directColor"] = directColorTex;
+				renderData["indirectColor"] = indirectColorTex;
+				renderData["output"] = outputTex;
+
+				svgfPass->execute(renderData);
 
 				//gamma correction
 				glEnable(GL_FRAMEBUFFER_SRGB);
 
-				glActiveTexture(GL_TEXTURE0);
-				screenShader.use();
-				screenShader.setInt("screenTexture", 0);
-				////glBindTexture(GL_TEXTURE_2D, screenTex->getId());
-				motionTex->bind();
+				//glActiveTexture(GL_TEXTURE0);
+				screenShader->use();
+				//screenShader->setInt("screenTexture", 0);
+				screenShader->setTexture2D("screenTexture", outputTex);
+				//albedoTex->bind();
 
 				{
 					static unsigned frame_count = 0;
 					displayFps(frame_count++, window);
 				}
 
-				// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-				glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-				// clear all relevant buffers
-				glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
-				glClear(GL_COLOR_BUFFER_BIT);
-
-				glBindVertexArray(quadVAO);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-
-				//void* pdata = 0;
-				//glReadPixels(0, 0, width, height, GL_RGBA, GL_FLOAT, pdata);
-
-				//for (int i = 0; i < width * height; i++) {
-				//	std::cout << ((float*)pdata)[i] << std::endl;
-				//}
+				screenDisplayPass->execute();
 
 				// 交换缓冲并查询IO事件
 				glfwSwapBuffers(window);
@@ -461,6 +432,8 @@
 	{
 		// make sure the viewport matches the new window dimensions; note that width and 
 		// height will be significantly larger than specified on retina displays.
+		//SCR_WIDTH = width;
+		//SCR_HEIGHT = height;
 		glViewport(0, 0, width, height);
 	}
 

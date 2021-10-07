@@ -1,8 +1,8 @@
-#version 330 core
+#version 460 core
 layout (location = 0) out vec4 gPositionMeshId;
 layout (location = 1) out vec2 gLinearZ;
 layout (location = 2) out vec3 gNormal;
-layout (location = 3) out vec3 gPositionNormalFwidth;
+layout (location = 3) out vec2 gPositionNormalFwidth;
 layout (location = 4) out vec3 gAlbedo;
 layout (location = 5) out vec2 gMotion;
 //layout (location = 6) out uint gMeshId;
@@ -57,6 +57,7 @@ vec2 calcMotionVector()
     vec2 uv_pre_pos = (pre_screen_pos.xy + vec2(1.0, 1.0)) * 0.5;
    
     vec2 uv_delta = uv_pre_pos - uv_pos;
+    //vec2 uv_delta = uv_pos - uv_pre_pos;
     return uv_delta;
 }
 
@@ -69,7 +70,7 @@ void main()
     gPositionMeshId = vec4(FragPos,1.0);
     gLinearZ = vec2(gl_FragCoord.z , fwidth(gl_FragCoord.z));
     gNormal = normalize(Normal);
-    gPositionNormalFwidth = fwidth(Normal);
+    gPositionNormalFwidth = vec2(length(fwidth(FragPos)), length(fwidth(Normal)));
     gAlbedo = color.rgb;
     gMotion = calcMotionVector();
     gEmission = vec3(0.0);

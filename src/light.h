@@ -13,34 +13,34 @@ namespace Desperado {
 	public:
 		//virtual glm::mat4 CalcLightVP() = 0;
 		void setLightMesh(std::shared_ptr<Mesh> p_mesh) {
-			entity = p_mesh;
+			pEntity = p_mesh;
 		}
 		void setLightShader(std::shared_ptr<Shader> p_shader) {
-			shader = p_shader;
+			pShader = p_shader;
 		}
 		std::shared_ptr<Mesh> getLightMesh() {
-			return entity;
+			return pEntity;
 		}
 		std::shared_ptr<Shader> getLightShader() {
-			return shader;
+			return pShader;
 		}
 		void Draw() {
-			if (entity.get() == NULL) {
+			if (pEntity.get() == NULL) {
 				std::cout << "The light has no mesh" << endl;
 				return;
 			}
-			if (shader.get() == NULL) {
+			if (pEntity.get() == NULL) {
 				std::cout << "The light has no shader" << endl;
 				return;
 			}
-			entity->Draw(*shader);
+			pEntity->Draw(pShader);
 		}
 
 		glm::vec3 emission;
 		glm::vec3 lightPos;
 
-		std::shared_ptr<Mesh> entity;
-		std::shared_ptr<Shader> shader;
+		std::shared_ptr<Mesh> pEntity;
+		std::shared_ptr<Shader> pShader;
 
 		std::shared_ptr<Fbo> pFbo;
 	};

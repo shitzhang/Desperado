@@ -155,6 +155,7 @@
     <ClCompile Include="..\src\optix\optixUtil.cpp" />
     <ClCompile Include="..\src\Passes\FullScreenPass.cpp" />
     <ClCompile Include="..\src\passes\RenderPass.cpp" />
+    <ClCompile Include="..\src\Passes\SVGFPass.cpp" />
     <ClCompile Include="..\src\stdafx.cpp" />
     <ClCompile Include="..\src\Utils\Threading.cpp" />
     <ClCompile Include="main.cpp" />

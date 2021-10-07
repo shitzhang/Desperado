@@ -484,13 +484,13 @@
         else if (buffer_format == RT_FORMAT_FLOAT) {
             //glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_R, GL_FLOAT, imageData);
             internalFormat = GL_R32F;
-            pixelFormat = GL_R;
+            pixelFormat = GL_RED;
             dataFormat = GL_FLOAT;
         }
         else if (buffer_format == RT_FORMAT_UNSIGNED_INT) {
             //glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, width, height, 0, GL_RG, GL_UNSIGNED_INT, imageData);
             internalFormat = GL_R32UI;
-            pixelFormat = GL_R;
+            pixelFormat = GL_RED;
             dataFormat = GL_UNSIGNED_INT;
         }
         else

@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 layout (location = 0) out vec4  OutIllumination;
 
@@ -17,13 +17,14 @@ uniform float       gPhiNormal;
 */
 vec2 oct_wrap(vec2 v)
 {
-    return (1.f - abs(v.yx)) * (v.xy >= 0.f ? 1.f : -1.f);
+    vec2 weight = vec2((v.x >= 0.f ? 1.f : -1.f) , (v.y >= 0.f ? 1.f : -1.f));
+    return (vec2(1.f , 1.f) - abs(v.yx)) * weight;
 }
 /** Converts normalized direction to the octahedral map (non-equal area, signed normalized).
     \param[in] n Normalized direction.
     \return Position in octahedral map in [-1,1] for each component.
 */
-vec2 ndir_to_oct_snorm(float3 n)
+vec2 ndir_to_oct_snorm(vec3 n)
 {
     // Project the sphere onto the octahedron (|x|+|y|+|z| = 1) and then onto the xy-plane.
     vec2 p = n.xy * (1.f / (abs(n.x) + abs(n.y) + abs(n.z)));
@@ -106,7 +107,7 @@ void main(){
             for (int xx = -radius; xx <= radius; xx++)
             {
                 const vec2 p     = TexCoords + vec2(xx * texelSizeX, yy * texelSizeY);
-                const bool inside = all(p >= vec2(0.0,0.0)) && all(p < vec2(1.0,1.0));
+                const bool inside = all(bvec2(p.x >= 0.0 , p.y >= 0.0)) && all(bvec2(p.x <= 1.0 , p.y <= 1.0));
                 const bool samePixel = (xx ==0 && yy == 0);
                 const float kernel = 1.0;
 
@@ -119,7 +120,7 @@ void main(){
                     const vec3  nP = oct_to_ndir_snorm(texture(gLinearZAndNormal,p).zw);
 
                     const float w = computeWeight(
-                        zCenter.x, zP, phiDepth * length(float2(xx, yy)),
+                        zCenter.x, zP, phiDepth * length(vec2(xx, yy)),
                         nCenter, nP, gPhiNormal,
                         lIlluminationCenter, lIlluminationP, phiLIllumination);
 

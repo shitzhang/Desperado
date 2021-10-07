@@ -16,7 +16,7 @@ namespace Desperado
 
         static SharedPtr create();
 
-        virtual void execute(const std::shared_ptr<Shader>& pShader, const Fbo::SharedPtr& pFbo) const;
+        virtual void execute(const Fbo::SharedPtr& pFbo = nullptr) const;
 
         //std::shared_ptr<Shader> getShaderPtr() { return mpShader; }
 

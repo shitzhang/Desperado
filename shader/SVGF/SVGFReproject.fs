@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 layout (location = 0) out vec4  OutIllumination;
 layout (location = 1) out vec2  OutMoments;
@@ -22,7 +22,8 @@ uniform float       gMomentsAlpha;
 
 vec2 oct_wrap(vec2 v)
 {
-    return (1.f - abs(v.yx)) * (v.xy >= 0.f ? 1.f : -1.f);
+    vec2 weight = vec2((v.x >= 0.f ? 1.f : -1.f) , (v.y >= 0.f ? 1.f : -1.f));
+    return (vec2(1.f , 1.f) - abs(v.yx)) * weight;
 }
 
 /** Converts point in the octahedral map to normalized direction (non-equal area, signed normalized).
@@ -48,7 +49,7 @@ vec3 demodulate(vec3 c, vec3 albedo)
     return c / max(albedo, vec3(0.001, 0.001, 0.001));
 }
 
-bool isReprjValid(vec2 coord, float Z, float Zprev, float fwidthZ, float3 normal, float3 normalPrev, float fwidthNormal)
+bool isReprjValid(vec2 coord, float Z, float Zprev, float fwidthZ, vec3 normal, vec3 normalPrev, float fwidthNormal)
 {
     //const int2 imageDim = getTextureDims(gColor, 0);
     ivec2 imageDim = textureSize(gColor,0);
@@ -57,7 +58,7 @@ bool isReprjValid(vec2 coord, float Z, float Zprev, float fwidthZ, float3 normal
     vec2 texelSize = vec2(texelSizeX,texelSizeY);
 
     // check whether reprojected pixel is inside of the screen
-    if (any(coord < vec2(0.0,0.0)) || any(coord > vec2(1.0,1.0))) return false;
+    if (any(bvec2(coord.x < 0.0 , coord.y < 0.0)) || any(bvec2(coord.x > 1.0 , coord.y > 1.0))) return false;
 
     // check if deviation of depths is acceptable
     if (abs(Zprev - Z) / (fwidthZ + 1e-2f) > 10.f) return false;
@@ -76,10 +77,10 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
     float texelSizeY = 1.0 / float(imageDim.y);
     vec2  texelSize = vec2(texelSizeX,texelSizeY);
 
-    const vec2 motion = texture(gMotion,texCoords).xy;
-    const float normalFwidth = texture(gPositionNormalFwidth,texCoords).y;
+    vec2 motion = texture(gMotion,texCoords).xy;
+    float normalFwidth = texture(gPositionNormalFwidth,texCoords).y;
 
-    const vec2 texCoordsPrev = texCoords + motion.xy;
+    vec2 texCoordsPrev = texCoords + motion.xy;
 
     vec2 depth = texture(gLinearZAndNormal,texCoords).xy;
     vec3 normal = oct_to_ndir_snorm(texture(gLinearZAndNormal,texCoords).zw);
@@ -89,12 +90,12 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
 
     bool v[4];
     //const vec2 posPrev = floor(posH.xy) + motion.xy * imageDim;
-    const ivec2 offset[4] = { 
+    vec2 offset[4] = vec2[]( 
         vec2(0.0, 0.0), 
         vec2(texelSizeX, 0.0), 
         vec2(0, texelSizeY), 
         vec2(texelSizeX, texelSizeY) 
-    };
+    );
 
     // check for all 4 taps of the bilinear filter for validity
     bool valid = false;
@@ -116,15 +117,15 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
         float y = fract(imageDim.y * texCoordsPrev.y);
 
         // bilinear weights
-        const float w[4] = { (1 - x) * (1 - y),
-                                  x  * (1 - y),
-                             (1 - x) *      y,
-                                  x  *      y };
+        float w[4] = float[]( (1 - x) * (1 - y),
+                                   x  * (1 - y),
+                              (1 - x) *      y,
+                                   x  *      y);
 
         // perform the actual bilinear interpolation
         for (int sampleIdx = 0; sampleIdx < 4; sampleIdx++)
         {
-            const vec2 loc = texCoordsPrev + offset[sampleIdx];
+            vec2 loc = texCoordsPrev + offset[sampleIdx];
             if (v[sampleIdx])
             {
                 prevIllum   += w[sampleIdx] * texture(gPrevIllum,loc);
@@ -135,8 +136,8 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
 
         // redistribute weights in case not all taps were used
         valid = (sumw >= 0.01);
-        prevIllum   = valid ? prevIllum / sumw   : float4(0, 0, 0, 0);
-        prevMoments = valid ? prevMoments / sumw : float2(0, 0);
+        prevIllum   = valid ? prevIllum / sumw   : vec4(0, 0, 0, 0);
+        prevMoments = valid ? prevMoments / sumw : vec2(0, 0);
     }
 
     if (!valid) // perform cross-bilateral filter in the hope to find some suitable samples somewhere
@@ -149,9 +150,9 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
         {
             for (int xx = -radius; xx <= radius; xx++)
             {
-                const vec2 p = texCoordsPrev + vec2(xx * texelSizeX, yy * texelSizeY);
-                const vec2 depthFilter = texture(gPrevLinearZAndNormal,p).xy;
-                const vec3 normalFilter = oct_to_ndir_snorm(texture(gPrevLinearZAndNormal,p).zw);
+                vec2 p = texCoordsPrev + vec2(xx * texelSizeX, yy * texelSizeY);
+                vec2 depthFilter = texture(gPrevLinearZAndNormal,p).xy;
+                vec3 normalFilter = oct_to_ndir_snorm(texture(gPrevLinearZAndNormal,p).zw);
 
                 if (isReprjValid(texCoordsPrev, depth.x, depthFilter.x, depth.y, normal, normalFilter, normalFwidth))
                 {
@@ -187,7 +188,7 @@ bool loadPrevData(vec2 texCoords, out vec4 prevIllum, out vec2 prevMoments, out 
 // not used currently
 float computeVarianceScale(float numSamples, float loopLength, float alpha)
 {
-    const float aa = (1.0 - alpha) * (1.0 - alpha);
+    float aa = (1.0 - alpha) * (1.0 - alpha);
     return (1.0 - pow(aa, min(loopLength, numSamples))) / (1.0 - aa);
 }
 
@@ -212,8 +213,8 @@ void main()
     // this adjusts the alpha for the case where insufficient history is available.
     // It boosts the temporal accumulation to give the samples equal weights in
     // the beginning.
-    const float alpha        = success ? max(gAlpha,        1.0 / historyLength) : 1.0;
-    const float alphaMoments = success ? max(gMomentsAlpha, 1.0 / historyLength) : 1.0;
+    float alpha        = success ? max(gAlpha,        1.0 / historyLength) : 1.0;
+    float alphaMoments = success ? max(gMomentsAlpha, 1.0 / historyLength) : 1.0;
 
     // compute first two moments of luminance
     vec2 moments;

@@ -25,7 +25,7 @@ namespace Desperado
          1.0f,  1.0f,  1.0f, 1.0f
         };
 
-        void initFullScreenData(uint32_t quadVBO, uint32_t quadVAO)
+        void initFullScreenData(uint32_t& quadVBO, uint32_t& quadVAO)
         {          
             glGenVertexArrays(1, &quadVAO);
             glGenBuffers(1, &quadVBO);
@@ -59,7 +59,6 @@ namespace Desperado
         gFullScreenData.objectCount--;
         if (gFullScreenData.objectCount == 0)
         {
-            //is this right?
             glDeleteBuffers(1, &gFullScreenData.quadVBO);
             glDeleteVertexArrays(1, &gFullScreenData.quadVAO);
         }
@@ -70,10 +69,18 @@ namespace Desperado
         return SharedPtr(new FullScreenPass());
     }
 
-    void FullScreenPass::execute(const std::shared_ptr<Shader>& pShader,const Fbo::SharedPtr& pFbo) const
+    void FullScreenPass::execute(const Fbo::SharedPtr& pFbo) const
     {
-        pFbo->bind();
-        pShader->use();
+        if (pFbo == nullptr) {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+        else {
+            pFbo->bind();
+        }
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);             // disable depth test so screen-space quad isn't discarded due to depth test.
+      
         glBindVertexArray(gFullScreenData.quadVAO);
         
         glDrawArrays(GL_TRIANGLES, 0, 6);

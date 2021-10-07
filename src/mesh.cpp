@@ -27,12 +27,12 @@ namespace Desperado {
         setupMesh();
     }
 
-    void Mesh::Draw(Shader& shader)
+    void Mesh::Draw(std::shared_ptr<Shader> pShader)
     {
-        shader.setVec3("Kd", this->mat.Kd);
-        shader.setVec3("Ks", this->mat.Ks);
-        shader.setVec3("Ka", this->mat.Ka);
-        shader.setFloat("Shininess", this->mat.Shininess);
+        pShader->setVec3("Kd", this->mat.Kd);
+        pShader->setVec3("Ks", this->mat.Ks);
+        pShader->setVec3("Ka", this->mat.Ka);
+        pShader->setFloat("Shininess", this->mat.Shininess);
 
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
@@ -40,7 +40,7 @@ namespace Desperado {
         unsigned int heightNr = 1;
         for (unsigned int i = 0; i < textures.size(); i++)
         {
-            glActiveTexture(GL_TEXTURE0 + i);
+            //glActiveTexture(GL_TEXTURE0 + i);
             string number;
             string name = textures[i]->getDesc();
             if (name == "diffuse_map")
@@ -52,11 +52,9 @@ namespace Desperado {
             else if (name == "height_map")
                 number = std::to_string(heightNr++);
 
-
-            //glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            shader.setInt(name + number, i);
-            //glBindTexture(GL_TEXTURE_2D, textures[i].id);
-            textures[i]->bind();
+            //pShader->setInt(name + number, i);
+            pShader->setTexture2D(name + number, textures[i]);
+            //textures[i]->bind();
         }
 
         glBindVertexArray(VAO);

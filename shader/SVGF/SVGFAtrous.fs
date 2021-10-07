@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 layout (location = 0) out vec4  OutFilteredIllumination;
 
@@ -9,7 +9,7 @@ uniform sampler2D   gHistoryLength;
 uniform sampler2D   gIllumination;
 uniform sampler2D   gLinearZAndNormal;
 
-uniform int         gStepSize
+uniform int         gStepSize;
 uniform float       gPhiColor;
 uniform float       gPhiNormal;
 
@@ -18,13 +18,14 @@ uniform float       gPhiNormal;
 */
 vec2 oct_wrap(vec2 v)
 {
-    return (1.f - abs(v.yx)) * (v.xy >= 0.f ? 1.f : -1.f);
+    vec2 weight = vec2((v.x >= 0.f ? 1.f : -1.f) , (v.y >= 0.f ? 1.f : -1.f));
+    return (vec2(1.f , 1.f) - abs(v.yx)) * weight;
 }
 /** Converts normalized direction to the octahedral map (non-equal area, signed normalized).
     \param[in] n Normalized direction.
     \return Position in octahedral map in [-1,1] for each component.
 */
-vec2 ndir_to_oct_snorm(float3 n)
+vec2 ndir_to_oct_snorm(vec3 n)
 {
     // Project the sphere onto the octahedron (|x|+|y|+|z| = 1) and then onto the xy-plane.
     vec2 p = n.xy * (1.f / (abs(n.x) + abs(n.y) + abs(n.z)));
@@ -59,11 +60,11 @@ float computeWeight(
     vec3 normalCenter, vec3 normalP, float phiNormal,
     float luminanceIllumCenter, float luminanceIllumP, float phiIllum)
 {
-    const float weightNormal  = pow(clamp(dot(normalCenter, normalP), 0.0, 1.0), phiNormal);
-    const float weightZ       = (phiDepth == 0) ? 0.0f : abs(depthCenter - depthP) / phiDepth;
-    const float weightLillum  = abs(luminanceIllumCenter - luminanceIllumP) / phiIllum;
+    float weightNormal  = pow(clamp(dot(normalCenter, normalP), 0.0, 1.0), phiNormal);
+    float weightZ       = (phiDepth == 0) ? 0.0f : abs(depthCenter - depthP) / phiDepth;
+    float weightLillum  = abs(luminanceIllumCenter - luminanceIllumP) / phiIllum;
 
-    const float weightIllum   = exp(0.0 - max(weightLillum, 0.0) - max(weightZ, 0.0)) * weightNormal;
+    float weightIllum   = exp(0.0 - max(weightLillum, 0.0) - max(weightZ, 0.0)) * weightNormal;
 
     return weightIllum;
 }
@@ -78,18 +79,18 @@ float computeVarianceCenter(vec2 texCoords)
 
     float sum = 0.f;
 
-    const float kernel[2][2] = {
-        { 1.0 / 4.0, 1.0 / 8.0  },
-        { 1.0 / 8.0, 1.0 / 16.0 }
-    };
+    const float kernel[2][2] = float[][](
+        float[]( 1.0 / 4.0, 1.0 / 8.0 ),
+        float[]( 1.0 / 8.0, 1.0 / 16.0)
+    );
 
     const int radius = 1;
     for (int yy = -radius; yy <= radius; yy++)
     {
         for (int xx = -radius; xx <= radius; xx++)
         {
-            const vec2 p = texCoords + vec2(xx * texelSizeX, yy * texelSizeY);
-            const float k = kernel[abs(xx)][abs(yy)];
+            vec2 p = texCoords + vec2(xx * texelSizeX, yy * texelSizeY);
+            float k = kernel[abs(xx)][abs(yy)];
             sum += texture(gIllumination, p).a * k;
         }
     }
@@ -104,30 +105,30 @@ void main(){
     vec2  texelSize = vec2(texelSizeX,texelSizeY);
 
     const float epsVariance      = 1e-10;
-    const float kernelWeights[3] = { 1.0, 2.0 / 3.0, 1.0 / 6.0 };
+    const float kernelWeights[3] = float[]( 1.0, 2.0 / 3.0, 1.0 / 6.0 );
 
     // constant samplers to prevent the compiler from generating code which
     // fetches the sampler descriptor from memory for each texture access
     // what the fuck?
-    const vec4 illuminationCenter = texture(gIllumination,TexCoords);
-    const float lIlluminationCenter = luminance(illuminationCenter.rgb);
+    vec4 illuminationCenter = texture(gIllumination,TexCoords);
+    float lIlluminationCenter = luminance(illuminationCenter.rgb);
 
     // variance, filtered using 3x3 gaussin blur
-    const float var = computeVarianceCenter(TexCoords);
+    float var = computeVarianceCenter(TexCoords);
 
     // number of temporally integrated pixels
-    const float historyLength = texture(gHistoryLength,TexCoords).x;
+    float historyLength = texture(gHistoryLength,TexCoords).x;
 
-    const vec2 zCenter = texture(gLinearZAndNormal,TexCoords).xy;
+    vec2 zCenter = texture(gLinearZAndNormal,TexCoords).xy;
     if (zCenter.x < 0)
     {
         // not a valid depth => must be envmap => do not filter
-        return illuminationCenter;
+        OutFilteredIllumination = illuminationCenter;
     }
-    const vec3 nCenter = oct_to_ndir_snorm(texture(gLinearZAndNormal,TexCoords).zw);
+    vec3 nCenter = oct_to_ndir_snorm(texture(gLinearZAndNormal,TexCoords).zw);
 
-    const float phiLIllumination   = gPhiColor * sqrt(max(0.0, epsVariance + var.r));
-    const float phiDepth     = max(zCenter.y, 1e-8) * gStepSize;
+    float phiLIllumination   = gPhiColor * sqrt(max(0.0, epsVariance + var.r));
+    float phiDepth     = max(zCenter.y, 1e-8) * gStepSize;
 
     // explicitly store/accumulate center pixel with weight 1 to prevent issues
     // with the edge-stopping functions
@@ -138,25 +139,25 @@ void main(){
     {
         for (int xx = -2; xx <= 2; xx++)
         {
-            const vec2 p      = TexCoords + vec2(xx, yy) * gStepSize * texelSize;
-            const bool inside = all(p >= vec2(0.0,0.0)) && all(p < vec2(1.0,1.0));
+            vec2 p      = TexCoords + vec2(xx, yy) * gStepSize * texelSize;
+            const bool inside = all(bvec2(p.x >= 0.0 , p.y >= 0.0)) && all(bvec2(p.x <= 1.0 , p.y <= 1.0));
 
-            const float kernel = kernelWeights[abs(xx)] * kernelWeights[abs(yy)];
+            float kernel = kernelWeights[abs(xx)] * kernelWeights[abs(yy)];
 
             if (inside && (xx != 0 || yy != 0)) // skip center pixel, it is already accumulated
             {
-                const vec4 illuminationP = texture(gIllumination,p);
-                const float lIlluminationP = luminance(illuminationP.rgb);
-                const float zP = texture(gLinearZAndNormal,p).x;
-                const vec3 nP = oct_to_ndir_snorm(texture(gLinearZAndNormal,p).zw);
+                vec4 illuminationP = texture(gIllumination,p);
+                float lIlluminationP = luminance(illuminationP.rgb);
+                float zP = texture(gLinearZAndNormal,p).x;
+                vec3 nP = oct_to_ndir_snorm(texture(gLinearZAndNormal,p).zw);
 
                 // compute the edge-stopping functions
-                const vec2 w = computeWeight(
-                    zCenter.x, zP, phiDepth * length(float2(xx, yy)),
+                const float w = computeWeight(
+                    zCenter.x, zP, phiDepth * length(vec2(xx, yy)),
                     nCenter, nP, gPhiNormal,
                     lIlluminationCenter, lIlluminationP, phiLIllumination);
 
-                const float wIllumination = w.x * kernel;
+                const float wIllumination = w * kernel;
 
                 // alpha channel contains the variance, therefore the weights need to be squared, see paper for the formula
                 sumWIllumination  += wIllumination;

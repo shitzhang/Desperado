@@ -14,8 +14,8 @@
 using namespace std;
 
 // settings
-extern const unsigned int SCR_WIDTH;
-extern const unsigned int SCR_HEIGHT;
+extern unsigned int SCR_WIDTH;
+extern unsigned int SCR_HEIGHT;
 
 extern const char* const SAMPLE_NAME;
 

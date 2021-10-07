@@ -53,9 +53,9 @@ rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 rtBuffer<float4, 2>              output_buffer;
 rtBuffer<ParallelogramLight>     lights;
 
-rtBuffer<float3, 2>              direct_color_buffer;
-rtBuffer<float3, 2>              indirect_color_buffer;
-rtBuffer<float3, 2>              color_buffer;
+rtBuffer<float4, 2>              direct_color_buffer;
+rtBuffer<float4, 2>              indirect_color_buffer;
+rtBuffer<float4, 2>              color_buffer;
 
 
 RT_PROGRAM void pathtrace_camera()
@@ -150,9 +150,9 @@ RT_PROGRAM void pathtrace_camera()
     float3 pixel_color_direct = result_direct / (sqrt_num_samples * sqrt_num_samples);
     float3 pixel_color_indirect = result_indirect / (sqrt_num_samples * sqrt_num_samples);
 
-    direct_color_buffer[launch_index] = pixel_color_direct;
-    indirect_color_buffer[launch_index] = pixel_color_indirect;
-    color_buffer[launch_index] = pixel_color;
+    direct_color_buffer[launch_index] = make_float4(pixel_color_direct, 1.0f);
+    indirect_color_buffer[launch_index] = make_float4(pixel_color_indirect, 1.0f);
+    color_buffer[launch_index] = make_float4(pixel_color, 1.0f);
     //printf("%f\n", pixel_color);
 
     if (frame_number > 1)
@@ -160,7 +160,6 @@ RT_PROGRAM void pathtrace_camera()
         float a = 1.0f / (float)frame_number;
         float3 old_color = make_float3(output_buffer[launch_index]);
         output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
-        //printf("%f\n", output_buffer[launch_index]);
     }
     else
     {
@@ -200,32 +199,6 @@ rtDeclareVariable(uint,       mesh_id,          attribute mesh_id, );
 
 rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
-
-rtDeclareVariable(optix::Matrix4x4, view_matrix, , );
-rtDeclareVariable(optix::Matrix4x4, projection_matrix, , );
-
-rtDeclareVariable(optix::Matrix4x4, pre_view_matrix, , );
-rtDeclareVariable(optix::Matrix4x4, pre_projection_matrix, , );
-
-//rtBuffer<float3, 2>              pre_normal_buffer;
-rtBuffer<float3, 2>              normal_buffer;
-
-//rtBuffer<float3, 2>              pre_normalFwidth_buffer;
-rtBuffer<float3, 2>              normalFwidth_buffer;
-
-//rtBuffer<float4, 2>              pre_albedo_buffer;
-rtBuffer<float4, 2>              albedo_buffer;
-
-//rtBuffer<float, 2>               pre_depth_buffer;
-rtBuffer<float, 2>               depth_buffer;
-
-//rtBuffer<uint, 2>                pre_meshID_buffer;
-rtBuffer<uint, 2>                meshID_buffer;
-
-rtBuffer<float2, 2>              motion_vector_buffer;
-
-//rtBuffer<float4, 2>              history_color_buffer;
-//rtBuffer<float4, 2>              history_color_moments_buffer;
 
 
 RT_PROGRAM void closest_hit()
@@ -295,27 +268,6 @@ RT_PROGRAM void closest_hit()
     }
 
     current_prd.radiance = result;
-
-    if (current_prd.depth == 0) {
-
-            //pre_normal_buffer[launch_index] = normal_buffer[launch_index];
-            //pre_normalFwidth_buffer[launch_index] = normalFwidth_buffer[launch_index];
-            //pre_albedo_buffer[launch_index] = albedo_buffer[launch_index];
-            //pre_meshID_buffer[launch_index] = meshID_buffer[launch_index];
-            //pre_depth_buffer[launch_index] = depth_buffer[launch_index];
-
-            normal_buffer[launch_index] = ffnormal;
-            normalFwidth_buffer[launch_index] = ffnormal;
-            albedo_buffer[launch_index] = make_float4(diffuse_color, 1.0);
-            meshID_buffer[launch_index] = mesh_id;
-
-            //float4 screen_pos = (projection_matrix * view_matrix * make_float4(hitpoint, 1.0));
-            //screen_pos /= screen_pos.w;
-
-            //depth_buffer[launch_index] = screen_pos.z;
-            //motion_vector_buffer[launch_index] = calcMotionVector(hitpoint, screen_pos, pre_view_matrix, pre_projection_matrix);
-     
-    }
 }
 
 

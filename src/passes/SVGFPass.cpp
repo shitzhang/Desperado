@@ -12,11 +12,11 @@ namespace Desperado {
     namespace
     {
         // Shader source files
-        const char kPackLinearZAndNormalShader[] = "RenderPasses/SVGFPass/SVGFPackLinearZAndNormal.ps.slang";
-        const char kReprojectShader[] = "RenderPasses/SVGFPass/SVGFReproject.ps.slang";
-        const char kAtrousShader[] = "RenderPasses/SVGFPass/SVGFAtrous.ps.slang";
-        const char kFilterMomentShader[] = "RenderPasses/SVGFPass/SVGFFilterMoments.ps.slang";
-        const char kFinalModulateShader[] = "RenderPasses/SVGFPass/SVGFFinalModulate.ps.slang";
+        const char kPackLinearZAndNormalShader[] = "../shader/SVGF/SVGFPackLinearZAndNormal.fs";
+        const char kReprojectShader[] = "../shader/SVGF/SVGFReproject.fs";
+        const char kAtrousShader[] = "../shader/SVGF/SVGFAtrous.fs";
+        const char kFilterMomentShader[] = "../shader/SVGF/SVGFFilterMoments.fs";
+        const char kFinalModulateShader[] = "../shader/SVGF/SVGFFinalModulate.fs";
 
         // Names of valid entries in the parameter dictionary.
         const char kEnabled[] = "Enabled";
@@ -29,14 +29,18 @@ namespace Desperado {
         const char kMomentsAlpha[] = "MomentsAlpha";
 
         // Input buffer names
-        const char kInputBufferAlbedo[] = "Albedo";
-        const char kInputBufferColor[] = "Color";
-        const char kInputBufferEmission[] = "Emission";
-        const char kInputBufferWorldPosition[] = "WorldPosition";
-        const char kInputBufferWorldNormal[] = "WorldNormal";
-        const char kInputBufferPosNormalFwidth[] = "PositionNormalFwidth";
-        const char kInputBufferLinearZ[] = "LinearZ";
-        const char kInputBufferMotionVector[] = "MotionVec";
+        const char kInputBufferAlbedo[] = "gAlbedo";
+        const char kInputBufferEmission[] = "gEmission";
+        const char kInputBufferWorldPosition[] = "gPositionMeshId";
+        const char kInputBufferWorldNormal[] = "gNormal";
+        const char kInputBufferPosNormalFwidth[] = "gPositionNormalFwidth";
+        const char kInputBufferLinearZ[] = "gLinearZ";
+        const char kInputBufferMotionVector[] = "gMotion";
+        const char kInputBufferMeshId[] = "gMeshId";
+
+        const char kInputBufferColor[] = "color";
+        const char kInputBufferDirectColor[] = "directColor";
+        const char kInputBufferIndirectColor[] = "indirectColor";
 
         // Internal buffer names
         const char kInternalBufferPreviousLinearZAndNormal[] = "Previous Linear Z and Packed Normal";
@@ -44,7 +48,7 @@ namespace Desperado {
         const char kInternalBufferPreviousMoments[] = "Previous Moments";
 
         // Output buffer name
-        const char kOutputBufferFilteredImage[] = "Filtered image";
+        const char kOutputBufferFilteredImage[] = "output";
     }
 
     SVGFPass::SharedPtr SVGFPass::create(const InternalDictionary& dict)
@@ -67,12 +71,24 @@ namespace Desperado {
             else std::cout<<("Unknown field '" + key + "' in SVGFPass dictionary")<<std::endl;
         }
 
+        mpPackLinearZAndNormalShader = Shader::create("../shader/SVGF/quad.vs", kPackLinearZAndNormalShader);
+        mpReprojectionShader = Shader::create("../shader/SVGF/quad.vs", kReprojectShader);
+        mpAtrousShader = Shader::create("../shader/SVGF/quad.vs", kAtrousShader);
+        mpFilterMomentsShader = Shader::create("../shader/SVGF/quad.vs", kFilterMomentShader);
+        mpFinalModulateShader = Shader::create("../shader/SVGF/quad.vs", kFinalModulateShader);
+       
+
         mpPackLinearZAndNormal = FullScreenPass::create();
         mpReprojection = FullScreenPass::create();
         mpAtrous = FullScreenPass::create();
         mpFilterMoments = FullScreenPass::create();
         mpFinalModulate = FullScreenPass::create();
         assert(mpPackLinearZAndNormal && mpReprojection && mpAtrous && mpFilterMoments && mpFinalModulate);
+
+        allocateFbos(uint2(SCR_WIDTH, SCR_HEIGHT));
+        mBuffersNeedClear = true;
+
+        mpPrevLinearZAndNormalTexture = Texture::create2D(SCR_WIDTH, SCR_HEIGHT, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, 0);
     }
 
     /*
@@ -89,16 +105,16 @@ namespace Desperado {
 
     void SVGFPass::execute(const RenderData& renderData)
     {
-        Texture::SharedPtr pAlbedoTexture = renderData[kInputBufferAlbedo]->asTexture();
-        Texture::SharedPtr pColorTexture = renderData[kInputBufferColor]->asTexture();
-        Texture::SharedPtr pEmissionTexture = renderData[kInputBufferEmission]->asTexture();
-        Texture::SharedPtr pWorldPositionTexture = renderData[kInputBufferWorldPosition]->asTexture();
-        Texture::SharedPtr pWorldNormalTexture = renderData[kInputBufferWorldNormal]->asTexture();
-        Texture::SharedPtr pPosNormalFwidthTexture = renderData[kInputBufferPosNormalFwidth]->asTexture();
-        Texture::SharedPtr pLinearZTexture = renderData[kInputBufferLinearZ]->asTexture();
-        Texture::SharedPtr pMotionVectorTexture = renderData[kInputBufferMotionVector]->asTexture();
+        Texture::SharedPtr pAlbedoTexture = renderData[kInputBufferAlbedo];
+        Texture::SharedPtr pColorTexture = renderData[kInputBufferColor];
+        Texture::SharedPtr pEmissionTexture = renderData[kInputBufferEmission];
+        Texture::SharedPtr pWorldPositionTexture = renderData[kInputBufferWorldPosition];
+        Texture::SharedPtr pWorldNormalTexture = renderData[kInputBufferWorldNormal];
+        Texture::SharedPtr pPosNormalFwidthTexture = renderData[kInputBufferPosNormalFwidth];
+        Texture::SharedPtr pLinearZTexture = renderData[kInputBufferLinearZ];
+        Texture::SharedPtr pMotionVectorTexture = renderData[kInputBufferMotionVector];
 
-        Texture::SharedPtr pOutputTexture = renderData[kOutputBufferFilteredImage]->asTexture();
+        Texture::SharedPtr pOutputTexture = renderData[kOutputBufferFilteredImage];
 
         assert(mpFilteredIlluminationFbo &&
             mpFilteredIlluminationFbo->getWidth() == pAlbedoTexture->getWidth() &&
@@ -106,56 +122,69 @@ namespace Desperado {
 
         if (mBuffersNeedClear)
         {
-            clearBuffers(pRenderContext, renderData);
-            mBuffersNeedClear = false;
+            //clearBuffers(pRenderContext, renderData);
+            //mBuffersNeedClear = false;
         }
 
         if (mFilterEnabled)
         {
             // Grab linear z and its derivative and also pack the normal into
             // the last two channels of the mpLinearZAndNormalFbo.
-            computeLinearZAndNormal(pRenderContext, pLinearZTexture, pWorldNormalTexture);
+            computeLinearZAndNormal(pLinearZTexture, pWorldNormalTexture);
 
             // Demodulate input color & albedo to get illumination and lerp in
             // reprojected filtered illumination from the previous frame.
             // Stores the result as well as initial moments and an updated
             // per-pixel history length in mpCurReprojFbo.
-            Texture::SharedPtr pPrevLinearZAndNormalTexture =
-                renderData[kInternalBufferPreviousLinearZAndNormal]->asTexture();
-            computeReprojection(pRenderContext, pAlbedoTexture, pColorTexture, pEmissionTexture,
+
+            /*Texture::SharedPtr pPrevLinearZAndNormalTexture =
+                renderData[kInternalBufferPreviousLinearZAndNormal];*/
+            //mpBlitFbo->blit(mpLinearZAndNormalFbo->getColorTexture(0), mpPrevLinearZAndNormalTexture);
+            computeReprojection(pAlbedoTexture, pColorTexture, pEmissionTexture,
                 pMotionVectorTexture, pPosNormalFwidthTexture,
-                pPrevLinearZAndNormalTexture);
+                mpPrevLinearZAndNormalTexture);
 
             // Do a first cross-bilateral filtering of the illumination and
             // estimate its variance, storing the result into a float4 in
             // mpPingPongFbo[0].  Takes mpCurReprojFbo as input.
-            computeFilteredMoments(pRenderContext);
+            computeFilteredMoments();
 
             // Filter illumination from mpCurReprojFbo[0], storing the result
             // in mpPingPongFbo[0].  Along the way (or at the end, depending on
             // the value of mFeedbackTap), save the filtered illumination for
             // next time into mpFilteredPastFbo.
-            computeAtrousDecomposition(pRenderContext, pAlbedoTexture);
+            computeAtrousDecomposition(pAlbedoTexture);
 
             // Compute albedo * filtered illumination and add emission back in.
-            auto perImageCB = mpFinalModulate["PerImageCB"];
-            perImageCB["gAlbedo"] = pAlbedoTexture;
-            perImageCB["gEmission"] = pEmissionTexture;
-            perImageCB["gIllumination"] = mpPingPongFbo[0]->getColorTexture(0);
-            mpFinalModulate->execute(pRenderContext, mpFinalFbo);
+            
+            //auto perImageCB = mpFinalModulate["PerImageCB"];
+            //perImageCB["gAlbedo"] = pAlbedoTexture;
+            //perImageCB["gEmission"] = pEmissionTexture;
+            //perImageCB["gIllumination"] = mpPingPongFbo[0]->getColorTexture(0);
+
+            mpFinalModulateShader->use();
+            mpFinalModulateShader->setTexture2D("gAlbedo", pAlbedoTexture);
+            mpFinalModulateShader->setTexture2D("gEmission", pEmissionTexture);
+            mpFinalModulateShader->setTexture2D("gIllumination", mpPingPongFbo[0]->getColorTexture(0));
+
+            mpFinalModulate->execute(mpFinalFbo);
 
             // Blit into the output texture.
-            pRenderContext->blit(mpFinalFbo->getColorTexture(0)->getSRV(), pOutputTexture->getRTV());
-
+            Fbo::blit(mpFinalFbo, 0, pOutputTexture);
+            
             // Swap resources so we're ready for next frame.
             std::swap(mpCurReprojFbo, mpPrevReprojFbo);
-            pRenderContext->blit(mpLinearZAndNormalFbo->getColorTexture(0)->getSRV(),
-                pPrevLinearZAndNormalTexture->getRTV());
+            Fbo::blit(mpLinearZAndNormalFbo, 0, mpPrevLinearZAndNormalTexture);
         }
         else
         {
-            pRenderContext->blit(pColorTexture->getSRV(), pOutputTexture->getRTV());
+            Fbo::blit(pColorTexture, pOutputTexture);
         }
+    }
+
+    bool SVGFPass::init(const InternalDictionary& dict)
+    {
+        return false;
     }
 
     void SVGFPass::allocateFbos(uint2 dim)
@@ -166,7 +195,7 @@ namespace Desperado {
             Fbo::Desc desc;
             desc.setColorTarget(0, GL_RGBA32F, GL_RGBA); // illumination
             desc.setColorTarget(1, GL_RG32F, GL_RG);   // moments
-            desc.setColorTarget(2, GL_R16F, GL_R);    // history length
+            desc.setColorTarget(2, GL_R32F, GL_RED);    // history length
             mpCurReprojFbo = Fbo::create2D(dim.x, dim.y, desc);
             mpPrevReprojFbo = Fbo::create2D(dim.x, dim.y, desc);
         }
@@ -188,23 +217,21 @@ namespace Desperado {
             mpFilteredIlluminationFbo = Fbo::create2D(dim.x, dim.y, desc);
             mpFinalFbo = Fbo::create2D(dim.x, dim.y, desc);
         }
-
-        mBuffersNeedClear = true;
     }
 
-    void SVGFPass::clearBuffers(RenderContext* pRenderContext, const RenderData& renderData)
+    void SVGFPass::clearBuffers(const RenderData& renderData)
     {
-        pRenderContext->clearFbo(mpPingPongFbo[0].get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpPingPongFbo[1].get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpLinearZAndNormalFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpFilteredPastFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpCurReprojFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpPrevReprojFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
-        pRenderContext->clearFbo(mpFilteredIlluminationFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpPingPongFbo[0].get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpPingPongFbo[1].get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpLinearZAndNormalFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpFilteredPastFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpCurReprojFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpPrevReprojFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
+        //pRenderContext->clearFbo(mpFilteredIlluminationFbo.get(), float4(0), 1.0f, 0, FboAttachmentType::All);
 
-        pRenderContext->clearTexture(renderData[kInternalBufferPreviousLinearZAndNormal]->asTexture().get());
-        pRenderContext->clearTexture(renderData[kInternalBufferPreviousLighting]->asTexture().get());
-        pRenderContext->clearTexture(renderData[kInternalBufferPreviousMoments]->asTexture().get());
+        //pRenderContext->clearTexture(renderData[kInternalBufferPreviousLinearZAndNormal]->asTexture().get());
+        //pRenderContext->clearTexture(renderData[kInternalBufferPreviousLighting]->asTexture().get());
+        //pRenderContext->clearTexture(renderData[kInternalBufferPreviousMoments]->asTexture().get());
     }
 
     // Extracts linear z and its derivative from the linear Z texture and packs
@@ -215,10 +242,12 @@ namespace Desperado {
     void SVGFPass::computeLinearZAndNormal(Texture::SharedPtr pLinearZTexture,
         Texture::SharedPtr pWorldNormalTexture)
     {
-        auto perImageCB = mpPackLinearZAndNormal["PerImageCB"];
+        /*auto perImageCB = mpPackLinearZAndNormal["PerImageCB"];
         perImageCB["gLinearZ"] = pLinearZTexture;
-        perImageCB["gNormal"] = pWorldNormalTexture;
-
+        perImageCB["gNormal"] = pWorldNormalTexture;*/
+        mpPackLinearZAndNormalShader->use();
+        mpPackLinearZAndNormalShader->setTexture2D("gLinearZ", pLinearZTexture);
+        mpPackLinearZAndNormalShader->setTexture2D("gNormal", pWorldNormalTexture);
         mpPackLinearZAndNormal->execute(mpLinearZAndNormalFbo);
     }
 
@@ -228,30 +257,42 @@ namespace Desperado {
         Texture::SharedPtr pPositionNormalFwidthTexture,
         Texture::SharedPtr pPrevLinearZTexture)
     {
-        auto perImageCB = mpReprojection["PerImageCB"];
+        //auto perImageCB = mpReprojection["PerImageCB"];       
+        //perImageCB["gMotion"] = pMotionVectorTexture;
+        //perImageCB["gColor"] = pColorTexture;
+        //perImageCB["gEmission"] = pEmissionTexture;
+        //perImageCB["gAlbedo"] = pAlbedoTexture;
+        //perImageCB["gPositionNormalFwidth"] = pPositionNormalFwidthTexture;
+        //perImageCB["gPrevIllum"] = mpFilteredPastFbo->getColorTexture(0);
+        //perImageCB["gPrevMoments"] = mpPrevReprojFbo->getColorTexture(1);
+        //perImageCB["gLinearZAndNormal"] = mpLinearZAndNormalFbo->getColorTexture(0);
+        //perImageCB["gPrevLinearZAndNormal"] = pPrevLinearZTexture;
+        //perImageCB["gPrevHistoryLength"] = mpPrevReprojFbo->getColorTexture(2);
 
-        // Setup textures for our reprojection shader pass
-        perImageCB["gMotion"] = pMotionVectorTexture;
-        perImageCB["gColor"] = pColorTexture;
-        perImageCB["gEmission"] = pEmissionTexture;
-        perImageCB["gAlbedo"] = pAlbedoTexture;
-        perImageCB["gPositionNormalFwidth"] = pPositionNormalFwidthTexture;
-        perImageCB["gPrevIllum"] = mpFilteredPastFbo->getColorTexture(0);
-        perImageCB["gPrevMoments"] = mpPrevReprojFbo->getColorTexture(1);
-        perImageCB["gLinearZAndNormal"] = mpLinearZAndNormalFbo->getColorTexture(0);
-        perImageCB["gPrevLinearZAndNormal"] = pPrevLinearZTexture;
-        perImageCB["gPrevHistoryLength"] = mpPrevReprojFbo->getColorTexture(2);
+        //perImageCB["gAlpha"] = mAlpha;
+        //perImageCB["gMomentsAlpha"] = mMomentsAlpha;
 
-        // Setup variables for our reprojection pass
-        perImageCB["gAlpha"] = mAlpha;
-        perImageCB["gMomentsAlpha"] = mMomentsAlpha;
+        mpReprojectionShader->use();
+        mpReprojectionShader->setTexture2D("gMotion", pMotionVectorTexture);
+        mpReprojectionShader->setTexture2D("gColor", pColorTexture);
+        mpReprojectionShader->setTexture2D("gEmission", pEmissionTexture);
+        mpReprojectionShader->setTexture2D("gAlbedo", pAlbedoTexture);
+        mpReprojectionShader->setTexture2D("gPositionNormalFwidth", pPositionNormalFwidthTexture);
+        mpReprojectionShader->setTexture2D("gPrevIllum", mpFilteredPastFbo->getColorTexture(0));
+        mpReprojectionShader->setTexture2D("gPrevMoments", mpPrevReprojFbo->getColorTexture(1));
+        mpReprojectionShader->setTexture2D("gLinearZAndNormal", mpLinearZAndNormalFbo->getColorTexture(0));
+        mpReprojectionShader->setTexture2D("gPrevLinearZAndNormal", pPrevLinearZTexture);
+        mpReprojectionShader->setTexture2D("gPrevHistoryLength", mpPrevReprojFbo->getColorTexture(2));
 
-        mpReprojection->execute(pRenderContext, mpCurReprojFbo);
+        mpReprojectionShader->setFloat("gAlpha", mAlpha);
+        mpReprojectionShader->setFloat("gMomentsAlpha", mMomentsAlpha);
+
+        mpReprojection->execute(mpCurReprojFbo);
     }
 
-    void SVGFPass::computeFilteredMoments(RenderContext* pRenderContext)
+    void SVGFPass::computeFilteredMoments()
     {
-        auto perImageCB = mpFilterMoments["PerImageCB"];
+        /*auto perImageCB = mpFilterMoments["PerImageCB"];
 
         perImageCB["gIllumination"] = mpCurReprojFbo->getColorTexture(0);
         perImageCB["gHistoryLength"] = mpCurReprojFbo->getColorTexture(2);
@@ -259,43 +300,65 @@ namespace Desperado {
         perImageCB["gMoments"] = mpCurReprojFbo->getColorTexture(1);
 
         perImageCB["gPhiColor"] = mPhiColor;
-        perImageCB["gPhiNormal"] = mPhiNormal;
+        perImageCB["gPhiNormal"] = mPhiNormal;*/
 
-        mpFilterMoments->execute(pRenderContext, mpPingPongFbo[0]);
+        mpFilterMomentsShader->use();
+        mpFilterMomentsShader->setTexture2D("gIllumination", mpCurReprojFbo->getColorTexture(0));
+        mpFilterMomentsShader->setTexture2D("gHistoryLength", mpCurReprojFbo->getColorTexture(2));
+        mpFilterMomentsShader->setTexture2D("gLinearZAndNormal", mpLinearZAndNormalFbo->getColorTexture(0));
+        mpFilterMomentsShader->setTexture2D("gMoments", mpCurReprojFbo->getColorTexture(1));
+
+        mpFilterMomentsShader->setFloat("gPhiColor", mPhiColor);
+        mpFilterMomentsShader->setFloat("gPhiNormal", mPhiNormal);
+
+        mpFilterMoments->execute(mpPingPongFbo[0]);
     }
 
-    void SVGFPass::computeAtrousDecomposition(RenderContext* pRenderContext, Texture::SharedPtr pAlbedoTexture)
+    void SVGFPass::computeAtrousDecomposition(Texture::SharedPtr pAlbedoTexture)
     {
-        auto perImageCB = mpAtrous["PerImageCB"];
+        //auto perImageCB = mpAtrous["PerImageCB"];
 
-        perImageCB["gAlbedo"] = pAlbedoTexture;
-        perImageCB["gHistoryLength"] = mpCurReprojFbo->getColorTexture(2);
-        perImageCB["gLinearZAndNormal"] = mpLinearZAndNormalFbo->getColorTexture(0);
+        //perImageCB["gAlbedo"] = pAlbedoTexture;
+        //perImageCB["gHistoryLength"] = mpCurReprojFbo->getColorTexture(2);
+        //perImageCB["gLinearZAndNormal"] = mpLinearZAndNormalFbo->getColorTexture(0);
 
-        perImageCB["gPhiColor"] = mPhiColor;
-        perImageCB["gPhiNormal"] = mPhiNormal;
+        //perImageCB["gPhiColor"] = mPhiColor;
+        //perImageCB["gPhiNormal"] = mPhiNormal;
+
+        mpAtrousShader->use();
+        mpAtrousShader->setTexture2D("gAlbedo", pAlbedoTexture);
+        mpAtrousShader->setTexture2D("gHistoryLength", mpCurReprojFbo->getColorTexture(2));
+        mpAtrousShader->setTexture2D("gLinearZAndNormal", mpLinearZAndNormalFbo->getColorTexture(0));
+
+        mpAtrousShader->setFloat("gPhiColor", mPhiColor);
+        mpAtrousShader->setFloat("gPhiNormal", mPhiNormal);
+
 
         for (int i = 0; i < mFilterIterations; i++)
         {
             Fbo::SharedPtr curTargetFbo = mpPingPongFbo[1];
 
-            perImageCB["gIllumination"] = mpPingPongFbo[0]->getColorTexture(0);
-            perImageCB["gStepSize"] = 1 << i;
+            //perImageCB["gIllumination"] = mpPingPongFbo[0]->getColorTexture(0);
+            //perImageCB["gStepSize"] = 1 << i;
 
-            mpAtrous->execute(pRenderContext, curTargetFbo);
+            mpAtrousShader->setTexture2D("gIllumination", mpPingPongFbo[0]->getColorTexture(0));
+            mpAtrousShader->setInt("gStepSize", 1 << i);
+
+            mpAtrous->execute(curTargetFbo);
 
             // store the filtered color for the feedback path
             if (i == std::min(mFeedbackTap, mFilterIterations - 1))
-            {
-                pRenderContext->blit(curTargetFbo->getColorTexture(0)->getSRV(), mpFilteredPastFbo->getRenderTargetView(0));
+            {               
+                Fbo::blit(curTargetFbo, 0, mpFilteredPastFbo, 0);
             }
 
+            //swap shared_ptr
             std::swap(mpPingPongFbo[0], mpPingPongFbo[1]);
         }
 
         if (mFeedbackTap < 0)
-        {
-            pRenderContext->blit(mpCurReprojFbo->getColorTexture(0)->getSRV(), mpFilteredPastFbo->getRenderTargetView(0));
+        {           
+            Fbo::blit(mpCurReprojFbo, 0, mpFilteredPastFbo, 0);
         }
     }
 }

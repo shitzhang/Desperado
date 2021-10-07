@@ -90,6 +90,9 @@
     <ClCompile Include="..\src\Passes\FullScreenPass.cpp">
       <Filter>源文件\Passes</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Passes\SVGFPass.cpp">
+      <Filter>源文件\Passes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cuda\helpers.h">

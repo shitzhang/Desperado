@@ -10,8 +10,8 @@ namespace Desperado
     class RenderData
     {
     public:
-        const InternalDictionary::Value& operator[](const std::string& name) const { return getResource(name); }
-        const InternalDictionary::Value& getResource(const std::string& name) const { return (*mpDictionary)[name]; }
+        InternalDictionary::Value& operator[](const std::string& name) const { return getResource(name); }
+        InternalDictionary::Value& getResource(const std::string& name) const { return (*mpDictionary)[name]; }
         InternalDictionary& getDictionary() const { return (*mpDictionary); }
         InternalDictionary::SharedPtr getDictionaryPtr() const { return mpDictionary; }
 

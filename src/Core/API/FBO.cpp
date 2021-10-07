@@ -275,6 +275,9 @@ namespace Desperado
     Fbo::Fbo()
     {
         mColorAttachments.resize(getMaxColorTargetCount());
+        mWidth = SCR_WIDTH;
+        mHeight = SCR_HEIGHT;
+        mDepth = 1;
         glGenFramebuffers(1, &mId);
     }
 
@@ -296,10 +299,99 @@ namespace Desperado
 
     void Fbo::bind() const {
         glBindFramebuffer(GL_FRAMEBUFFER, mId);
-        glViewport(0, 0, mWidth, mHeight);
+        //glViewport(0, 0, mWidth, mHeight);
     }
 
     void Fbo::unBind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-    uint32_t Fbo::getId() const { return mId; }
+    void Fbo::clear() const
+    {
+        bind();
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearDepth(1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void Fbo::blit(Texture::SharedPtr srcTex, Texture::SharedPtr dstTex)
+    {
+        auto blitFbo = getDefault();
+        blitFbo->bind();
+        //mColorAttachments.clear();
+        blitFbo->mColorAttachments[0].pTexture = srcTex;
+        blitFbo->mColorAttachments[0].mipLevel = 0;
+
+        blitFbo->mColorAttachments[1].pTexture = dstTex;
+        blitFbo->mColorAttachments[1].mipLevel = 0;
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, srcTex->getId(), 0);
+        std::cout << glGetError() << std::endl;
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, dstTex->getId(), 0);
+        std::cout << glGetError() << std::endl;
+        
+        blitFbo->finalize();
+
+        glReadBuffer(GL_COLOR_ATTACHMENT0); 
+
+        //GLenum bufferlist[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffer(GL_COLOR_ATTACHMENT1);
+
+        glBlitFramebuffer(0, 0, srcTex->getWidth(), srcTex->getHeight(), 0, 0, dstTex->getWidth(), dstTex->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST); // This will now copy from GL_COLOR_ATTACHMENT0 to GL_COLOR_ATTACHMENT1
+
+        Fbo::unBind();
+    }
+    void Fbo::blit(Fbo::SharedPtr inFbo, int inAttachment, Texture::SharedPtr dstTex)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, inFbo->getId());
+        int oldReadAttach;
+        glGetIntegerv(GL_READ_BUFFER, &oldReadAttach);
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + inAttachment);
+
+        auto blitFbo = getDefault();
+
+        //blitFbo->bind();
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blitFbo->getId());
+
+        //mColorAttachments.clear();
+        blitFbo->mColorAttachments[0].pTexture = dstTex;
+
+        blitFbo->mColorAttachments[0].mipLevel = 0;
+
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, dstTex->getId(), 0);
+
+
+        blitFbo->finalize();
+
+        //GLenum bufferlist[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+        glBlitFramebuffer(0, 0, inFbo->getColorTexture(inAttachment)->getWidth(), inFbo->getColorTexture(inAttachment)->getHeight(), 
+            0, 0, dstTex->getWidth(), dstTex->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+        // cleanup
+        //glReadBuffer(static_cast<GLenum>(oldReadAttach));
+        Fbo::unBind();
+    }
+    void Fbo::blit(Fbo::SharedPtr inFbo, int inAttachment, Fbo::SharedPtr outFbo, int outAttachment)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, inFbo->getId());
+        int oldReadAttach;
+        glGetIntegerv(GL_READ_BUFFER, &oldReadAttach);
+
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + inAttachment);
+
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, outFbo->getId());
+        int oldDrawAttach;
+        glGetIntegerv(GL_DRAW_BUFFER, &oldDrawAttach);
+
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + outAttachment);
+
+        glBlitFramebuffer(0, 0, inFbo->getColorTexture(inAttachment)->getWidth(), inFbo->getColorTexture(inAttachment)->getHeight(), 
+            0, 0, outFbo->getColorTexture(outAttachment)->getWidth(), outFbo->getColorTexture(outAttachment)->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST); 
+
+        // cleanup
+        //glReadBuffer(static_cast<GLenum>(oldReadAttach));
+        //glDrawBuffer(static_cast<GLenum>(oldDrawAttach));
+        Fbo::unBind();
+    }
 }

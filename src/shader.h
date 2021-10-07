@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "Core/API/Texture.h"
 
 #include <string>
 #include <fstream>
@@ -10,13 +11,33 @@
 #include <iostream>
 
 namespace Desperado {
-    class Shader
+    class Shader :public std::enable_shared_from_this<Shader>
     {
     public:
+        using SharedPtr = std::shared_ptr<Shader>;
+
         unsigned int ID;
+        void bind() {
+            glUseProgram(ID);
+        }
+
+        void unbind() {
+            glUseProgram(0);
+        }
+        void clear() {
+            glDeleteProgram(ID);
+        }
+        ~Shader()
+        {
+            this->clear();
+        }
+        static SharedPtr create(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr) {
+            //return make_shared<Shader>(vertexPath, fragmentPath, geometryPath);
+            return SharedPtr(new Shader(vertexPath, fragmentPath, geometryPath));
+        }
         // constructor generates the shader on the fly
         // ------------------------------------------------------------------------
-        Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
+        Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr) : mCurrTexUnit(0)
         {
             // 1. retrieve the vertex/fragment source code from filePath
             std::string vertexCode;
@@ -161,8 +182,22 @@ namespace Desperado {
         {
             glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
         }
+        void setTexture2D(const std::string& name, const Texture::SharedPtr pTex)
+        {
+            //GLint maxUnitCnt = 0;
+            //glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxUnitCnt);
+            if (mCurrTexUnit >= 16) {
+                mCurrTexUnit = 0;
+            }
+            glActiveTexture(GL_TEXTURE0 + mCurrTexUnit);
+            pTex->bind();
+            setInt(name, mCurrTexUnit);
+            //std::cout << "Texture unit : " + mCurrTexUnit << std::endl;
+            mCurrTexUnit++;
+        }
 
     private:
+        unsigned int mCurrTexUnit;
         // utility function for checking shader compilation/linking errors.
         // ------------------------------------------------------------------------
         void checkCompileErrors(GLuint shader, std::string type)

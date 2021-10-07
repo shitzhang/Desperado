@@ -68,7 +68,7 @@ namespace Desperado {
 				glm::mat4 viewMatrix(1.0f);
 				glm::mat4 projectionMatrix(1.0f);
 
-				TRStransform trans = light->entity->transform;
+				TRStransform trans = light->pEntity->transform;
 
 				modelMatrix = glm::translate(modelMatrix, trans.translate);
 
@@ -82,7 +82,7 @@ namespace Desperado {
 				viewMatrix = pCamera->GetViewMatrix();
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
 
-				auto shader = light->shader;
+				auto shader = light->pShader;
 				shader->use();
 				shader->setMat4("uModelMatrix", modelMatrix);
 				shader->setMat4("uViewMatrix", viewMatrix);
@@ -97,7 +97,7 @@ namespace Desperado {
 				glm::mat4 viewMatrix(1.0f);
 				glm::mat4 projectionMatrix(1.0f);
 
-				TRStransform trans = light->entity->transform;
+				TRStransform trans = light->pEntity->transform;
 
 				modelMatrix = glm::translate(modelMatrix, trans.translate);
 
@@ -111,7 +111,7 @@ namespace Desperado {
 				viewMatrix = pCamera->GetViewMatrix();
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
 
-				auto shader = light->shader;
+				auto shader = light->pShader;
 				shader->use();
 				shader->setMat4("uModelMatrix", modelMatrix);
 				shader->setMat4("uViewMatrix", viewMatrix);
@@ -126,7 +126,7 @@ namespace Desperado {
 				glm::mat4 viewMatrix(1.0f);
 				glm::mat4 projectionMatrix(1.0f);
 
-				TRStransform trans = light->entity->transform;
+				TRStransform trans = light->pEntity->transform;
 
 				modelMatrix = glm::translate(modelMatrix, trans.translate);
 
@@ -140,7 +140,7 @@ namespace Desperado {
 				viewMatrix = pCamera->GetViewMatrix();
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
 
-				auto shader = light->shader;
+				auto shader = light->pShader;
 				shader->use();
 				shader->setMat4("uModelMatrix", modelMatrix);
 				shader->setMat4("uViewMatrix", viewMatrix);
@@ -150,7 +150,7 @@ namespace Desperado {
 			}
 		}
 
-		void DrawModels(Shader& shader) {
+		void DrawModels(std::shared_ptr<Shader> pShader) {
 			for (int i = 0; i < models.size(); i++) {
 				auto model = models[i];
 
@@ -173,19 +173,19 @@ namespace Desperado {
 				viewMatrix = pCamera->GetViewMatrix();
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
 
-				shader.use();
-				shader.setMat4("model", modelMatrix);
-				shader.setMat4("view", viewMatrix);
-				shader.setMat4("projection", projectionMatrix);
+				pShader->use();
+				pShader->setMat4("model", modelMatrix);
+				pShader->setMat4("view", viewMatrix);
+				pShader->setMat4("projection", projectionMatrix);
 
-				shader.setMat4("pre_view", preViewMatrix);
-				shader.setMat4("pre_projection", preProjectionMatrix);
+				pShader->setMat4("pre_view", preViewMatrix);
+				pShader->setMat4("pre_projection", preProjectionMatrix);
 
-				models[i]->Draw(shader);
+				models[i]->Draw(pShader);
 			}
 		}
 
-		void DrawMeshes(Shader& shader) {
+		void DrawMeshes(std::shared_ptr<Shader> pShader) {
 			for (int i = 0; i < meshes.size(); i++) {
 				auto mesh = meshes[i];
 
@@ -208,11 +208,11 @@ namespace Desperado {
 				projectionMatrix = pCamera->GetPerspectiveMatrix();
 
 
-				shader.use();
-				shader.setMat4("uModelMatrix", modelMatrix);
-				shader.setMat4("uViewMatrix", viewMatrix);
-				shader.setMat4("uProjectionMatrix", projectionMatrix);
-				meshes[i]->Draw(shader);
+				pShader->use();
+				pShader->setMat4("uModelMatrix", modelMatrix);
+				pShader->setMat4("uViewMatrix", viewMatrix);
+				pShader->setMat4("uProjectionMatrix", projectionMatrix);
+				meshes[i]->Draw(pShader);
 			}
 		}
 	};

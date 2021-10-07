@@ -15,6 +15,13 @@ namespace Desperado {
         virtual std::string getDesc() override { return "SVGF Denoising Pass"; }
         virtual void execute(const RenderData& renderData) override;
 
+        Fbo::SharedPtr mpPingPongFbo[2];
+        Fbo::SharedPtr mpLinearZAndNormalFbo;
+        Fbo::SharedPtr mpFilteredPastFbo;
+        Fbo::SharedPtr mpCurReprojFbo;
+        Fbo::SharedPtr mpPrevReprojFbo;
+        Fbo::SharedPtr mpFilteredIlluminationFbo;
+        Fbo::SharedPtr mpFinalFbo;
     private:
         SVGFPass(const InternalDictionary& dict);
 
@@ -52,12 +59,20 @@ namespace Desperado {
         FullScreenPass::SharedPtr mpFinalModulate;
 
         // Intermediate framebuffers
-        Fbo::SharedPtr mpPingPongFbo[2];
-        Fbo::SharedPtr mpLinearZAndNormalFbo;
-        Fbo::SharedPtr mpFilteredPastFbo;
-        Fbo::SharedPtr mpCurReprojFbo;
-        Fbo::SharedPtr mpPrevReprojFbo;
-        Fbo::SharedPtr mpFilteredIlluminationFbo;
-        Fbo::SharedPtr mpFinalFbo;
+        //Fbo::SharedPtr mpPingPongFbo[2];
+        //Fbo::SharedPtr mpLinearZAndNormalFbo;
+        //Fbo::SharedPtr mpFilteredPastFbo;
+        //Fbo::SharedPtr mpCurReprojFbo;
+        //Fbo::SharedPtr mpPrevReprojFbo;
+        //Fbo::SharedPtr mpFilteredIlluminationFbo;
+        //Fbo::SharedPtr mpFinalFbo;
+
+        Shader::SharedPtr mpPackLinearZAndNormalShader;
+        Shader::SharedPtr mpReprojectionShader;
+        Shader::SharedPtr mpFilterMomentsShader;
+        Shader::SharedPtr mpAtrousShader;
+        Shader::SharedPtr mpFinalModulateShader;
+
+        Texture::SharedPtr mpPrevLinearZAndNormalTexture;
     };
 }

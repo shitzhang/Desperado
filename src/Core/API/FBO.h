@@ -76,10 +76,15 @@ namespace Desperado
 
         void bind() const;
         static void unBind(); // Unbinds whatever current framebuffer is bound
-        unsigned int getId() const;
+        void clear() const;
 
+        unsigned int getId() const { return mId; }
+        static void blit(Texture::SharedPtr srcTex, Texture::SharedPtr dstTex);
+        static void blit(Fbo::SharedPtr inFbo, int inAttachment, Texture::SharedPtr dstTex);
+        static void blit(Fbo::SharedPtr inFbo, int inAttachment, Fbo::SharedPtr outFbo, int outAttachment);
+
+        
     private:
-
         void applyColorAttachment(uint32_t rtIndex);
         void applyDepthAttachment();
         void initApiHandle() const;

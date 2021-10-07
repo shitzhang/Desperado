@@ -54,6 +54,7 @@
 // RenderPass
 #include "Passes/RenderPass.h"
 #include "Passes/FullScreenPass.h"
+#include "Passes/SVGFPass.h"
 
 // Scene
 //#include "Scene/Scene.h"

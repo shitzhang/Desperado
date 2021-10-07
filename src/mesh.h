@@ -56,7 +56,7 @@ namespace Desperado {
         Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, TRStransform trans);
         Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<std::shared_ptr<Texture>> textures, Material mat, TRStransform trans);
 
-        void Draw(Shader& shader);
+        void Draw(std::shared_ptr<Shader> pShader);
 
         unsigned int getVBO() {
             return VBO;

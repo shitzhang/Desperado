@@ -42,10 +42,10 @@ namespace Desperado {
 		}
 
 		// draws the model, and thus all its meshes
-		void Draw(Shader& shader)
+		void Draw(std::shared_ptr<Shader> pShader)
 		{
 			for (unsigned int i = 0; i < p_meshes.size(); i++) {
-				p_meshes[i]->Draw(shader);
+				p_meshes[i]->Draw(pShader);
 			}
 		}
 
