@@ -10,6 +10,7 @@
 namespace Desperado {
 	class Scene {
 	public:
+		using SharedPtr = std::shared_ptr<Scene>;
 		Scene(std::shared_ptr<Camera> pC) {
 			if (pC == nullptr) {
 				std::cout << "Error: camera is nullptr" << std::endl;
@@ -59,7 +60,12 @@ namespace Desperado {
 		void AddMesh(std::shared_ptr<Mesh> mesh) {
 			meshes.push_back(mesh);
 		};
-
+		std::vector<std::shared_ptr<Model>> getModels() {
+			return models;
+		};
+		std::vector<std::shared_ptr<Mesh>> getMeshs() {
+			return meshes;
+		};
 		void DrawLights() {
 			for (int i = 0; i < directionalLights.size(); i++) {
 				auto light = directionalLights[i];

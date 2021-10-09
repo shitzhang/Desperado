@@ -10,8 +10,8 @@ uniform sampler2D   gIllumination;
 
 
 void main(){
-    vec4 albedo = texture(gAlbedo,TexCoords);
+    vec4 albedo = vec4(texture(gAlbedo,TexCoords).rgb, 1.0);
     vec4 illumination = texture(gIllumination,TexCoords);
-    vec4 emission = texture(gEmission,TexCoords);
+    vec4 emission = vec4(texture(gEmission,TexCoords).rgb, 1.0);
     OutPixelColor = albedo * illumination + emission;
 }

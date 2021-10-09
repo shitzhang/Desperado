@@ -51,6 +51,9 @@ rtDeclareVariable(unsigned int,  sqrt_num_samples, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
+rtBuffer<float4, 2>              output_direct_buffer;
+rtBuffer<float4, 2>              output_indirect_buffer;
+
 rtBuffer<ParallelogramLight>     lights;
 
 rtBuffer<float4, 2>              direct_color_buffer;
@@ -109,6 +112,7 @@ RT_PROGRAM void pathtrace_camera()
           
             if (prd.depth == 0) {
                 prd.direct_radiance = prd.radiance * prd.attenuation;
+                //printf("radiance : %f %f %f   attenuation : %f %f %f\n", prd.radiance.x, prd.radiance.y, prd.radiance.z, prd.attenuation.x, prd.attenuation.y, prd.attenuation.z);
             }
 
             if(prd.done)
@@ -129,6 +133,8 @@ RT_PROGRAM void pathtrace_camera()
 
             prd.depth++;
             prd.result += prd.radiance * prd.attenuation;
+
+            //printf("radiance : %f %f %f   attenuation : %f %f %f\n", prd.radiance.x, prd.radiance.y, prd.radiance.z, prd.attenuation.x, prd.attenuation.y, prd.attenuation.z);
 
             // Update ray data for the next path segment
             ray_origin = prd.origin;
@@ -159,11 +165,18 @@ RT_PROGRAM void pathtrace_camera()
     {
         float a = 1.0f / (float)frame_number;
         float3 old_color = make_float3(output_buffer[launch_index]);
+        float3 old_direct_color = make_float3(output_direct_buffer[launch_index]);
+        float3 old_indirect_color = make_float3(output_indirect_buffer[launch_index]);
+
         output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
+        output_direct_buffer[launch_index] = make_float4(lerp(old_direct_color, pixel_color_direct, a), 1.0f);
+        output_indirect_buffer[launch_index] = make_float4(lerp(old_indirect_color, pixel_color_indirect, a), 1.0f);
     }
     else
     {
         output_buffer[launch_index] = make_float4(pixel_color, 1.0f);
+        output_direct_buffer[launch_index] = make_float4(pixel_color_direct, 1.0f);
+        output_indirect_buffer[launch_index] = make_float4(pixel_color_indirect, 1.0f);
     }
 }
 
@@ -225,6 +238,7 @@ RT_PROGRAM void closest_hit()
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
     float3 diffuse_color = make_float3(tex2D(diffuse_map1, texcoord.x, texcoord.y));
+    //float3 diffuse_color = make_float3(1.0f);
     current_prd.attenuation = current_prd.attenuation * diffuse_color;
     current_prd.countEmitted = false;
 

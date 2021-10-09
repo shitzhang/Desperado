@@ -89,16 +89,19 @@
 		context->setPrintEnabled(1);
 		context->setPrintBufferSize(4096);
 
-		context["scene_epsilon"]->setFloat(1.e-3f);
-		context["rr_begin_depth"]->setUint(rr_begin_depth);
-		context["sqrt_num_samples"]->setUint(sqrt_num_samples);
 		//Buffer buffer = sutil::createOutputBuffer(context, RT_FORMAT_FLOAT4, width, height, use_pbo);
 		optix::Buffer output_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+		optix::Buffer output_direct_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+		optix::Buffer output_indirect_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+
 		optix::Buffer color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
 		optix::Buffer direct_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
 		optix::Buffer indirect_color_buffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);	
 
 		context["output_buffer"]->set(output_buffer);
+		context["output_direct_buffer"]->set(output_direct_buffer);
+		context["output_indirect_buffer"]->set(output_indirect_buffer);
+
 		context["color_buffer"]->set(color_buffer);
 		context["direct_color_buffer"]->set(direct_color_buffer);
 		context["indirect_color_buffer"]->set(indirect_color_buffer);
@@ -109,8 +112,10 @@
 		context->setExceptionProgram(0, context->createProgramFromPTXString(ptx, "exception"));
 		context->setMissProgram(0, context->createProgramFromPTXString(ptx, "miss"));
 
-		//context["sqrt_num_samples"]->setUint(sqrt_num_samples);
-		context["bad_color"]->setFloat(1000000.0f, 0.0f, 1000000.0f); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.
+		context["scene_epsilon"]->setFloat(1.e-3f);		
+		context["rr_begin_depth"]->setUint(rr_begin_depth);
+		context["sqrt_num_samples"]->setUint(sqrt_num_samples);
+		context["bad_color"]->setFloat(1000000.0f, 0.0f, 1000000.0f); // Super magenta to make sure it doesn't get averaged out in the progressive rendering.		
 		context["bg_color"]->setFloat(optix::make_float3(0.0f));
 	}
 
@@ -144,8 +149,8 @@
 	void setupLights() {
 		// Light buffer
 		Desperado::OptixParallelogramLight light;
-		light.corner = optix::make_float3(0.0f, 800.0f, 0.0f);
-		light.v1 = optix::make_float3(-800.0f, 0.0f, 0.0f);
+		light.corner = optix::make_float3(600.0f, 1000.0f, -100.0f);
+		light.v1 = optix::make_float3(-1200.0f, 0.0f, 0.0f);
 		light.v2 = optix::make_float3(0.0f, 0.0f, 200.0f);
 		light.normal = normalize(cross(light.v1, light.v2));
 		light.emission = optix::make_float3(15.0f, 15.0f, 15.0f);
@@ -168,7 +173,7 @@
 		pgram_bounding_box = context->createProgramFromPTXString(ptx, "bounds");
 		pgram_intersection = context->createProgramFromPTXString(ptx, "intersect");
 
-		const optix::float3 light_em = optix::make_float3(15.0f, 15.0f, 5.0f);
+		const optix::float3 light_em = optix::make_float3(15.0f, 15.0f, 15.0f);
 
 		// Light
 		light_gis.push_back(createParallelogram(light.corner, light.v1, light.v2));
@@ -286,6 +291,10 @@
 		auto colorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
 		auto directColorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
 		auto indirectColorTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+		//test ray tracing
+		auto outputBufTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+		auto outputDirectBufTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
+		auto outputIndirectBufTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
 
 		auto outputTex = Desperado::Texture::create2D(width, height, GL_RGBA32F, GL_RGBA, GL_FLOAT, 1, 0, nullptr);
 
@@ -342,9 +351,17 @@
 				auto directColorBuffer = context["direct_color_buffer"]->getBuffer();
 			    auto indirectColorBuffer = context["indirect_color_buffer"]->getBuffer();
 
+				auto outputBuffer = context["output_buffer"]->getBuffer();
+				auto outputDirectBuffer = context["output_direct_buffer"]->getBuffer();
+				auto outputIndirectBuffer = context["output_indirect_buffer"]->getBuffer();
+
 				optixUtil::displayBufferGL(colorBuffer, colorTex);
 				optixUtil::displayBufferGL(directColorBuffer, directColorTex);
 				optixUtil::displayBufferGL(indirectColorBuffer, indirectColorTex);
+
+				optixUtil::displayBufferGL(outputBuffer, outputBufTex);
+				optixUtil::displayBufferGL(outputDirectBuffer, outputDirectBufTex);
+				optixUtil::displayBufferGL(outputIndirectBuffer, outputIndirectBufTex);
 
 				auto posMeshIdTex = GbufferFbo->getColorTexture(0);
 				auto linearZTex = GbufferFbo->getColorTexture(1);
@@ -365,7 +382,7 @@
 				//renderData["gMeshId"] = meshIDTex;
 				renderData["gEmission"] = emissionTex;
 
-				renderData["color"] = colorTex;
+				renderData["color"] = directColorTex;
 				renderData["directColor"] = directColorTex;
 				renderData["indirectColor"] = indirectColorTex;
 				renderData["output"] = outputTex;
@@ -373,7 +390,7 @@
 				svgfPass->execute(renderData);
 
 				//gamma correction
-				glEnable(GL_FRAMEBUFFER_SRGB);
+				//glEnable(GL_FRAMEBUFFER_SRGB);
 
 				//glActiveTexture(GL_TEXTURE0);
 				screenShader->use();

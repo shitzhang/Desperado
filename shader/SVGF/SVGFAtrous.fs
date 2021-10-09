@@ -139,7 +139,7 @@ void main(){
     {
         for (int xx = -2; xx <= 2; xx++)
         {
-            vec2 p      = TexCoords + vec2(xx, yy) * gStepSize * texelSize;
+            vec2 p      = TexCoords + vec2(xx * texelSizeX, yy * texelSizeY) * gStepSize;
             const bool inside = all(bvec2(p.x >= 0.0 , p.y >= 0.0)) && all(bvec2(p.x <= 1.0 , p.y <= 1.0));
 
             float kernel = kernelWeights[abs(xx)] * kernelWeights[abs(yy)];

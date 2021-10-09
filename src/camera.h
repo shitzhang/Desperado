@@ -30,7 +30,8 @@ namespace Desperado {
     class Camera
     {
     public:
-        //FBO fbo;
+        using SharedPtr = std::shared_ptr<Camera>;
+
         std::shared_ptr<Fbo> pFbo;
         // camera Attributes
         glm::vec3 Position;

@@ -232,6 +232,7 @@ void main()
 
     // temporal integration of illumination
     OutIllumination = mix(prevIllumination,   vec4(illumination,   0), alpha);
+    //OutIllumination = vec4(illumination, 1.0);
     // variance is propagated through the alpha channel
     OutIllumination.a = variance;
     OutMoments = moments;
