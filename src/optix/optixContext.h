@@ -10,19 +10,20 @@
 
 
 namespace Desperado {
-    struct MeshBuffers
-    {
-        optix::Buffer vertices;
-        optix::Buffer indices;
-        //optix::Buffer tri_indices;
-        //optix::Buffer mat_indices;
-        //optix::Buffer positions;
-        //optix::Buffer normals;
-        //optix::Buffer texcoords;
-    };
     class OptixContext {
     public:
-        OptixContext(const std::string& mSampleName, const std::string& mCuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height);
+        using UniquePtr = std::unique_ptr<OptixContext>;
+        struct MeshBuffers
+        {
+            optix::Buffer vertices;
+            optix::Buffer indices;
+            //optix::Buffer tri_indices;
+            //optix::Buffer mat_indices;
+            //optix::Buffer positions;
+            //optix::Buffer normals;
+            //optix::Buffer texcoords;
+        };
+        static UniquePtr create(const std::string& mSampleName, const std::string& mCuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height);
         ~OptixContext();
 
         optix::Buffer getBuffer(std::string bufName);
@@ -37,6 +38,7 @@ namespace Desperado {
         void validate();
         void launch();
     private:
+        OptixContext(const std::string& mSampleName, const std::string& mCuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height);
         std::string mSampleName;
         std::string mCuName;
         std::string getCuFilename(std::string const& name);
@@ -68,6 +70,7 @@ namespace Desperado {
     public:
         inline uint32_t getWidth() const { return m_width; }
         inline uint32_t getHeight() const { return m_height; }
+        inline optix::Context getContext() const { return m_context; }
 
     private:
         optix::Context        m_context = 0;
@@ -93,9 +96,6 @@ namespace Desperado {
         optix::Program        m_any_hit = 0;
         optix::Program		  m_any_hit_shadow = 0;
 
-        optix::Material       m_diffuse_light = 0;
-        optix::Material       m_diffuse = 0;
-
         std::vector<optix::GeometryInstance> m_light_gis;
         std::vector<optix::GeometryInstance> m_gis;
 
@@ -105,13 +105,7 @@ namespace Desperado {
         optix::float3         m_camera_up;
         optix::float3         m_camera_lookat;
         optix::float3         m_camera_eye;
-        optix::Matrix4x4      m_camera_rotate;
-        bool                  m_camera_changed = true;
-        
-        
-    public:
-        //void renderScene(const Scene& scene, const Camera& camera);
-        //void display();
+        optix::Matrix4x4      m_camera_rotate;    
     };
 }
 

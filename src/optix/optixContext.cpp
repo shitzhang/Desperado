@@ -2,6 +2,13 @@
 #include "optixContext.h"
 
 namespace Desperado {
+	OptixContext::UniquePtr OptixContext::create(const std::string& mSampleName, const std::string& mCuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height)
+	{
+		//auto p = std::make_unique<OptixContext>(mSampleName, mCuName, pScene, pCamera, width, height);
+		//return p;
+
+		return UniquePtr(new OptixContext(mSampleName, mCuName, pScene, pCamera, width, height));
+	}
 	OptixContext::OptixContext(const std::string& sampleName, const std::string& cuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height)
 		:mSampleName(sampleName), mCuName(cuName), mpScene(pScene), mpCamera(pCamera), m_width(width), m_height(height)
 	{
@@ -96,12 +103,14 @@ namespace Desperado {
 		light_buffer->unmap();
 		m_context["lights"]->setBuffer(light_buffer);
 
+		optix::Material diffuse_light = m_context->createMaterial();
+		diffuse_light->setClosestHitProgram(0, m_closest_hit_emitter);
 
 		const optix::float3 light_em = optix::make_float3(15.0f, 15.0f, 15.0f);
 
 		// Light
 		m_light_gis.push_back(createParallelogram(light.corner, light.v1, light.v2));
-		m_light_gis.back()->addMaterial(m_diffuse_light);
+		m_light_gis.back()->addMaterial(diffuse_light);
 		m_light_gis.back()["emission_color"]->setFloat(light_em);
 	}
 
@@ -136,6 +145,12 @@ namespace Desperado {
 				g->setIntersectionProgram(m_triangle_intersection);
 				g->setBoundingBoxProgram(m_triangle_bounds);
 
+				auto material = m_context->createMaterial();
+	
+				material->setClosestHitProgram(0, m_closest_hit);
+				material->setAnyHitProgram(0, m_any_hit);
+				material->setAnyHitProgram(1, m_any_hit_shadow);
+
 				unsigned int diffuse_num = 1;
 				//unsigned int specularNr = 1;
 				//unsigned int normalNr = 1;
@@ -166,29 +181,27 @@ namespace Desperado {
 						sampler->setWrapMode(0, RT_WRAP_REPEAT);
 						sampler->setWrapMode(1, RT_WRAP_REPEAT);
 						m_texture_sampler[tex] = sampler;
-						m_diffuse[name + number]->setTextureSampler(sampler);
+						material[name + number]->setTextureSampler(sampler);
 
 					}
 					else {
-						m_diffuse[name + number]->setTextureSampler(p->second);
+						material[name + number]->setTextureSampler(p->second);
 					}
 
 				}
-
 
 				glm::vec3 Kd = p_mesh->mat.Kd;
 				glm::vec3 Ks = p_mesh->mat.Ks;
 				glm::vec3 Ka = p_mesh->mat.Ka;
 				float Shininess = p_mesh->mat.Shininess;
-				m_diffuse["Kd"]->setFloat(optix::make_float3(Kd.r, Kd.g, Kd.b));
-				m_diffuse["Ks"]->setFloat(optix::make_float3(Ks.r, Ks.g, Ks.b));
-				m_diffuse["Ka"]->setFloat(optix::make_float3(Ka.r, Ka.g, Ka.b));
-				m_diffuse["Shininess"]->setFloat(Shininess);
-
+				material["Kd"]->setFloat(optix::make_float3(Kd.r, Kd.g, Kd.b));
+				material["Ks"]->setFloat(optix::make_float3(Ks.r, Ks.g, Ks.b));
+				material["Ka"]->setFloat(optix::make_float3(Ka.r, Ka.g, Ka.b));
+				material["Shininess"]->setFloat(Shininess);
 
 				optix::GeometryInstance geom_instance = m_context->createGeometryInstance();
 				geom_instance->setGeometry(g);
-				geom_instance->addMaterial(m_diffuse);
+				geom_instance->addMaterial(material);
 
 				m_gis.push_back(geom_instance);
 			}
@@ -216,7 +229,7 @@ namespace Desperado {
 	void OptixContext::updateCamera()
 	{
 		const float fov = mpCamera->Zoom;
-		const float aspect_ratio = static_cast<float>(m_width) / static_cast<float>(m_height);
+		//const float aspect_ratio = static_cast<float>(m_width) / static_cast<float>(m_height);
 
 		optix::float3 camera_u, camera_v, camera_w;
 
@@ -228,9 +241,9 @@ namespace Desperado {
 
 		m_camera_eye = optix::make_float3(mpCamera->Position.x, mpCamera->Position.y, mpCamera->Position.z);
 
-		if (m_camera_changed) // reset accumulation
+		if (camera_changed) // reset accumulation
 			m_frame_number = 1;
-		m_camera_changed = false;
+		camera_changed = false;
 
 		m_context["frame_number"]->setUint(m_frame_number++);
 		m_context["eye"]->setFloat(m_camera_eye);
@@ -283,20 +296,14 @@ namespace Desperado {
 		ptx = optixUtil::getPtxString(0, "parallelogram.cu");
 		m_pgram_bounding_box = m_context->createProgramFromPTXString(ptx, "bounds");
 		m_pgram_intersection = m_context->createProgramFromPTXString(ptx, "intersect");
-
-		m_diffuse = m_context->createMaterial();
+	
 		ptx = optixUtil::getPtxString(mSampleName.c_str(), mCuName.c_str());
 		m_closest_hit = m_context->createProgramFromPTXString(ptx, "closest_hit");
 		m_any_hit = m_context->createProgramFromPTXString(ptx, "any_hit");
 		m_any_hit_shadow = m_context->createProgramFromPTXString(ptx, "any_hit_shadow");
-		m_diffuse->setClosestHitProgram(0, m_closest_hit);
-		m_diffuse->setAnyHitProgram(0, m_any_hit);
-		m_diffuse->setAnyHitProgram(1, m_any_hit_shadow);
 
-		m_diffuse_light = m_context->createMaterial();
 		ptx = optixUtil::getPtxString(mSampleName.c_str(), mCuName.c_str());
 		m_closest_hit_emitter = m_context->createProgramFromPTXString(ptx, "closest_hit_emitter");
-		m_diffuse_light->setClosestHitProgram(0, m_closest_hit_emitter);
 	}
 
 	void OptixContext::initSceneGeometry()

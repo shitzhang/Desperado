@@ -4,6 +4,7 @@
 const char* const SAMPLE_NAME = "SVGF";
 unsigned int SCR_WIDTH = 1920;
 unsigned int SCR_HEIGHT = 1080;
+bool         camera_changed = true;
 
 const vector<std::string> skyboxFaces
 {

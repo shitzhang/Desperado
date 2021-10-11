@@ -161,7 +161,7 @@ RT_PROGRAM void pathtrace_camera()
     color_buffer[launch_index] = make_float4(pixel_color, 1.0f);
     //printf("%f\n", pixel_color);
 
-    if (frame_number > 1)
+    /*if (frame_number > 1)
     {
         float a = 1.0f / (float)frame_number;
         float3 old_color = make_float3(output_buffer[launch_index]);
@@ -177,7 +177,7 @@ RT_PROGRAM void pathtrace_camera()
         output_buffer[launch_index] = make_float4(pixel_color, 1.0f);
         output_direct_buffer[launch_index] = make_float4(pixel_color_direct, 1.0f);
         output_indirect_buffer[launch_index] = make_float4(pixel_color_indirect, 1.0f);
-    }
+    }*/
 }
 
 

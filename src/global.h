@@ -16,6 +16,7 @@ using namespace std;
 // settings
 extern unsigned int SCR_WIDTH;
 extern unsigned int SCR_HEIGHT;
+extern bool         camera_changed;
 
 extern const char* const SAMPLE_NAME;
 

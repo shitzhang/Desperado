@@ -30,6 +30,7 @@
 #include "optixUtil.h"
 #include "optixMesh.h"
 #include "optixLight.h"
+#include "optixContext.h"
 
 // Core
 //#include "Core/Sample.h"

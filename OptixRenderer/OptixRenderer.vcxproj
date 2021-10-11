@@ -151,7 +151,7 @@
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\include.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
-    <ClCompile Include="..\src\optix\optixMesh.cpp" />
+    <ClCompile Include="..\src\optix\optixContext.cpp" />
     <ClCompile Include="..\src\optix\optixUtil.cpp" />
     <ClCompile Include="..\src\Passes\FullScreenPass.cpp" />
     <ClCompile Include="..\src\passes\RenderPass.cpp" />
@@ -172,8 +172,8 @@
     <ClInclude Include="..\src\mesh.h" />
     <ClInclude Include="..\src\model.h" />
     <ClInclude Include="..\src\optix\optixConfig.h" />
+    <ClInclude Include="..\src\optix\optixContext.h" />
     <ClInclude Include="..\src\optix\optixLight.h" />
-    <ClInclude Include="..\src\optix\optixMesh.h" />
     <ClInclude Include="..\src\optix\optixUtil.h" />
     <ClInclude Include="..\src\Passes\FullScreenPass.h" />
     <ClInclude Include="..\src\passes\RenderPass.h" />

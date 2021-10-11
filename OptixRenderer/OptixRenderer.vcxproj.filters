@@ -69,9 +69,6 @@
     <ClCompile Include="..\src\Utils\Threading.cpp">
       <Filter>源文件\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\optix\optixMesh.cpp">
-      <Filter>源文件\optix</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\include.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -92,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Passes\SVGFPass.cpp">
       <Filter>源文件\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\optix\optixContext.cpp">
+      <Filter>源文件\optix</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +129,6 @@
       <Filter>源文件\optix</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixLight.h">
-      <Filter>源文件\optix</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\optix\optixMesh.h">
       <Filter>源文件\optix</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixUtil.h">
@@ -187,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="cuda\common.h">
       <Filter>源文件\cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\optix\optixContext.h">
+      <Filter>源文件\optix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
