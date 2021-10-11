@@ -1,7 +1,6 @@
 
 #pragma once
 #include "Core/API/Texture.h"
-#include "Core/API/Formats.h"
 #include <memory>
 #include <glad/glad.h>
 
