@@ -37,6 +37,9 @@ namespace Desperado {
 
         void validate();
         void launch();
+
+        void setContextTextureSampler(const Texture::SharedPtr pTex, const string& name);
+        void createTexIdBuffer(const std::vector<Texture::SharedPtr> textures);
     private:
         OptixContext(const std::string& mSampleName, const std::string& mCuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height);
         std::string mSampleName;
@@ -58,8 +61,8 @@ namespace Desperado {
         optix::Geometry getMeshGeometry(const shared_ptr<Mesh> mesh);
 
         optix::TextureSampler getTextureSampler(const Texture::SharedPtr pTex);
-        optix::TextureSampler getEmptySampler();
-
+        optix::TextureSampler getEmptySampler();       
+        optix::TextureSampler addTextureSampler(const Texture::SharedPtr pTex);
 
     private:
         void initProgram();

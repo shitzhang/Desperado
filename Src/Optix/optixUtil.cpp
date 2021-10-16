@@ -185,7 +185,7 @@
     {
         std::vector<std::string> source_locations;
 
-        std::string base_dir = std::filesystem::current_path().string() + "\\cuda";
+        std::string base_dir = std::filesystem::current_path().string() + "\\Cuda";
         //std::string base_dir = std::string(CUDA_DIR);
 
         // Potential source locations (in priority order)

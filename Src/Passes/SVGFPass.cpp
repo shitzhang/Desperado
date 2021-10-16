@@ -31,7 +31,7 @@ namespace Desperado {
         // Input buffer names
         const char kInputBufferAlbedo[] = "gAlbedo";
         const char kInputBufferEmission[] = "gEmission";
-        const char kInputBufferWorldPosition[] = "gPositionMeshId";
+        const char kInputBufferWorldPosition[] = "gPosition";
         const char kInputBufferWorldNormal[] = "gNormal";
         const char kInputBufferPosNormalFwidth[] = "gPositionNormalFwidth";
         const char kInputBufferLinearZ[] = "gLinearZ";
@@ -148,11 +148,13 @@ namespace Desperado {
             // estimate its variance, storing the result into a float4 in
             // mpPingPongFbo[0].  Takes mpCurReprojFbo as input.
             computeFilteredMoments();
+            //Fbo::blit(mpPingPongFbo[0], 0, pOutputTexture);
 
             // Filter illumination from mpCurReprojFbo[0], storing the result
             // in mpPingPongFbo[0].  Along the way (or at the end, depending on
             // the value of mFeedbackTap), save the filtered illumination for
             // next time into mpFilteredPastFbo.
+            
             computeAtrousDecomposition(pAlbedoTexture);
 
             // Compute albedo * filtered illumination and add emission back in.

@@ -75,16 +75,25 @@ int main()
 	auto SVGFGbufferShader = std::make_shared<Desperado::Shader>("../shader/SVGF/SVGFGbuffer.vs", "../shader/SVGF/SVGFGbuffer.fs");
 
 	Desperado::Fbo::Desc GbufferDesc;
-	GbufferDesc.setColorTarget(0, GL_RGBA32F, GL_RGBA);			// gPositionMeshId
+	GbufferDesc.setColorTarget(0, GL_RGBA32F, GL_RGB);			// gPosition
 	GbufferDesc.setColorTarget(1, GL_RG32F, GL_RG);				// gLinearZ
-	GbufferDesc.setColorTarget(2, GL_RGB32F, GL_RGB);			// gNormal
+	GbufferDesc.setColorTarget(2, GL_RGBA32F, GL_RGB);			// gNormal
 	GbufferDesc.setColorTarget(3, GL_RG32F, GL_RG);			// gPositionNormalFwidth
-	GbufferDesc.setColorTarget(4, GL_RGB32F, GL_RGB);			// gAlbedo
+	GbufferDesc.setColorTarget(4, GL_RGBA32F, GL_RGB);			// gAlbedo
 	GbufferDesc.setColorTarget(5, GL_RG32F, GL_RG);				// gMotion
 	//GbufferDesc.setColorTarget(6, GL_R32F, GL_R);				// gMeshId
 	GbufferDesc.setColorTarget(7, GL_RGB32F, GL_RGB);			// gEmission
 	GbufferDesc.setDepthStencilTarget(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT);
 	auto GbufferFbo = Desperado::Fbo::create2D(SCR_WIDTH, SCR_HEIGHT, GbufferDesc);
+
+	auto posTex = GbufferFbo->getColorTexture(0);
+	auto linearZTex = GbufferFbo->getColorTexture(1);
+	auto normalTex = GbufferFbo->getColorTexture(2);
+	auto posNormalFwidthTex = GbufferFbo->getColorTexture(3);
+	auto albedoTex = GbufferFbo->getColorTexture(4);
+	auto motionTex = GbufferFbo->getColorTexture(5);
+	//auto meshIDTex = GbufferFbo->getColorTexture(6);
+	auto emissionTex = GbufferFbo->getColorTexture(7);
 
 	auto screenDisplayPass = Desperado::FullScreenPass::create();
 
@@ -101,6 +110,10 @@ int main()
 	auto svgfPass = Desperado::SVGFPass::create();
 	auto pOptixContext = Desperado::OptixContext::create("SVGF", "optixSVGF.cu", pScene, camera, SCR_WIDTH, SCR_HEIGHT);
 
+	pOptixContext->setContextTextureSampler(posTex, "world_pos_tex");
+	pOptixContext->setContextTextureSampler(normalTex, "world_normal_tex");
+	pOptixContext->setContextTextureSampler(albedoTex, "albedo_tex");
+
 	try {
 		pOptixContext->validate();
 
@@ -113,9 +126,7 @@ int main()
 
 			processInput(window);
 
-			pOptixContext->updateCamera();
-			pOptixContext->launch();
-			//glBindFramebuffer(GL_FRAMEBUFFER, GbufferFbo->getId());
+			//Gbuffer
 			GbufferFbo->bind();
 
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -125,33 +136,27 @@ int main()
 			SVGFGbufferShader->use();
 			pScene->DrawModels(SVGFGbufferShader);
 
+			pOptixContext->updateCamera();			
+			pOptixContext->launch();
+			
 			auto colorBuffer = pOptixContext->getBuffer("color_buffer");
 			auto directColorBuffer = pOptixContext->getBuffer("direct_color_buffer");
 			auto indirectColorBuffer = pOptixContext->getBuffer("indirect_color_buffer");
 
-			/*auto outputBuffer = pOptixContext->getBuffer("output_buffer");
+			auto outputBuffer = pOptixContext->getBuffer("output_buffer");
 			auto outputDirectBuffer = pOptixContext->getBuffer("output_direct_buffer");
-			auto outputIndirectBuffer = pOptixContext->getBuffer("output_indirect_buffer");*/
+			auto outputIndirectBuffer = pOptixContext->getBuffer("output_indirect_buffer");
 
 			optixUtil::displayBufferGL(colorBuffer, colorTex);
 			optixUtil::displayBufferGL(directColorBuffer, directColorTex);
 			optixUtil::displayBufferGL(indirectColorBuffer, indirectColorTex);
 
-			/*optixUtil::displayBufferGL(outputBuffer, outputBufTex);
+			optixUtil::displayBufferGL(outputBuffer, outputBufTex);
 			optixUtil::displayBufferGL(outputDirectBuffer, outputDirectBufTex);
-			optixUtil::displayBufferGL(outputIndirectBuffer, outputIndirectBufTex);*/
-
-			auto posMeshIdTex = GbufferFbo->getColorTexture(0);
-			auto linearZTex = GbufferFbo->getColorTexture(1);
-			auto normalTex = GbufferFbo->getColorTexture(2);
-			auto posNormalFwidthTex = GbufferFbo->getColorTexture(3);
-			auto albedoTex = GbufferFbo->getColorTexture(4);
-			auto motionTex = GbufferFbo->getColorTexture(5);
-			//auto meshIDTex = GbufferFbo->getColorTexture(6);
-			auto emissionTex = GbufferFbo->getColorTexture(7);
+			optixUtil::displayBufferGL(outputIndirectBuffer, outputIndirectBufTex);
 
 			auto renderData = Desperado::RenderData("SVGF", nullptr);
-			renderData["gPositionMeshId"] = posMeshIdTex;
+			renderData["gPosition"] = posTex;
 			renderData["gLinearZ"] = linearZTex;
 			renderData["gNormal"] = normalTex;
 			renderData["gPositionNormalFwidth"] = posNormalFwidthTex;
@@ -160,7 +165,7 @@ int main()
 			//renderData["gMeshId"] = meshIDTex;
 			renderData["gEmission"] = emissionTex;
 
-			renderData["color"] = colorTex;
+			renderData["color"] = indirectColorTex;
 			renderData["directColor"] = directColorTex;
 			renderData["indirectColor"] = indirectColorTex;
 			renderData["output"] = outputTex;
@@ -191,7 +196,7 @@ int main()
 		glfwTerminate();
 	}
 	OPTIXUTIL_CATCH(pOptixContext->getContext()->get())
-		return 0;
+	return 0;
 }
 
 

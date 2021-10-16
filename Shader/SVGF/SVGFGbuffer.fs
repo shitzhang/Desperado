@@ -1,9 +1,9 @@
 #version 460 core
-layout (location = 0) out vec4 gPositionMeshId;
+layout (location = 0) out vec4 gPosition;
 layout (location = 1) out vec2 gLinearZ;
-layout (location = 2) out vec3 gNormal;
+layout (location = 2) out vec4 gNormal;
 layout (location = 3) out vec2 gPositionNormalFwidth;
-layout (location = 4) out vec3 gAlbedo;
+layout (location = 4) out vec4 gAlbedo;
 layout (location = 5) out vec2 gMotion;
 //layout (location = 6) out uint gMeshId;
 layout (location = 7) out vec3 gEmission;
@@ -67,11 +67,11 @@ void main()
     vec4 color = texture(diffuse_map1, TexCoords);
     if(color.a < 0.1)
         discard;
-    gPositionMeshId = vec4(FragPos,1.0);
+    gPosition = vec4(FragPos, 1.0);
     gLinearZ = vec2(gl_FragCoord.z , fwidth(gl_FragCoord.z));
-    gNormal = normalize(Normal);
+    gNormal = vec4(normalize(Normal), 1.0);
     gPositionNormalFwidth = vec2(length(fwidth(FragPos)), length(fwidth(Normal)));
-    gAlbedo = color.rgb;
+    gAlbedo = vec4(color.rgb, 1.0);
     gMotion = calcMotionVector();
     gEmission = vec3(0.0);
 }  

@@ -13,17 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="源文件\shader">
-      <UniqueIdentifier>{279d2506-60d5-4d11-a073-0145b94ee9c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\passes">
-      <UniqueIdentifier>{280c23fb-3de6-44db-8636-758b66988f7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Utils">
       <UniqueIdentifier>{420b75ef-68c2-4245-83f2-f47a2eba708a}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Utils\Math">
       <UniqueIdentifier>{30c8e633-d603-4817-b0aa-3f5f25ba5b05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Passes">
+      <UniqueIdentifier>{280c23fb-3de6-44db-8636-758b66988f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shader">
+      <UniqueIdentifier>{279d2506-60d5-4d11-a073-0145b94ee9c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -83,16 +83,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shader\diffuse.fs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
     <None Include="..\shader\diffuse.vs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
     <None Include="..\shader\framebuffers_screen.fs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
     <None Include="..\shader\framebuffers_screen.vs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

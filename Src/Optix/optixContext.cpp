@@ -9,14 +9,28 @@ namespace Desperado {
 
 		return UniquePtr(new OptixContext(mSampleName, mCuName, pScene, pCamera, width, height));
 	}
+	void OptixContext::createTexIdBuffer(const std::vector<Texture::SharedPtr> textures)
+	{
+		optix::Buffer texIdBuffer = m_context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT, textures.size());
+
+		void* data = texIdBuffer->map();
+		for (int i = 0; i < textures.size(); i++) {
+			((int*)data)[i] = (int)(textures[i]->getId());
+		}
+		texIdBuffer->unmap();
+		m_context["tex_id_buffer"]->set(texIdBuffer);
+	}
+
 	OptixContext::OptixContext(const std::string& sampleName, const std::string& cuName, Scene::SharedPtr pScene, Camera::SharedPtr pCamera, uint32_t width, uint32_t height)
 		:mSampleName(sampleName), mCuName(cuName), mpScene(pScene), mpCamera(pCamera), m_width(width), m_height(height)
 	{
-		createContext();
-		initProgram();
-		setupLights();
-		loadGeometry();
-		setupCamera();
+		try {
+			createContext();
+			initProgram();
+			setupLights();
+			loadGeometry();
+			setupCamera();
+		}OPTIXUTIL_CATCH(m_context->get())
 	}
 
 	OptixContext::~OptixContext()
@@ -73,7 +87,7 @@ namespace Desperado {
 
 		// Setup programs
 		const char* ptx = optixUtil::getPtxString(mSampleName.c_str(), mCuName.c_str());
-		m_context->setRayGenerationProgram(0, m_context->createProgramFromPTXString(ptx, "pathtrace_camera"));
+		m_context->setRayGenerationProgram(0, m_context->createProgramFromPTXString(ptx, "pathtrace_Gbuffer"));
 		m_context->setExceptionProgram(0, m_context->createProgramFromPTXString(ptx, "exception"));
 		m_context->setMissProgram(0, m_context->createProgramFromPTXString(ptx, "miss"));
 
@@ -175,19 +189,8 @@ namespace Desperado {
 					//	number = std::to_string(heightNr++); // transfer unsigned int to stream
 
 					auto tex = p_mesh->textures[i];
-					auto p = m_texture_sampler.find(tex);
-					if (p == m_texture_sampler.end()) {
-						optix::TextureSampler sampler = m_context->createTextureSamplerFromGLImage(tex->getId(), RT_TARGET_GL_TEXTURE_2D);
-						sampler->setWrapMode(0, RT_WRAP_REPEAT);
-						sampler->setWrapMode(1, RT_WRAP_REPEAT);
-						m_texture_sampler[tex] = sampler;
-						material[name + number]->setTextureSampler(sampler);
-
-					}
-					else {
-						material[name + number]->setTextureSampler(p->second);
-					}
-
+					auto ts = addTextureSampler(tex);
+					material[name + number]->setTextureSampler(ts);
 				}
 
 				glm::vec3 Kd = p_mesh->mat.Kd;
@@ -285,6 +288,28 @@ namespace Desperado {
 		optix::GeometryInstance gi = m_context->createGeometryInstance();
 		gi->setGeometry(parallelogram);
 		return gi;
+	}
+
+	optix::TextureSampler OptixContext::addTextureSampler(const Texture::SharedPtr pTex)
+	{
+		auto p = m_texture_sampler.find(pTex);
+		if (p == m_texture_sampler.end()) {
+			optix::TextureSampler sampler = m_context->createTextureSamplerFromGLImage(pTex->getId(), RT_TARGET_GL_TEXTURE_2D);
+			sampler->setWrapMode(0, RT_WRAP_REPEAT);
+			sampler->setWrapMode(1, RT_WRAP_REPEAT);
+			sampler->setFilteringModes(RT_FILTER_NEAREST, RT_FILTER_NEAREST, RT_FILTER_NONE);
+			m_texture_sampler[pTex] = sampler;		
+		}
+		return m_texture_sampler[pTex];
+	}
+
+	void OptixContext::setContextTextureSampler(const Texture::SharedPtr pTex, const string& name) 
+	{
+		optix::TextureSampler ts = m_context->createTextureSamplerFromGLImage(pTex->getId(), RT_TARGET_GL_TEXTURE_2D);
+		ts->setWrapMode(0, RT_WRAP_REPEAT);
+		ts->setWrapMode(1, RT_WRAP_REPEAT);
+		ts->setFilteringModes(RT_FILTER_NEAREST, RT_FILTER_NEAREST, RT_FILTER_NONE);
+		m_context[name]->setTextureSampler(ts);
 	}
 
 	void OptixContext::initProgram()

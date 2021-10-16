@@ -110,6 +110,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\third\glfw-3.3.4\include;..\third\glm;..\third\glad\include;..\third\assimp-5.0.1\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;..\src;..\src\passes;$(IncludePath)</IncludePath>
     <LibraryPath>..\third\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>.\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

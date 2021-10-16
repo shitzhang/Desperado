@@ -1,5 +1,8 @@
-#include "optixSVGF.h"
+
+#include <optixu/optixu_math_namespace.h>
+#include <optixu/optixu_matrix_namespace.h>
 #include "../common.h"
+#include "optixPathTracer.h"
 #include "../random.h"
 
 using namespace optix;
@@ -11,8 +14,6 @@ struct PerRayData_pathtrace
     float3 attenuation;
     float3 origin;
     float3 direction;
-    float3 direct_radiance;
-    float3 indirect_radiance;
     unsigned int seed;
     int depth;
     int countEmitted;
@@ -51,14 +52,7 @@ rtDeclareVariable(unsigned int,  sqrt_num_samples, , );
 rtDeclareVariable(unsigned int,  rr_begin_depth, , );
 
 rtBuffer<float4, 2>              output_buffer;
-rtBuffer<float4, 2>              output_direct_buffer;
-rtBuffer<float4, 2>              output_indirect_buffer;
-
 rtBuffer<ParallelogramLight>     lights;
-
-rtBuffer<float4, 2>              direct_color_buffer;
-rtBuffer<float4, 2>              indirect_color_buffer;
-rtBuffer<float4, 2>              color_buffer;
 
 
 RT_PROGRAM void pathtrace_camera()
@@ -70,10 +64,7 @@ RT_PROGRAM void pathtrace_camera()
 
     float2 jitter_scale = inv_screen / sqrt_num_samples;
     unsigned int samples_per_pixel = sqrt_num_samples*sqrt_num_samples;
-
     float3 result = make_float3(0.0f);
-    float3 result_direct = make_float3(0.0f);
-    float3 result_indirect = make_float3(0.0f);
 
     unsigned int seed = tea<16>(screen.x*launch_index.y+launch_index.x, frame_number);
     while(samples_per_pixel--)
@@ -87,8 +78,8 @@ RT_PROGRAM void pathtrace_camera()
         //printf("samples %u xy %u %u\n\n", samples_per_pixel, x, y);
         //printf("Hello from index %u, %u!\n", launch_index.x, launch_index.y);
         //printf("jitter %f\n%f\n\n",x - rnd(seed), y - rnd(seed));
-        //float2 jitter = make_float2(x+rnd(seed), y+rnd(seed));
-        float2 jitter = make_float2(x+0.5, y+0.5);
+        float2 jitter = make_float2(x+rnd(seed), y+rnd(seed));
+        //float2 jitter = make_float2(x+0.5, y+0.5);
         
         float2 d = pixel + jitter*jitter_scale;
         float3 ray_origin = eye;
@@ -110,10 +101,6 @@ RT_PROGRAM void pathtrace_camera()
             Ray ray = make_Ray(ray_origin, ray_direction, RADIANCE_RAY_TYPE, scene_epsilon, RT_DEFAULT_MAX);
             rtTrace(top_object, ray, prd);
           
-            if (prd.depth == 0) {
-                prd.direct_radiance = prd.radiance * prd.attenuation;
-                //printf("radiance : %f %f %f   attenuation : %f %f %f\n", prd.radiance.x, prd.radiance.y, prd.radiance.z, prd.attenuation.x, prd.attenuation.y, prd.attenuation.z);
-            }
 
             if(prd.done)
             {
@@ -134,18 +121,12 @@ RT_PROGRAM void pathtrace_camera()
             prd.depth++;
             prd.result += prd.radiance * prd.attenuation;
 
-            //printf("radiance : %f %f %f   attenuation : %f %f %f\n", prd.radiance.x, prd.radiance.y, prd.radiance.z, prd.attenuation.x, prd.attenuation.y, prd.attenuation.z);
-
             // Update ray data for the next path segment
             ray_origin = prd.origin;
             ray_direction = prd.direction;
         }
 
-        prd.indirect_radiance = prd.result - prd.direct_radiance;
-
         result += prd.result;
-        result_direct += prd.direct_radiance;
-        result_indirect += prd.indirect_radiance;
         seed = prd.seed;
     }
 
@@ -153,31 +134,18 @@ RT_PROGRAM void pathtrace_camera()
     // Update the output buffer
     //
     float3 pixel_color = result/(sqrt_num_samples*sqrt_num_samples);
-    float3 pixel_color_direct = result_direct / (sqrt_num_samples * sqrt_num_samples);
-    float3 pixel_color_indirect = result_indirect / (sqrt_num_samples * sqrt_num_samples);
 
-    direct_color_buffer[launch_index] = make_float4(pixel_color_direct, 1.0f);
-    indirect_color_buffer[launch_index] = make_float4(pixel_color_indirect, 1.0f);
-    color_buffer[launch_index] = make_float4(pixel_color, 1.0f);
-    //printf("%f\n", pixel_color);
-
-    /*if (frame_number > 1)
+    if (frame_number > 1)
     {
         float a = 1.0f / (float)frame_number;
         float3 old_color = make_float3(output_buffer[launch_index]);
-        float3 old_direct_color = make_float3(output_direct_buffer[launch_index]);
-        float3 old_indirect_color = make_float3(output_indirect_buffer[launch_index]);
-
         output_buffer[launch_index] = make_float4( lerp( old_color, pixel_color, a ), 1.0f );
-        output_direct_buffer[launch_index] = make_float4(lerp(old_direct_color, pixel_color_direct, a), 1.0f);
-        output_indirect_buffer[launch_index] = make_float4(lerp(old_indirect_color, pixel_color_indirect, a), 1.0f);
+        //printf("%f\n", output_buffer[launch_index].x);
     }
     else
     {
         output_buffer[launch_index] = make_float4(pixel_color, 1.0f);
-        output_direct_buffer[launch_index] = make_float4(pixel_color_direct, 1.0f);
-        output_indirect_buffer[launch_index] = make_float4(pixel_color_indirect, 1.0f);
-    }*/
+    }
 }
 
 
@@ -208,7 +176,6 @@ rtTextureSampler<float4, 2>   diffuse_map1;
 rtDeclareVariable(float3,     geometric_normal, attribute geometric_normal, );
 rtDeclareVariable(float3,     shading_normal,   attribute shading_normal, );
 rtDeclareVariable(float2,     texcoord,         attribute texcoord, ); 
-rtDeclareVariable(uint,       mesh_id,          attribute mesh_id, );
 
 rtDeclareVariable(optix::Ray, ray,              rtCurrentRay, );
 rtDeclareVariable(float,      t_hit,            rtIntersectionDistance, );
@@ -238,7 +205,6 @@ RT_PROGRAM void closest_hit()
     // NOTE: f/pdf = 1 since we are perfectly importance sampling lambertian
     // with cosine density.
     float3 diffuse_color = make_float3(tex2D(diffuse_map1, texcoord.x, texcoord.y));
-    //float3 diffuse_color = make_float3(1.0f);
     current_prd.attenuation = current_prd.attenuation * diffuse_color;
     current_prd.countEmitted = false;
 
@@ -269,6 +235,7 @@ RT_PROGRAM void closest_hit()
             shadow_prd.inShadow = false;
             // Note: bias both ends of the shadow ray, in case the light is also present as geometry in the scene.
             Ray shadow_ray = make_Ray( hitpoint, L, SHADOW_RAY_TYPE, scene_epsilon, Ldist - scene_epsilon );
+            //top_shadower is not used.
             rtTrace(top_object, shadow_ray, shadow_prd);
 
             if(!shadow_prd.inShadow)

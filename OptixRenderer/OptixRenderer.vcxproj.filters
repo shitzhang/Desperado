@@ -13,15 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="源文件\cuda">
-      <UniqueIdentifier>{e184bce5-919c-43f5-a790-dbe5893d7ed6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\shader">
-      <UniqueIdentifier>{094cfccd-012f-4b7d-9a58-621ce397bf64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\optix">
-      <UniqueIdentifier>{eee6ee63-2856-4070-9ada-309ba5cf65d8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Utils">
       <UniqueIdentifier>{9722b897-d318-4e7d-8306-341425b7e661}</UniqueIdentifier>
     </Filter>
@@ -37,23 +28,29 @@
     <Filter Include="源文件\Passes">
       <UniqueIdentifier>{a8a16364-c5d7-4c4e-91d4-69465e560103}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\cuda\SVGF">
+    <Filter Include="源文件\Cuda">
+      <UniqueIdentifier>{e184bce5-919c-43f5-a790-dbe5893d7ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Cuda\SVGF">
       <UniqueIdentifier>{7496df7b-4ad8-4b92-97d3-747b0fe623bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\cuda\PathTracer">
+    <Filter Include="源文件\Cuda\PathTracer">
       <UniqueIdentifier>{da5c6786-3588-4d5a-b081-cfd6858bb1a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\cuda\MeshViewer">
+    <Filter Include="源文件\Cuda\MeshViewer">
       <UniqueIdentifier>{7f4bf3fc-681e-48b8-81ce-c67656626a46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\shader\SVGF">
+    <Filter Include="源文件\Optix">
+      <UniqueIdentifier>{eee6ee63-2856-4070-9ada-309ba5cf65d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shader">
+      <UniqueIdentifier>{094cfccd-012f-4b7d-9a58-621ce397bf64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shader\SVGF">
       <UniqueIdentifier>{e2326c98-2aff-4b89-9940-f86b54e1525a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -61,7 +58,7 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\optix\optixUtil.cpp">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
     </ClCompile>
     <ClCompile Include="..\src\stdafx.cpp">
       <Filter>源文件</Filter>
@@ -91,12 +88,15 @@
       <Filter>源文件\Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\src\optix\optixContext.cpp">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glad.c">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cuda\helpers.h">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\src\camera.h">
       <Filter>源文件</Filter>
@@ -126,13 +126,13 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixConfig.h">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixLight.h">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixUtil.h">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utils\Math\Vector.h">
       <Filter>源文件\Utils\Math</Filter>
@@ -165,16 +165,16 @@
       <Filter>源文件\Passes</Filter>
     </ClInclude>
     <ClInclude Include="cuda\PathTracer\optixPathTracer.h">
-      <Filter>源文件\cuda\PathTracer</Filter>
+      <Filter>源文件\Cuda\PathTracer</Filter>
     </ClInclude>
     <ClInclude Include="cuda\MeshViewer\phong.h">
-      <Filter>源文件\cuda\MeshViewer</Filter>
+      <Filter>源文件\Cuda\MeshViewer</Filter>
     </ClInclude>
     <ClInclude Include="cuda\random.h">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </ClInclude>
     <ClInclude Include="cuda\SVGF\optixSVGF.h">
-      <Filter>源文件\cuda\SVGF</Filter>
+      <Filter>源文件\Cuda\SVGF</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Passes\FullScreenPass.h">
       <Filter>源文件\Passes</Filter>
@@ -183,54 +183,54 @@
       <Filter>源文件\Passes</Filter>
     </ClInclude>
     <ClInclude Include="cuda\common.h">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\src\optix\optixContext.h">
-      <Filter>源文件\optix</Filter>
+      <Filter>源文件\Optix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\optixGeometryTriangles.cu">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </None>
     <None Include="cuda\triangle_mesh.cu">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </None>
     <None Include="..\shader\framebuffers_screen.fs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
     <None Include="..\shader\framebuffers_screen.vs">
-      <Filter>源文件\shader</Filter>
+      <Filter>源文件\Shader</Filter>
     </None>
     <None Include="cuda\PathTracer\optixPathTracer.cu">
-      <Filter>源文件\cuda\PathTracer</Filter>
+      <Filter>源文件\Cuda\PathTracer</Filter>
     </None>
     <None Include="cuda\MeshViewer\phong.cu">
-      <Filter>源文件\cuda\MeshViewer</Filter>
+      <Filter>源文件\Cuda\MeshViewer</Filter>
     </None>
     <None Include="cuda\MeshViewer\pinhole_camera.cu">
-      <Filter>源文件\cuda\MeshViewer</Filter>
+      <Filter>源文件\Cuda\MeshViewer</Filter>
     </None>
     <None Include="cuda\parallelogram.cu">
-      <Filter>源文件\cuda</Filter>
+      <Filter>源文件\Cuda</Filter>
     </None>
     <None Include="cuda\SVGF\optixSVGF.cu">
-      <Filter>源文件\cuda\SVGF</Filter>
+      <Filter>源文件\Cuda\SVGF</Filter>
     </None>
     <None Include="..\shader\SVGF\SVGFAtrous.fs">
-      <Filter>源文件\shader\SVGF</Filter>
+      <Filter>源文件\Shader\SVGF</Filter>
     </None>
     <None Include="..\shader\SVGF\SVGFFilterMoments.fs">
-      <Filter>源文件\shader\SVGF</Filter>
+      <Filter>源文件\Shader\SVGF</Filter>
     </None>
     <None Include="..\shader\SVGF\SVGFFinalModulate.fs">
-      <Filter>源文件\shader\SVGF</Filter>
+      <Filter>源文件\Shader\SVGF</Filter>
     </None>
     <None Include="..\shader\SVGF\SVGFpackLinearZAndNormal.fs">
-      <Filter>源文件\shader\SVGF</Filter>
+      <Filter>源文件\Shader\SVGF</Filter>
     </None>
     <None Include="..\shader\SVGF\SVGFReproject.fs">
-      <Filter>源文件\shader\SVGF</Filter>
+      <Filter>源文件\Shader\SVGF</Filter>
     </None>
   </ItemGroup>
 </Project>

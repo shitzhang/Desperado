@@ -210,6 +210,7 @@ void main()
     bool success = loadPrevData(TexCoords, prevIllumination, prevMoments, historyLength);
     historyLength = min(32.0f, success ? historyLength + 1.0f : 1.0f);
 
+
     // this adjusts the alpha for the case where insufficient history is available.
     // It boosts the temporal accumulation to give the samples equal weights in
     // the beginning.
@@ -236,5 +237,6 @@ void main()
     // variance is propagated through the alpha channel
     OutIllumination.a = variance;
     OutMoments = moments;
+
     OutHistoryLength = historyLength;
 }
