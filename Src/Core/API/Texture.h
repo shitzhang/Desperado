@@ -68,7 +68,7 @@ namespace Desperado
         static SharedPtr create2D(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
         static SharedPtr create3D(uint32_t width, uint32_t height, uint32_t depth, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t mipLevels = 0, const void* pInitData = nullptr);
         static SharedPtr createCube(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, uint32_t arraySize = 1, uint32_t mipLevels = 0, const void* pInitData = nullptr);
-        static SharedPtr createFromFile(const std::string& path, const string& directory, bool loadAsSrgb, GLenum dataFormat = GL_UNSIGNED_BYTE);
+        static SharedPtr createFromFile(const std::string& path, const std::string& directory, bool loadAsSrgb, GLenum dataFormat = GL_UNSIGNED_BYTE);
         static SharedPtr createConstant(const unsigned char* color, bool loadAsSrgb, GLenum dataFormat = GL_UNSIGNED_BYTE);
         static SharedPtr createFromPBO(uint32_t width, uint32_t height, GLenum internalFormat, GLenum format, GLenum dataFormat, const uint32_t pboId, uint32_t arraySize = 1, uint32_t mipLevels = 0);
 
@@ -81,6 +81,8 @@ namespace Desperado
         const std::string& getPath() const { return mPath; }
 
         uint64_t getTexelCount() const;
+
+    	void writeToFile(std::string filename);
 
     protected:
         Texture(uint32_t width, uint32_t height, uint32_t depth, uint32_t arraySize, uint32_t mipLevels, uint32_t sampleCount, GLenum internalFormat,GLenum format, GLenum type);

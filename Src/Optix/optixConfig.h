@@ -1,10 +1,10 @@
 #pragma once
 
 
-//#define CUDA_DIR "F:/Project/DesperadoRenderer/OptixRenderer/cuda"
+#define CUDA_DIR "..\\Cuda"
 //#define PTX_DIR "F:/Project/DesperadoRenderer/OptixRenderer/ptx"
-//
-// // Include directories
+
+// Include directories
 //#define SAMPLES_RELATIVE_INCLUDE_DIRS \
 //  "/sutil", \
 //  "/cuda", 

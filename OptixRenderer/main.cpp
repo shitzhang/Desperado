@@ -8,7 +8,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // camera
-shared_ptr<Desperado::Camera> camera = make_shared<Desperado::Camera>(glm::vec3(.0f, 10.0f, .0f), glm::vec3(0.0f, 1.0f, 0.0f), 90.0f);
+shared_ptr<Desperado::Camera> camera = make_shared<Desperado::Camera>(glm::vec3(-500.0f, 700.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, -10.0f);
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -114,6 +114,8 @@ int main()
 	pOptixContext->setContextTextureSampler(normalTex, "world_normal_tex");
 	pOptixContext->setContextTextureSampler(albedoTex, "albedo_tex");
 
+	float lastScreenShotTime = 0.0f;
+
 	try {
 		pOptixContext->validate();
 
@@ -165,7 +167,7 @@ int main()
 			//renderData["gMeshId"] = meshIDTex;
 			renderData["gEmission"] = emissionTex;
 
-			renderData["color"] = indirectColorTex;
+			renderData["color"] = colorTex;
 			renderData["directColor"] = directColorTex;
 			renderData["indirectColor"] = indirectColorTex;
 			renderData["output"] = outputTex;
@@ -175,11 +177,8 @@ int main()
 			//gamma correction
 			//glEnable(GL_FRAMEBUFFER_SRGB);
 
-			//glActiveTexture(GL_TEXTURE0);
 			screenShader->use();
-			//screenShader->setInt("screenTexture", 0);
 			screenShader->setTexture2D("screenTexture", outputTex);
-			//albedoTex->bind();
 
 			{
 				static unsigned frame_count = 0;

@@ -4,7 +4,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "stb_image.h"
 #include "global.h"
 #include "shader.h"
 #include "scene.h"
@@ -20,18 +19,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
-unsigned int loadTexture(char const* path);
-unsigned int loadCubemap(vector<std::string> faces);
-void renderQuad();
+
+void renderSphere();
 
 // camera
-shared_ptr<Camera> camera = make_shared<Camera>(glm::vec3(0.0f, 0.0f, 0.0f));
+shared_ptr<Desperado::Camera> camera = make_shared<Desperado::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-
-float heightScale = 0.1;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -79,86 +75,35 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	
-	auto shader = make_shared<Shader>("../shader/normal_mapping.vs", "../shader/normal_mapping.fs");
+	auto shader = make_shared<Desperado::Shader>("../shader/PBR/PBR.vs", "../shader/PBR/PBR.fs");
 
-	//unsigned int diffuseMap = loadTexture("../textures/bricks2.jpg");
-	//unsigned int normalMap = loadTexture("../textures/bricks2_normal.jpg");
-	//unsigned int heightMap = loadTexture("../textures/bricks2_disp.jpg");
-	//unsigned int diffuseMap = loadTexture("../textures/toy_box_diffuse.png");
-	//unsigned int normalMap = loadTexture("../textures/toy_box_normal.png");
-	//unsigned int heightMap = loadTexture("../textures/toy_box_disp.png");
+	shader->use();
+	shader->setVec3("albedo", 0.5f, 0.0f, 0.0f);
+	shader->setFloat("ao", 1.0f);
 
-	//shader->use();
-	//shader->setInt("diffuseMap", 0);
-	//shader->setInt("normalMap", 1);
-	//shader->setInt("depthMap", 2);
+	// lights
+	// ------
+	glm::vec3 lightPositions[] = {
+		glm::vec3(-10.0f,  10.0f, 10.0f),
+		glm::vec3(10.0f,  10.0f, 10.0f),
+		glm::vec3(-10.0f, -10.0f, 10.0f),
+		glm::vec3(10.0f, -10.0f, 10.0f),
+	};
+	glm::vec3 lightColors[] = {
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f)
+	};
+	int nrRows = 7;
+	int nrColumns = 7;
+	float spacing = 2.5;
 
-	glm::vec3 lightPos(0.0f, 100.0f, 0.0f);
-
-	//camera->pFbo = make_shared<FBO>();
-
-	//glm::vec3 lightRadiance = glm::vec3(1.0, 1.0, 1.0);
-	//glm::vec3 lightPos = glm::vec3(0.0, 80.0, 80.0);
-
-	//glm::vec3 lightDir = glm::vec3(0.0, -80.0, -80.0);
-
-	//glm::vec3 lightUp = glm::vec3(0.0, 1.0, 0.0);
-
-	//TRStransform lightTrans = TRStransform(lightPos, glm::vec3(1.0, 1.0, 1.0));
-	////Mesh lightCube = cube(lightTrans);
-	////Shader lightShader("shader/lightShader/lightCube.vs", "shader/lightShader/lightCube.fs");
-
-
-	//auto dl = make_shared<DirectionalLight>(lightRadiance, lightPos, lightDir, lightUp);
-	//dl->entity= cube(lightTrans);
-	//dl->shader = make_shared<Shader>("shader/lightShader/lightCube.vs", "shader/lightShader/lightCube.fs");
-
-	auto scene = make_shared<Scene>();
-	//scene->AddDirectionalLight(dl);
-
-	//TRStransform maryTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(10.0, 10.0, 10.0));
-
-	//auto mary = make_shared<Model>("model/Marry/Marry.obj", maryTrans);
-
-	//scene->AddModel(mary);
-
-	//TRStransform maryTrans2(glm::vec3(40.0, 0.0, -40.0), glm::vec3(10.0, 10.0, 10.0));
-
-	//auto mary2 = make_shared<Model>("model/Marry/Marry.obj", maryTrans2);
-
-	//scene->AddModel(mary2);
-
-	//TRStransform floorTrans(glm::vec3(0.0, 0.0, -30.0), glm::vec3(4.0, 4.0, 4.0));
-
-	//auto floor = make_shared<Model>("model/floor/floor.obj", floorTrans);
-
-	//scene->AddModel(floor);
-
-	scene->pCamera = camera;
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-
-	//passes
-	//SceneDepthPass depthPass(scene, camera);
-	//SimpleShadowPass simpleShadowPass(scene, camera);
-
-	// draw in wireframe
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	TRStransform cornellTrans(glm::vec3(0.0, 0.0, 0.0));
-	TRStransform sponzaTrans(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.2, 0.2, 0.2));
-	TRStransform MarryTrans(glm::vec3(0.0, 0.0, 0.0));
-	TRStransform nanoTrans(glm::vec3(0.0, 0.0, 0.0));
-	TRStransform bedTrans(glm::vec3(0.0, 0.0, 0.0));
-
-	//Model cornell_box("model/cornell_box/CornellBox-Empty-CO.obj", cornellTrans);
-	auto sponza = make_shared<Model>("../model/sponza/sponza.obj", sponzaTrans);
-	//Model Mary("model/Marry/Marry.obj", MarryTrans);
-	//Model nanosuit("model/nanosuit/nanosuit.obj", nanoTrans);
-	//Model bedroom("model/bedroom/iscv2.obj", bedTrans);
-	//Model breakfast_room("model/breakfast_room/breakfast_room.obj", bedTrans);
-	//Model sibenik("model/sibenik/sibenik.obj", sponzaTrans);
-
-	scene->AddModel(sponza);
+	// initialize static shader uniforms before rendering
+	// --------------------------------------------------
+	glm::mat4 projection = glm::perspective(glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	shader->use();
+	shader->setMat4("projection", projection);
 
 	// äÖÈ¾Ñ­»·
 	while (!glfwWindowShouldClose(window))
@@ -176,11 +121,49 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
-		shader->setVec3("viewPos", camera->Position);
-		shader->setVec3("lightPos", lightPos);
-		//shader->setFloat("heightScale", heightScale); // adjust with Q and E keys
+		shader->use();
+		glm::mat4 view = camera->GetViewMatrix();
+		shader->setMat4("view", view);
+		shader->setVec3("camPos", camera->Position);
 
-		scene->DrawModels(*shader);
+		// render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
+		glm::mat4 model = glm::mat4(1.0f);
+		for (int row = 0; row < nrRows; ++row)
+		{
+			shader->setFloat("metallic", (float)row / (float)nrRows);
+			for (int col = 0; col < nrColumns; ++col)
+			{
+				// we clamp the roughness to 0.05 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
+				// on direct lighting.
+				shader->setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, glm::vec3(
+					(col - (nrColumns / 2)) * spacing,
+					(row - (nrRows / 2)) * spacing,
+					0.0f
+				));
+				shader->setMat4("model", model);
+				renderSphere();
+			}
+		}
+
+		// render light source (simply re-render sphere at light positions)
+		// this looks a bit off as we use the same shader, but it'll make their positions obvious and 
+		// keeps the codeprint small.
+		for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+		{
+			glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+			newPos = lightPositions[i];
+			shader->setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
+			shader->setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, newPos);
+			model = glm::scale(model, glm::vec3(0.5f));
+			shader->setMat4("model", model);
+			renderSphere();
+		}
 		
 		{
 			static unsigned frame_count = 0;
@@ -205,29 +188,13 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera->ProcessKeyboard(FORWARD, deltaTime);
+		camera->ProcessKeyboard(Desperado::FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera->ProcessKeyboard(BACKWARD, deltaTime);
+		camera->ProcessKeyboard(Desperado::BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera->ProcessKeyboard(LEFT, deltaTime);
+		camera->ProcessKeyboard(Desperado::LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera->ProcessKeyboard(RIGHT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		if (heightScale > 0.0f)
-			heightScale -= 0.0005f;
-		else
-			heightScale = 0.0f;
-		std::cout << heightScale << std::endl;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	{
-		if (heightScale < 1.0f)
-			heightScale += 0.0005f;
-		else
-			heightScale = 1.0f;
-		std::cout << heightScale << std::endl;
-	}
+		camera->ProcessKeyboard(Desperado::RIGHT, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -267,98 +234,99 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	camera->ProcessMouseScroll(yoffset);
 }
 
-
-
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad()
+// renders (and builds at first invocation) a sphere
+// -------------------------------------------------
+unsigned int sphereVAO = 0;
+unsigned int indexCount;
+void renderSphere()
 {
-	if (quadVAO == 0)
+	if (sphereVAO == 0)
 	{
-		// positions
-		glm::vec3 pos1(-1.0f, 1.0f, 0.0f);
-		glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
-		glm::vec3 pos3(1.0f, -1.0f, 0.0f);
-		glm::vec3 pos4(1.0f, 1.0f, 0.0f);
-		// texture coordinates
-		glm::vec2 uv1(0.0f, 1.0f);
-		glm::vec2 uv2(0.0f, 0.0f);
-		glm::vec2 uv3(1.0f, 0.0f);
-		glm::vec2 uv4(1.0f, 1.0f);
-		// normal vector
-		glm::vec3 nm(0.0f, 0.0f, 1.0f);
+		glGenVertexArrays(1, &sphereVAO);
 
-		// calculate tangent/bitangent vectors of both triangles
-		glm::vec3 tangent1, bitangent1;
-		glm::vec3 tangent2, bitangent2;
-		// triangle 1
-		// ----------
-		glm::vec3 edge1 = pos2 - pos1;
-		glm::vec3 edge2 = pos3 - pos1;
-		glm::vec2 deltaUV1 = uv2 - uv1;
-		glm::vec2 deltaUV2 = uv3 - uv1;
+		unsigned int vbo, ebo;
+		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ebo);
 
-		float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+		std::vector<glm::vec3> positions;
+		std::vector<glm::vec2> uv;
+		std::vector<glm::vec3> normals;
+		std::vector<unsigned int> indices;
 
-		tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-		tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-		tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-		tangent1 = glm::normalize(tangent1);
+		const unsigned int X_SEGMENTS = 64;
+		const unsigned int Y_SEGMENTS = 64;
+		const float PI = 3.14159265359;
+		for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+		{
+			for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+			{
+				float xSegment = (float)x / (float)X_SEGMENTS;
+				float ySegment = (float)y / (float)Y_SEGMENTS;
+				float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+				float yPos = std::cos(ySegment * PI);
+				float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 
-		bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-		bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-		bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-		bitangent1 = glm::normalize(bitangent1);
+				positions.push_back(glm::vec3(xPos, yPos, zPos));
+				uv.push_back(glm::vec2(xSegment, ySegment));
+				normals.push_back(glm::vec3(xPos, yPos, zPos));
+			}
+		}
 
-		// triangle 2
-		// ----------
-		edge1 = pos3 - pos1;
-		edge2 = pos4 - pos1;
-		deltaUV1 = uv3 - uv1;
-		deltaUV2 = uv4 - uv1;
+		bool oddRow = false;
+		for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+		{
+			if (!oddRow) // even rows: y == 0, y == 2; and so on
+			{
+				for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+				{
+					indices.push_back(y * (X_SEGMENTS + 1) + x);
+					indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+				}
+			}
+			else
+			{
+				for (int x = X_SEGMENTS; x >= 0; --x)
+				{
+					indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+					indices.push_back(y * (X_SEGMENTS + 1) + x);
+				}
+			}
+			oddRow = !oddRow;
+		}
+		indexCount = indices.size();
 
-		f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-		tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-		tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-		tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-		tangent2 = glm::normalize(tangent2);
-
-
-		bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-		bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-		bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-		bitangent2 = glm::normalize(bitangent2);
-
-
-		float quadVertices[] = {
-			// positions            // normal         // texcoords  // tangent                          // bitangent
-			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-			pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-
-			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-			pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
-		};
-		// configure plane VAO
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		std::vector<float> data;
+		for (unsigned int i = 0; i < positions.size(); ++i)
+		{
+			data.push_back(positions[i].x);
+			data.push_back(positions[i].y);
+			data.push_back(positions[i].z);
+			if (normals.size() > 0)
+			{
+				data.push_back(normals[i].x);
+				data.push_back(normals[i].y);
+				data.push_back(normals[i].z);
+			}
+			if (uv.size() > 0)
+			{
+				data.push_back(uv[i].x);
+				data.push_back(uv[i].y);
+			}
+		}
+		glBindVertexArray(sphereVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+		unsigned int stride = (3 + 2 + 3) * sizeof(float);
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 	}
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+
+	glBindVertexArray(sphereVAO);
+	glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
 }

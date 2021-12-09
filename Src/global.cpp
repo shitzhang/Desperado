@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "global.h"
 
+
 const char* const SAMPLE_NAME = "SVGF";
 unsigned int SCR_WIDTH = 1920;
 unsigned int SCR_HEIGHT = 1080;
