@@ -13,10 +13,10 @@ The goal of the project is to denoise Monte-Carlo path traced images with low sa
  - Motion vectors -- reprojection to match up points across frames, even w/ movement.
 
 ### No Denoising
-![1SPP (Sponza)](image/NoDenoising.png)
+![1SPP (Sponza)](Image/NoDenoising.png)
 
 ### Denoising - SVGF
-![SVGF (Sponza)](image/SVGF.png)
+![SVGF (Sponza)](Image/SVGF.png)
 
 ### TODO
  - Add TAA in the final stage of rendering.
