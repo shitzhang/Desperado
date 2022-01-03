@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{f3f660e0-fd45-4c88-ab31-4966d7551339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Optix">
+      <UniqueIdentifier>{afd246c8-833b-482d-a62d-0cb708486168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Passes">
+      <UniqueIdentifier>{1407ae88-9107-4cb0-90f5-280defab037b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{fd06a470-4d4b-4cf9-88bb-f92ccf3736cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\API">
+      <UniqueIdentifier>{762f3d7c-b835-4b5c-95a0-3f2e67fb4329}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Math">
+      <UniqueIdentifier>{96435304-28bf-41db-8b04-fc36e6cc390a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Timing">
+      <UniqueIdentifier>{333ef278-7074-4adc-9b6e-17039affe7a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\UI">
+      <UniqueIdentifier>{963ad990-e92e-4e22-9d62-519faca064db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Video">
+      <UniqueIdentifier>{34474c17-ee73-4584-a69f-3c54d4c27227}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{24e60ab4-f1bb-4d01-8928-658bb8ef4469}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Desperado.h" />
+    <ClInclude Include="Global.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Core\DesperadoConfig.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Framework.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Renderer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Sample.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Window.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\API\FBO.h">
+      <Filter>Core\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\API\RenderContext.h">
+      <Filter>Core\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\API\Texture.h">
+      <Filter>Core\API</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\InternalDictionary.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\StringUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Threading.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Math\Vector.h">
+      <Filter>Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UI\Gui.h">
+      <Filter>Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UI\UserInput.h">
+      <Filter>Utils\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Timing\Clock.h">
+      <Filter>Utils\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Timing\CpuTimer.h">
+      <Filter>Utils\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Timing\FrameRate.h">
+      <Filter>Utils\Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\FullScreenPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\RenderPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\SVGFPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="Optix\OptixConfig.h">
+      <Filter>Optix</Filter>
+    </ClInclude>
+    <ClInclude Include="Optix\OptixContext.h">
+      <Filter>Optix</Filter>
+    </ClInclude>
+    <ClInclude Include="Optix\OptixLight.h">
+      <Filter>Optix</Filter>
+    </ClInclude>
+    <ClInclude Include="Optix\OptixMesh.h">
+      <Filter>Optix</Filter>
+    </ClInclude>
+    <ClInclude Include="Optix\OptixUtil.h">
+      <Filter>Optix</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Third\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="stb.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Core\Framework.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Sample.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Window.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\API\FBO.cpp">
+      <Filter>Core\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\API\RenderContext.cpp">
+      <Filter>Core\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\API\Texture.cpp">
+      <Filter>Core\API</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\StringUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Threading.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\UI\Gui.cpp">
+      <Filter>Utils\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Timing\Clock.cpp">
+      <Filter>Utils\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Timing\FrameRate.cpp">
+      <Filter>Utils\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\FullScreenPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\RenderPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\SVGFPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="Optix\OptixContext.cpp">
+      <Filter>Optix</Filter>
+    </ClCompile>
+    <ClCompile Include="Optix\OptixMesh.cpp">
+      <Filter>Optix</Filter>
+    </ClCompile>
+    <ClCompile Include="Optix\OptixUtil.cpp">
+      <Filter>Optix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Third\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Third\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Third\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Third\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Scene.cpp" />
+  </ItemGroup>
+</Project>

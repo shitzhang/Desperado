@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <DESPERADO_SRC_DIRECTORY>$(SolutionDir)\Src</DESPERADO_SRC_DIRECTORY>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)Bin\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Bin\Int\$(PlatformShortName)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(DESPERADO_SRC_DIRECTORY)\Framework;$(DESPERADO_SRC_DIRECTORY)\..\Third\glad\include;$(DESPERADO_SRC_DIRECTORY)\..\Third\glfw-3.3.4\include;$(DESPERADO_SRC_DIRECTORY)\..\Third\glm;$(DESPERADO_SRC_DIRECTORY)\..\Third\Optix\include;$(DESPERADO_SRC_DIRECTORY)\..\Third\assimp-5.0.1\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;$(DESPERADO_SRC_DIRECTORY)\..\Third;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;GLAD_GLAPI_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(DESPERADO_SRC_DIRECTORY)\..\Third\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc142-mt.lib;glfw3dll.lib;nvrtc.lib;optix.6.5.0.lib;optix_prime.6.5.0.lib;optixu.6.5.0.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="DESPERADO_SRC_DIRECTORY">
+      <Value>$(DESPERADO_SRC_DIRECTORY)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
